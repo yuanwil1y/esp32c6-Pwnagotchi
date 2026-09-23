@@ -84,5 +84,27 @@ typedef struct {
     uint32_t qos_null_count;
     uint32_t data_other_count;
 
+    /* Phase 1C: beacon/probe observations. Fixed-size fields only. */
+    uint32_t beacon_parsed;
+    uint32_t beacon_parse_errors;
+    uint32_t probe_req_parsed;
+    uint32_t probe_req_errors;
+    uint32_t probe_resp_parsed;
+    uint32_t ie_total;
+    uint32_t ie_malformed;
+    uint32_t ssid_found;
+    uint32_t hidden_ssid_count;
+    uint32_t rsn_ie_count;
+    uint32_t wpa_vendor_ie_count;
+    uint32_t channel_ie_count;
+    uint32_t ap_unique;
+
+    /* Last AP observation, for the UI. 33 = 32 SSID bytes + NUL. */
+    char last_ssid[33];
+    uint8_t last_ssid_len;
+    bool last_ssid_valid;
+    uint8_t last_ap_channel;
+    int8_t last_ap_rssi;
+
     uint8_t current_channel;
 } radio_stats_t;

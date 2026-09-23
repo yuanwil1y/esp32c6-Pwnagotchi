@@ -19,6 +19,7 @@
 
 static const char *TAG = "RADIO";
 static const char *TAG_80211 = "80211";
+static const char *TAG_OBS = "OBS";
 
 #define RADIO_RX_TASK_STACK       2048
 #define RADIO_RX_TASK_PRIO        5
@@ -39,6 +40,52 @@ static portMUX_TYPE s_stats_mux = portMUX_INITIALIZER_UNLOCKED;
 static radio_stats_t s_stats;
 static uint8_t s_current_channel;
 static bool s_initialized;
+
+/*
+ * Phase 1C observation log throttling: fixed-size dedup caches so the
+ * console gets one line per new/changed AP and per new (src, ssid) probe,
+ * never one line per beacon. This is deliberately NOT an AP database.
+ * Touched only from radio_rx_task, so no extra locking.
+ */
+#define RADIO_AP_CACHE_SIZE     32
+#define RADIO_PROBE_CACHE_SIZE  16
+
+typedef struct {
+    bool used;
+    uint8_t bssid[6];
+    uint8_t ssid_len;
+    char ssid[33];
+    uint8_t adv_channel;
+    uint8_t sec; /* ieee80211_security_t */
+} ap_cache_entry_t;
+
+typedef struct {
+    bool used;
+    uint8_t src[6];
+    uint8_t ssid_len;
+    char ssid[33];
+} probe_cache_entry_t;
+
+static ap_cache_entry_t s_ap_cache[RADIO_AP_CACHE_SIZE];
+static uint8_t s_ap_cache_next;
+static probe_cache_entry_t s_probe_cache[RADIO_PROBE_CACHE_SIZE];
+static uint8_t s_probe_cache_next;
+
+/* Global rate cap on observation log lines. Dedup alone is not enough:
+ * with more distinct BSSIDs than cache slots, eviction churn could turn
+ * every beacon into a "new" AP line. 5 lines/s worst case. */
+#define RADIO_OBS_LOG_MIN_INTERVAL_MS 200
+static TickType_t s_last_obs_log_tick;
+
+static bool obs_log_rate_ok(void)
+{
+    const TickType_t now = xTaskGetTickCount();
+    if ((now - s_last_obs_log_tick) < pdMS_TO_TICKS(RADIO_OBS_LOG_MIN_INTERVAL_MS)) {
+        return false;
+    }
+    s_last_obs_log_tick = now;
+    return true;
+}
 
 /*
  * Promiscuous RX callback. Runs in the Wi-Fi driver task context: only read
@@ -236,6 +283,177 @@ static void stats_count_parsed_locked(const radio_packet_t *pkt,
     }
 }
 
+/* Returns true when this AP should produce a console line (first sight or
+ * changed ssid/channel/security). Updates the cache entry either way. */
+static bool ap_cache_update(const ieee80211_ap_observation_t *obs, uint8_t sec)
+{
+    for (int i = 0; i < RADIO_AP_CACHE_SIZE; i++) {
+        ap_cache_entry_t *e = &s_ap_cache[i];
+        if (!e->used || memcmp(e->bssid, obs->bssid, sizeof(e->bssid)) != 0) {
+            continue;
+        }
+
+        const bool changed = e->ssid_len != obs->ssid_len ||
+                             memcmp(e->ssid, obs->ssid, obs->ssid_len) != 0 ||
+                             e->adv_channel != obs->advertised_channel ||
+                             e->sec != sec;
+        e->ssid_len = obs->ssid_len;
+        memcpy(e->ssid, obs->ssid, sizeof(e->ssid));
+        e->adv_channel = obs->advertised_channel;
+        e->sec = sec;
+        return changed;
+    }
+
+    ap_cache_entry_t *e = &s_ap_cache[s_ap_cache_next % RADIO_AP_CACHE_SIZE];
+    s_ap_cache_next++;
+    e->used = true;
+    memcpy(e->bssid, obs->bssid, sizeof(e->bssid));
+    e->ssid_len = obs->ssid_len;
+    memcpy(e->ssid, obs->ssid, sizeof(e->ssid));
+    e->adv_channel = obs->advertised_channel;
+    e->sec = sec;
+    return true;
+}
+
+/* Returns true when this (src, ssid) probe has not been logged yet. */
+static bool probe_cache_update(const ieee80211_probe_req_observation_t *obs)
+{
+    for (int i = 0; i < RADIO_PROBE_CACHE_SIZE; i++) {
+        probe_cache_entry_t *e = &s_probe_cache[i];
+        if (!e->used || memcmp(e->src, obs->source, sizeof(e->src)) != 0) {
+            continue;
+        }
+        if (e->ssid_len == obs->ssid_len &&
+            memcmp(e->ssid, obs->ssid, obs->ssid_len) == 0) {
+            return false;
+        }
+        e->ssid_len = obs->ssid_len;
+        memcpy(e->ssid, obs->ssid, sizeof(e->ssid));
+        return true;
+    }
+
+    probe_cache_entry_t *e = &s_probe_cache[s_probe_cache_next % RADIO_PROBE_CACHE_SIZE];
+    s_probe_cache_next++;
+    e->used = true;
+    memcpy(e->src, obs->source, sizeof(e->src));
+    e->ssid_len = obs->ssid_len;
+    memcpy(e->ssid, obs->ssid, sizeof(e->ssid));
+    return true;
+}
+
+/* Beacon / probe response observation: parse, count, throttle-log. */
+static void handle_ap_observation(const radio_packet_t *pkt, bool is_beacon)
+{
+    ieee80211_ap_observation_t obs;
+    if (!ieee80211_parse_beacon_or_probe_resp(pkt->data, pkt->length, &obs)) {
+        portENTER_CRITICAL(&s_stats_mux);
+        s_stats.beacon_parse_errors++;
+        portEXIT_CRITICAL(&s_stats_mux);
+        return;
+    }
+    obs.rssi = pkt->rssi;
+    obs.rx_channel = pkt->channel;
+
+    const ieee80211_security_t sec = ieee80211_classify_security(&obs);
+    const bool log_this = ap_cache_update(&obs, (uint8_t)sec);
+
+    portENTER_CRITICAL(&s_stats_mux);
+    if (is_beacon) {
+        s_stats.beacon_parsed++;
+    } else {
+        s_stats.probe_resp_parsed++;
+    }
+    s_stats.ie_total += obs.ie_count;
+    if (obs.malformed_ie) {
+        s_stats.ie_malformed++;
+    }
+    if (obs.ssid_len > 0) {
+        s_stats.ssid_found++;
+    }
+    if (obs.hidden_ssid) {
+        s_stats.hidden_ssid_count++;
+    }
+    if (obs.rsn_present) {
+        s_stats.rsn_ie_count++;
+    }
+    if (obs.wpa_vendor_present) {
+        s_stats.wpa_vendor_ie_count++;
+    }
+    if (obs.ds_param_present) {
+        s_stats.channel_ie_count++;
+    }
+    if (log_this) {
+        s_stats.ap_unique++;
+    }
+    memcpy(s_stats.last_ssid, obs.ssid, sizeof(s_stats.last_ssid));
+    s_stats.last_ssid_len = obs.ssid_len;
+    s_stats.last_ssid_valid = true;
+    s_stats.last_ap_channel = obs.advertised_channel != 0 ? obs.advertised_channel
+                                                          : obs.rx_channel;
+    s_stats.last_ap_rssi = obs.rssi;
+    portEXIT_CRITICAL(&s_stats_mux);
+
+    if (!log_this || !obs_log_rate_ok()) {
+        return;
+    }
+
+    char mac[18];
+    ieee80211_format_mac(obs.bssid, mac, sizeof(mac));
+
+    if (obs.hidden_ssid) {
+        ESP_LOGI(TAG_OBS, "AP bssid=%s ssid=<hidden> rssi=%d rx_ch=%u adv_ch=%u bintv=%u sec=%s",
+                 mac, obs.rssi, obs.rx_channel, obs.advertised_channel,
+                 obs.beacon_interval, ieee80211_security_name(sec));
+    } else {
+        char printable[IEEE80211_SSID_BUF_LEN];
+        ieee80211_ssid_to_printable(obs.ssid, obs.ssid_len, printable, sizeof(printable));
+        ESP_LOGI(TAG_OBS, "AP bssid=%s ssid=\"%s\" rssi=%d rx_ch=%u adv_ch=%u bintv=%u sec=%s",
+                 mac, printable, obs.rssi, obs.rx_channel, obs.advertised_channel,
+                 obs.beacon_interval, ieee80211_security_name(sec));
+    }
+}
+
+/* Probe request observation: parse, count, throttle-log. */
+static void handle_probe_request(const radio_packet_t *pkt)
+{
+    ieee80211_probe_req_observation_t obs;
+    if (!ieee80211_parse_probe_request(pkt->data, pkt->length, &obs)) {
+        portENTER_CRITICAL(&s_stats_mux);
+        s_stats.probe_req_errors++;
+        portEXIT_CRITICAL(&s_stats_mux);
+        return;
+    }
+    obs.rssi = pkt->rssi;
+    obs.rx_channel = pkt->channel;
+
+    const bool log_this = probe_cache_update(&obs);
+
+    portENTER_CRITICAL(&s_stats_mux);
+    s_stats.probe_req_parsed++;
+    s_stats.ie_total += obs.ie_count;
+    if (obs.malformed_ie) {
+        s_stats.ie_malformed++;
+    }
+    portEXIT_CRITICAL(&s_stats_mux);
+
+    if (!log_this || !obs_log_rate_ok()) {
+        return;
+    }
+
+    char mac[18];
+    ieee80211_format_mac(obs.source, mac, sizeof(mac));
+
+    if (obs.wildcard_ssid) {
+        ESP_LOGI(TAG_OBS, "PROBE src=%s ssid=<wildcard> rssi=%d ch=%u",
+                 mac, obs.rssi, obs.rx_channel);
+    } else {
+        char printable[IEEE80211_SSID_BUF_LEN];
+        ieee80211_ssid_to_printable(obs.ssid, obs.ssid_len, printable, sizeof(printable));
+        ESP_LOGI(TAG_OBS, "PROBE src=%s ssid=\"%s\" rssi=%d ch=%u",
+                 mac, printable, obs.rssi, obs.rx_channel);
+    }
+}
+
 /*
  * Consumer task. Phase 1A driver-type counting plus Phase 1B Frame Control
  * classification via the pure parser. All parsing happens here, never in
@@ -286,6 +504,22 @@ static void radio_rx_task(void *arg)
         stats_count_parsed_locked(pkt, &info);
         portEXIT_CRITICAL(&s_stats_mux);
 
+        if (info.valid && info.type == IEEE80211_TYPE_MGMT) {
+            switch (info.fc.subtype) {
+            case IEEE80211_MGMT_BEACON:
+                handle_ap_observation(pkt, true);
+                break;
+            case IEEE80211_MGMT_PROBE_RESP:
+                handle_ap_observation(pkt, false);
+                break;
+            case IEEE80211_MGMT_PROBE_REQ:
+                handle_probe_request(pkt);
+                break;
+            default:
+                break;
+            }
+        }
+
         (void)xQueueSend(s_free_queue, &pkt, 0);
     }
 }
@@ -334,6 +568,18 @@ static void radio_stats_task(void *arg)
                  " null=%" PRIu32 " other=%" PRIu32,
                  stats.data_total, stats.qos_data_count, stats.qos_null_count,
                  stats.null_count, stats.data_other_count);
+        ESP_LOGI(TAG_OBS,
+                 "ap=%" PRIu32 " beacon=%" PRIu32 " berr=%" PRIu32
+                 " preq=%" PRIu32 " perr=%" PRIu32 " presp=%" PRIu32
+                 " ie=%" PRIu32 " ie_err=%" PRIu32
+                 " ssid=%" PRIu32 " hidden=%" PRIu32
+                 " rsn=%" PRIu32 " wpa=%" PRIu32 " ds=%" PRIu32,
+                 stats.ap_unique, stats.beacon_parsed, stats.beacon_parse_errors,
+                 stats.probe_req_parsed, stats.probe_req_errors,
+                 stats.probe_resp_parsed, stats.ie_total, stats.ie_malformed,
+                 stats.ssid_found, stats.hidden_ssid_count,
+                 stats.rsn_ie_count, stats.wpa_vendor_ie_count,
+                 stats.channel_ie_count);
     }
 }
 

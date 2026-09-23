@@ -2,7 +2,9 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "driver/spi_master.h"
 #include "esp_heap_caps.h"
@@ -43,6 +45,7 @@ typedef enum {
     STATUS_SCREEN_NONE = 0,
     STATUS_SCREEN_PHASE1A,
     STATUS_SCREEN_PHASE1B,
+    STATUS_SCREEN_PHASE1C,
 } status_screen_kind_t;
 
 static lv_obj_t *s_status_label;
@@ -454,6 +457,84 @@ esp_err_t board_display_update_phase1b(uint32_t rx_total, uint32_t mgmt, uint32_
     }
 
     phase1b_refresh_locked(rx_total, mgmt, data, ctrl, errors);
+
+    board_display_unlock();
+    return ESP_OK;
+}
+
+/* Requires the LVGL mutex to be held. last_ssid must already be sanitized
+ * for display (printable, length-bounded) by the caller; NULL shows "-". */
+static void phase1c_refresh_locked(uint32_t rx_total, uint32_t ap_unique,
+                                   uint32_t ie_errors, const char *last_ssid,
+                                   uint8_t channel, int8_t rssi)
+{
+    if (s_status_label == NULL || s_screen_kind != STATUS_SCREEN_PHASE1C) {
+        return;
+    }
+
+    char info[48];
+    if (last_ssid != NULL && channel != 0) {
+        snprintf(info, sizeof(info), "CH %u  %ddBm", (unsigned)channel, (int)rssi);
+    } else {
+        strlcpy(info, "-", sizeof(info));
+        last_ssid = NULL;
+    }
+
+    lv_label_set_text_fmt(s_status_label,
+                          "esp32c6-Pwnagotchi\n"
+                          "\n"
+                          "Phase 1C\n"
+                          "LCD: OK\n"
+                          "Touch: %s\n"
+                          "SD: %s\n"
+                          "WiFi: %s\n"
+                          "\n"
+                          "RX: %lu\n"
+                          "AP: %lu\n"
+                          "IE ERR: %lu\n"
+                          "Last: %s\n"
+                          "%s",
+                          s_status_touch_ok ? "OK" : "FAIL",
+                          s_status_sd_ok ? "OK" : "FAIL",
+                          s_status_wifi_ok ? "SNIFFING" : "FAIL",
+                          (unsigned long)rx_total,
+                          (unsigned long)ap_unique,
+                          (unsigned long)ie_errors,
+                          last_ssid != NULL ? last_ssid : "-",
+                          info);
+}
+
+esp_err_t board_display_show_phase1c_status(bool touch_ok, bool sd_ok, bool wifi_ok)
+{
+    if (!board_display_lock(BOARD_DISPLAY_WAIT_FOREVER)) {
+        return ESP_ERR_INVALID_STATE;
+    }
+
+    s_status_touch_ok = touch_ok;
+    s_status_sd_ok = sd_ok;
+    s_status_wifi_ok = wifi_ok;
+    s_screen_kind = STATUS_SCREEN_PHASE1C;
+
+    if (status_screen_create_locked() == NULL) {
+        s_screen_kind = STATUS_SCREEN_NONE;
+        board_display_unlock();
+        return ESP_ERR_NO_MEM;
+    }
+    phase1c_refresh_locked(0, 0, 0, NULL, 0, 0);
+
+    board_display_unlock();
+    return ESP_OK;
+}
+
+esp_err_t board_display_update_phase1c(uint32_t rx_total, uint32_t ap_unique,
+                                       uint32_t ie_errors, const char *last_ssid,
+                                       uint8_t channel, int8_t rssi)
+{
+    if (!board_display_lock(BOARD_DISPLAY_WAIT_FOREVER)) {
+        return ESP_ERR_INVALID_STATE;
+    }
+
+    phase1c_refresh_locked(rx_total, ap_unique, ie_errors, last_ssid, channel, rssi);
 
     board_display_unlock();
     return ESP_OK;
