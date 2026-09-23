@@ -384,19 +384,28 @@ static void handle_ap_observation(const radio_packet_t *pkt,
     if (obs.ds_param_present) {
         s_stats.channel_ie_count++;
     }
-    s_stats.ap_cache_inserts = res.inserts;
-    s_stats.ap_cache_updates = res.updates;
-    s_stats.ap_cache_evictions = res.evictions;
-    s_stats.ap_cache_occupied = res.occupied;
     if (res.action == OBS_AP_SKIPPED) {
+        /* Incomplete observation: counted, but no cache / last-obs /
+         * log impact at all (issue 5 policy). */
         s_stats.ap_obs_skipped++;
+    } else {
+        s_stats.ap_cache_inserts = res.inserts;
+        s_stats.ap_cache_updates = res.updates;
+        s_stats.ap_cache_evictions = res.evictions;
+        s_stats.ap_cache_occupied = res.occupied;
+        if (obs.ssid_len > 0) {
+            memcpy(s_stats.last_ssid, obs.ssid, sizeof(s_stats.last_ssid));
+            s_stats.last_ssid_len = obs.ssid_len;
+            s_stats.last_ssid_valid = true;
+        }
+        /* A complete observation always refreshes rssi/channel context;
+         * advertised_channel is 0 when the DS IE was absent/invalid and
+         * the rx metadata channel fills in. */
+        s_stats.last_ap_channel = obs.advertised_channel != 0
+                                      ? obs.advertised_channel
+                                      : obs.rx_channel;
+        s_stats.last_ap_rssi = obs.rssi;
     }
-    memcpy(s_stats.last_ssid, obs.ssid, sizeof(s_stats.last_ssid));
-    s_stats.last_ssid_len = obs.ssid_len;
-    s_stats.last_ssid_valid = true;
-    s_stats.last_ap_channel = obs.advertised_channel != 0 ? obs.advertised_channel
-                                                          : obs.rx_channel;
-    s_stats.last_ap_rssi = obs.rssi;
     portEXIT_CRITICAL(&s_stats_mux);
 
     if (!res.should_log || !obs_log_rate_ok()) {

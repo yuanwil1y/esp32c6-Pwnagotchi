@@ -3,16 +3,23 @@
 #include <string.h>
 
 /*
- * INTERMEDIATE Phase 1.5 commit: the merge policy below is the pre-1.5
- * wifi_sniffer.c ap_cache_update() logic verbatim (behind the new API), so
- * the regression tests added next can demonstrate the defects failing:
- *   - observations that are incomplete/malformed still overwrite cached
- *     fields (no OBS_AP_SKIPPED path),
- *   - a hidden/missing SSID erases a previously known SSID,
- *   - an observation without a DS Parameter IE clears the cached
- *     advertised channel.
- * The conservative merge policy lands in a later commit and flips the
- * tests without changing them.
+ * Phase 1.5 observation merge policy (issue 5). Coarse presence-level
+ * classification only; the full security parser stays Phase 2.
+ *
+ * Merge policy - an observation is merged only when it is COMPLETE
+ * (whole MAC body captured, walk finished cleanly, no malformed /
+ * incomplete / duplicated-critical IEs). Anything else is skipped
+ * entirely: it can neither confirm nor deny, and "no RSN IE seen" in a
+ * truncated capture must never become "OPEN" or erase a known SSID.
+ *
+ * For complete observations:
+ * - security is authoritative (presence-level: RSN > WPA > PRIVACY >
+ *   OPEN; a complete frame without security IEs is valid negative
+ *   evidence for OPEN),
+ * - a missing/hidden SSID never erases a previously known name,
+ * - advertised_channel is written only when the observation carries a
+ *   valid DS value (0 = absent/invalid keeps the cached channel);
+ *   rx_channel is handled by the caller and stays independent.
  */
 
 void obs_ap_cache_init(obs_ap_cache_t *cache)
@@ -23,15 +30,37 @@ void obs_ap_cache_init(obs_ap_cache_t *cache)
     memset(cache, 0, sizeof(*cache));
 }
 
+static obs_ap_result_t obs_finish(const obs_ap_cache_t *cache,
+                                  obs_ap_action_t action, bool should_log)
+{
+    obs_ap_result_t res = {0};
+    res.action = action;
+    res.should_log = should_log;
+    res.occupied = 0;
+    for (int i = 0; i < OBS_AP_CACHE_SIZE; i++) {
+        if (cache->entries[i].used) {
+            res.occupied++;
+        }
+    }
+    res.inserts = cache->inserts;
+    res.updates = cache->updates;
+    res.evictions = cache->evictions;
+    return res;
+}
+
 obs_ap_result_t obs_ap_cache_update(obs_ap_cache_t *cache,
                                     const ieee80211_ap_observation_t *obs,
                                     uint8_t sec)
 {
-    obs_ap_result_t res = {0};
-
     if (cache == NULL || obs == NULL) {
+        obs_ap_result_t res = {0};
         res.action = OBS_AP_SKIPPED;
         return res;
+    }
+
+    if (!obs->complete) {
+        /* Incomplete / malformed observation: conservative skip. */
+        return obs_finish(cache, OBS_AP_SKIPPED, false);
     }
 
     for (int i = 0; i < OBS_AP_CACHE_SIZE; i++) {
@@ -40,25 +69,31 @@ obs_ap_result_t obs_ap_cache_update(obs_ap_cache_t *cache,
             continue;
         }
 
-        const bool changed = e->ssid_len != obs->ssid_len ||
-                             memcmp(e->ssid, obs->ssid, obs->ssid_len) != 0 ||
-                             e->adv_channel != obs->advertised_channel ||
+        /* Merged view: keep cached knowledge where the observation is
+         * silent (hidden/missing SSID, absent/invalid DS channel). */
+        const uint8_t new_ssid_len = obs->ssid_len > 0 ? obs->ssid_len
+                                                       : e->ssid_len;
+        const uint8_t new_adv = obs->advertised_channel != 0
+                                    ? obs->advertised_channel
+                                    : e->adv_channel;
+
+        const bool changed = e->ssid_len != new_ssid_len ||
+                             memcmp(e->ssid, obs->ssid_len > 0 ? obs->ssid : e->ssid,
+                                    new_ssid_len) != 0 ||
+                             e->adv_channel != new_adv ||
                              e->sec != sec;
 
-        /* Pre-1.5 defect: unconditional overwrite, including empty/hidden
-         * SSID over a known name and zero advertised channel over a known
-         * channel. */
-        e->ssid_len = obs->ssid_len;
-        memcpy(e->ssid, obs->ssid, sizeof(e->ssid));
-        e->adv_channel = obs->advertised_channel;
+        e->ssid_len = new_ssid_len;
+        memcpy(e->ssid, obs->ssid_len > 0 ? obs->ssid : e->ssid,
+               sizeof(e->ssid));
+        e->adv_channel = new_adv;
         e->sec = sec;
 
-        res.action = changed ? OBS_AP_CHANGED : OBS_AP_UNCHANGED;
-        res.should_log = changed;
         if (changed) {
             cache->updates++;
         }
-        goto out;
+        return obs_finish(cache, changed ? OBS_AP_CHANGED : OBS_AP_UNCHANGED,
+                          changed);
     }
 
     obs_ap_entry_t *e = &cache->entries[cache->next % OBS_AP_CACHE_SIZE];
@@ -74,20 +109,7 @@ obs_ap_result_t obs_ap_cache_update(obs_ap_cache_t *cache,
     memcpy(e->ssid, obs->ssid, sizeof(e->ssid));
     e->adv_channel = obs->advertised_channel;
     e->sec = sec;
-    res.action = OBS_AP_INSERTED;
-    res.should_log = true;
-
-out:
-    res.occupied = 0;
-    for (int i = 0; i < OBS_AP_CACHE_SIZE; i++) {
-        if (cache->entries[i].used) {
-            res.occupied++;
-        }
-    }
-    res.inserts = cache->inserts;
-    res.updates = cache->updates;
-    res.evictions = cache->evictions;
-    return res;
+    return obs_finish(cache, OBS_AP_INSERTED, true);
 }
 
 bool obs_ap_cache_find(const obs_ap_cache_t *cache, const uint8_t bssid[6],
