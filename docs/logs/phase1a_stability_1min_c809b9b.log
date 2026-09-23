@@ -1,0 +1,152 @@
+ESP-ROM:esp32c6-20220919
+Build:Sep 19 2022
+rst:0x15 (USB_UART_HPSYS),boot:0x6e (SPI_FAST_FLASH_BOOT)
+Saved PC:0x408705ce
+SPIWP:0xee
+mode:DIO, clock div:2
+load:0x40875720,len:0x16b8
+load:0x4086c110,len:0xe84
+load:0x4086e610,len:0x3048
+entry 0x4086c11a
+I (23) boot: ESP-IDF v5.4 2nd stage bootloader
+I (23) boot: compile time Sep 23 2026 14:33:06
+I (24) boot: chip revision: v0.2
+I (24) boot: efuse block revision: v0.3
+I (26) boot.esp32c6: SPI Speed      : 80MHz
+I (30) boot.esp32c6: SPI Mode       : DIO
+I (34) boot.esp32c6: SPI Flash Size : 8MB
+I (38) boot: Enabling RNG early entropy source...
+I (42) boot: Partition Table:
+I (45) boot: ## Label            Usage          Type ST Offset   Length
+I (51) boot:  0 nvs              WiFi data        01 02 00009000 00006000
+I (58) boot:  1 phy_init         RF data          01 01 0000f000 00001000
+I (64) boot:  2 factory          factory app      00 00 00010000 00400000
+I (71) boot: End of partition table
+I (74) esp_image: segment 0: paddr=00010020 vaddr=420d0020 size=2668ch (157324) map
+I (110) esp_image: segment 1: paddr=000366b4 vaddr=40800000 size=09964h ( 39268) load
+I (120) esp_image: segment 2: paddr=00040020 vaddr=42000020 size=cf61ch (849436) map
+I (277) esp_image: segment 3: paddr=0010f644 vaddr=40809964 size=181a4h ( 98724) load
+I (298) esp_image: segment 4: paddr=001277f0 vaddr=40821b10 size=03dc8h ( 15816) load
+I (303) esp_image: segment 5: paddr=0012b5c0 vaddr=50000000 size=0001ch (    28) load
+I (311) boot: Loaded app from partition at offset 0x10000
+I (312) boot: Disabling RNG early entropy source...
+I (324) cpu_start: Unicore app
+I (332) cpu_start: Pro cpu start user code
+I (333) cpu_start: cpu freq: 160000000 Hz
+I (333) app_init: Application information:
+I (333) app_init: Project name:     esp32c6_pwnagotchi
+I (337) app_init: App version:      c809b9b
+I (341) app_init: Compile time:     Sep 23 2026 14:32:59
+I (346) app_init: ELF file SHA256:  75eec83ed...
+I (351) app_init: ESP-IDF:          v5.4
+I (354) efuse_init: Min chip rev:     v0.0
+I (358) efuse_init: Max chip rev:     v0.99 
+I (362) efuse_init: Chip rev:         v0.2
+I (366) heap_init: Initializing. RAM available for dynamic allocation:
+I (372) heap_init: At 4082E360 len 0004E2B0 (312 KiB): RAM
+I (377) heap_init: At 4087C610 len 00002F54 (11 KiB): RAM
+I (383) heap_init: At 5000001C len 00003FCC (15 KiB): RTCRAM
+I (389) spi_flash: detected chip: generic
+I (392) spi_flash: flash io: dio
+W (395) i2c: This driver is an old driver, please migrate your application code to adapt `driver/i2c_master.h`
+I (405) sleep_gpio: Configure to isolate all GPIO pins in sleep state
+I (411) sleep_gpio: Enable automatic switching of GPIO sleep configuration
+I (417) coexist: coex firmware version: 49a8cdc
+I (422) coexist: coexist rom version 5b8dcfa
+I (426) main_task: Started on CPU0
+I (428) main_task: Calling app_main()
+I (432) phase1a: esp32c6-Pwnagotchi Phase 1A Wi-Fi promiscuous RX
+I (438) phase1a: firmware git commit: c809b9b042bacff6e5cbbda0780ed8d8294f1446 (c809b9b)
+I (446) board_backlight: backlight PWM ready on GPIO15 (inverted, duty 0 = full on)
+I (453) board_i2c: I2C0 ready: SDA=18 SCL=8 @ 200000 Hz
+I (458) board_touch: CST78x touch ready at I2C address 0x15
+I (463) board_spi: SPI2 ready: MOSI=4 MISO=19 SCLK=5
+I (468) gpio: GPIO[6]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 
+I (476) gpio: GPIO[14]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 
+I (484) sh8601: LCD panel create success, version: 1.0.0
+I (812) board_display: LCD/LVGL ready: SH8601 170x320, x-offset=35
+I (812) gpio: GPIO[20]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 
+I (818) sdspi_transaction: cmd=52, R1 response: command not supported
+I (863) sdspi_transaction: cmd=5, R1 response: command not supported
+Name: SA01G
+Type: SDSC
+Speed: 20.00 MHz (limit: 20.00 MHz)
+Size: 972MB
+CSD: ver=1, sector_size=512, capacity=1990656 read_bl_len=9
+SSR: bus_width=1
+I (887) board_sd: SD mount: OK at /sd_card, size 0.95 GB
+I (922) board_sd: SD write: OK (/sd_card/phase0_test.txt)
+I (925) board_sd: SD read: OK -> 'esp32c6-Pwnagotchi phase0'
+I (925) board_sd: SD verify: OK
+I (934) pp: pp rom version: 5b8dcfa
+I (934) net80211: net80211 rom version: 5b8dcfa
+I (936) wifi:wifi driver task: 40847d9c, prio:23, stack:6656, core=0
+I (941) wifi:wifi firmware version: 48ea317a7
+I (942) wifi:wifi certification version: v7.0
+I (946) wifi:config NVS flash: enabled
+I (949) wifi:config nano formatting: disabled
+I (953) wifi:mac_version:HAL_MAC_ESP32AX_761,ut_version:N, band mode:0x1
+I (960) wifi:Init data frame dynamic rx buffer num: 32
+I (965) wifi:Init static rx mgmt buffer num: 5
+I (969) wifi:Init management short buffer num: 32
+I (973) wifi:Init dynamic tx buffer num: 32
+I (977) wifi:Init static tx FG buffer num: 2
+I (981) wifi:Init static rx buffer size: 1700 (rxctrl:92, csi:512)
+I (987) wifi:Init static rx buffer num: 10
+I (991) wifi:Init dynamic rx buffer num: 32
+I (996) wifi_init: rx ba win: 6
+I (998) wifi_init: accept mbox: 6
+I (1001) wifi_init: tcpip mbox: 32
+I (1004) wifi_init: udp mbox: 6
+I (1007) wifi_init: tcp mbox: 6
+I (1010) wifi_init: tcp tx win: 5760
+I (1013) wifi_init: tcp rx win: 5760
+I (1016) wifi_init: tcp mss: 1440
+I (1019) wifi_init: WiFi IRAM OP enabled
+I (1023) wifi_init: WiFi RX IRAM OP enabled
+I (1027) wifi_init: WiFi SLP IRAM OP enabled
+I (1031) RADIO: wifi driver ready (pool=24 pkts x 520 B, queues=24)
+I (1037) phy_init: phy_version 320,348a293,Sep  3 2024,16:33:12
+W (1124) wifi:ACK_TAB0   :0x   90a0b, QAM16:0x9 (24Mbps), QPSK:0xa (12Mbps), BPSK:0xb (6Mbps)
+W (1124) wifi:CTS_TAB0   :0x   90a0b, QAM16:0x9 (24Mbps), QPSK:0xa (12Mbps), BPSK:0xb (6Mbps)
+W (1130) wifi:(agc)0x600a7128:0xd217da12, min.avgNF:0xce->0xd2(dB), RCalCount:0x17d, min.RRssi:0xa12(-94.88)
+W (1139) wifi:(TB)WDEV_PWR_TB_MCS0:19
+W (1142) wifi:(TB)WDEV_PWR_TB_MCS1:19
+W (1146) wifi:(TB)WDEV_PWR_TB_MCS2:19
+W (1149) wifi:(TB)WDEV_PWR_TB_MCS3:19
+W (1152) wifi:(TB)WDEV_PWR_TB_MCS4:19
+W (1156) wifi:(TB)WDEV_PWR_TB_MCS5:19
+W (1159) wifi:(TB)WDEV_PWR_TB_MCS6:18
+W (1163) wifi:(TB)WDEV_PWR_TB_MCS7:18
+W (1166) wifi:(TB)WDEV_PWR_TB_MCS8:17
+W (1169) wifi:(TB)WDEV_PWR_TB_MCS9:15
+W (1173) wifi:(TB)WDEV_PWR_TB_MCS10:15
+W (1176) wifi:(TB)WDEV_PWR_TB_MCS11:15
+I (1180) wifi:11ax coex: WDEVAX_PTI0(0x55777555), WDEVAX_PTI1(0x00003377).
+
+I (1187) wifi:mode : sta (ac:eb:e6:3a:53:18)
+I (1191) wifi:enable tsf
+I (1194) wifi:ic_enable_sniffer
+I (1196) RADIO: promiscuous RX started on channel 6
+I (1203) board_backlight: brightness=80%
+I (1204) phase1a: Phase 1A ready: LCD=OK I2C=OK Touch=OK SD=OK WiFi=SNIFFING
+I (1211) main_task: Returned from app_main()
+I (4031) RADIO: rx=62 queued=62 processed=62 drop=0 trunc=0 mgmt=62 data=0 ctrl=0 misc=0 q=0/1 heap=204072 min_heap=198852
+I (7031) RADIO: rx=123 queued=123 processed=123 drop=0 trunc=0 mgmt=123 data=0 ctrl=0 misc=0 q=0/1 heap=204068 min_heap=198852
+I (10031) RADIO: rx=184 queued=184 processed=184 drop=0 trunc=0 mgmt=184 data=0 ctrl=0 misc=0 q=0/1 heap=204068 min_heap=198852
+I (13031) RADIO: rx=264 queued=264 processed=264 drop=0 trunc=3 mgmt=259 data=5 ctrl=0 misc=0 q=0/1 heap=204072 min_heap=198852
+I (16031) RADIO: rx=321 queued=321 processed=321 drop=0 trunc=3 mgmt=316 data=5 ctrl=0 misc=0 q=0/1 heap=204072 min_heap=198852
+I (19031) RADIO: rx=397 queued=397 processed=397 drop=0 trunc=3 mgmt=365 data=32 ctrl=0 misc=0 q=0/1 heap=204072 min_heap=198852
+I (22031) RADIO: rx=448 queued=448 processed=448 drop=0 trunc=3 mgmt=415 data=33 ctrl=0 misc=0 q=0/1 heap=204072 min_heap=198852
+I (25031) RADIO: rx=486 queued=486 processed=486 drop=0 trunc=3 mgmt=453 data=33 ctrl=0 misc=0 q=0/1 heap=204072 min_heap=198852
+I (28031) RADIO: rx=526 queued=526 processed=526 drop=0 trunc=3 mgmt=492 data=34 ctrl=0 misc=0 q=0/1 heap=204072 min_heap=198852
+I (31031) RADIO: rx=574 queued=574 processed=574 drop=0 trunc=3 mgmt=540 data=34 ctrl=0 misc=0 q=0/1 heap=204072 min_heap=198852
+I (34031) RADIO: rx=619 queued=619 processed=619 drop=0 trunc=3 mgmt=584 data=35 ctrl=0 misc=0 q=0/1 heap=204072 min_heap=198852
+I (37031) RADIO: rx=663 queued=663 processed=663 drop=0 trunc=3 mgmt=628 data=35 ctrl=0 misc=0 q=0/1 heap=204072 min_heap=198852
+I (40031) RADIO: rx=703 queued=703 processed=703 drop=0 trunc=3 mgmt=668 data=35 ctrl=0 misc=0 q=0/1 heap=204072 min_heap=198852
+I (43031) RADIO: rx=748 queued=748 processed=748 drop=0 trunc=3 mgmt=711 data=37 ctrl=0 misc=0 q=0/1 heap=204072 min_heap=198852
+I (46031) RADIO: rx=789 queued=789 processed=789 drop=0 trunc=3 mgmt=751 data=38 ctrl=0 misc=0 q=0/1 heap=204072 min_heap=198852
+I (49031) RADIO: rx=834 queued=834 processed=834 drop=0 trunc=3 mgmt=795 data=39 ctrl=0 misc=0 q=0/1 heap=204072 min_heap=198852
+I (52031) RADIO: rx=878 queued=878 processed=878 drop=0 trunc=3 mgmt=839 data=39 ctrl=0 misc=0 q=0/1 heap=204072 min_heap=198852
+I (55031) RADIO: rx=936 queued=936 processed=936 drop=0 trunc=3 mgmt=896 data=40 ctrl=0 misc=0 q=0/1 heap=204072 min_heap=198852
+I (58031) RADIO: rx=1003 queued=1003 processed=1003 drop=0 trunc=3 mgmt=958 data=45 ctrl=0 misc=0 q=0/1 heap=204072 min_heap=198852

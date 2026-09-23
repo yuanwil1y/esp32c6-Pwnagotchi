@@ -6,6 +6,8 @@
 
 ## 当前状态
 
+**Phase 1A - Wi-Fi Promiscuous RX 已实现并通过实机验收。** `components/radio` 提供 promiscuous RX：极轻量 callback → 固定容量 packet pool + 队列 → 消费任务计数，3 秒周期串口统计输出，LVGL 状态页 2 Hz 刷新，本阶段无协议解析。验收记录见 [docs/PHASE1A_WIFI_PROMISCUOUS_RX.md](docs/PHASE1A_WIFI_PROMISCUOUS_RX.md)。
+
 **Phase 0 - Board Bring-up 已实现。** 当前工程已经从 Waveshare FactoryProgram 中抽出最小 board 层，包含 LCD/LVGL、Touch、SD、I2C 和背光；LVGL 运行在独立 FreeRTOS Task 中。
 
 硬件实机验收重点见 [docs/PHASE0_BOARD_BRINGUP.md](docs/PHASE0_BOARD_BRINGUP.md)。
