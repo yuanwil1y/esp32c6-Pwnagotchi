@@ -1,5 +1,7 @@
 #include "ieee80211_parser.h"
 
+#include <stddef.h>
+
 bool ieee80211_parse(const uint8_t *frame, uint16_t length,
                      ieee80211_frame_info_t *out)
 {
