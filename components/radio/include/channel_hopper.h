@@ -16,6 +16,9 @@
 
 typedef struct {
     bool enabled;
+    /* Last channel whose set_channel() succeeded; 0 = no successful hop
+     * yet (unknown). Kept after the hopper stops so consumers never fall
+     * back to a stale startup channel. */
     uint8_t current_channel;
     uint32_t dwell_ms;
     uint32_t hop_count;
@@ -24,10 +27,17 @@ typedef struct {
 } channel_hopper_stats_t;
 
 /*
- * Build the channel list (from the driver's country code, conservative
- * mapping) and create the hopper task. Requires esp_wifi_start() to have
- * succeeded first. Never fails hard: on repeated set_channel errors the
- * offending channel is retired and the hop continues with the rest.
+ * Build the channel list from the driver's country table
+ * (esp_wifi_get_country(): schan = first channel, nchan = count; missing
+ * or invalid tables fall back to world-safe 1..11) and create the hopper
+ * task. Requires esp_wifi_start() to have succeeded first.
+ *
+ * Failure policy: ESP_ERR_INVALID_ARG retires a channel (deterministic
+ * invalid entry); other errors are treated as transient - bounded
+ * retries, then the channel is skipped for the current pass, never
+ * retired, so a transient failure storm cannot retire every channel. A
+ * dead driver (NOT_INIT/NOT_STARTED) stops the hopper. Task creation
+ * failure leaves enabled == false.
  */
 esp_err_t channel_hopper_start(uint32_t dwell_ms);
 
