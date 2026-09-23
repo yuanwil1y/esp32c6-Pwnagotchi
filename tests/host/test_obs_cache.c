@@ -83,12 +83,15 @@ static void t_eviction_and_reappear(void)
     CHECK(r.occupied == OBS_AP_CACHE_SIZE);
     CHECK(r.evictions == 1);
 
-    /* The evicted BSSID is gone. */
-    CHECK(!obs_ap_cache_find(&c, BSS_A, NULL));
+    /* The round-robin cursor evicted the FIRST cached BSSID (index 0). */
+    uint8_t b0[6] = {0x02, 0, 0, 0, 0, 0};
+    CHECK(!obs_ap_cache_find(&c, b0, NULL));
+    CHECK(obs_ap_cache_find(&c, b33, NULL));
 
-    /* Reappearance is an INSERT (cache change), not a "unique AP". */
-    ieee80211_ap_observation_t o1b = make_obs(BSS_A, "Home", false, 6, true);
-    r = obs_ap_cache_update(&c, &o1b, 0);
+    /* Reappearance of the evicted BSSID is an INSERT (a cache change),
+     * not a "unique AP" event. */
+    ieee80211_ap_observation_t o0b = make_obs(b0, "Re", false, 6, true);
+    r = obs_ap_cache_update(&c, &o0b, 0);
     CHECK(r.action == OBS_AP_INSERTED);
     CHECK(r.inserts == OBS_AP_CACHE_SIZE + 2);
     CHECK(r.evictions == 2);
