@@ -51,6 +51,11 @@ idf.py -p <PORT> flash monitor
 
 The first configure/build downloads managed dependencies declared by `components/board/idf_component.yml`.
 
+`sdkconfig.defaults` enables `CONFIG_FATFS_LFN_HEAP` because the acceptance
+test file name `phase0_test.txt` is longer than 8.3. The factory baseline
+ships with long filenames disabled and only ever wrote `test.txt`, so it
+never hit this.
+
 ## Hardware acceptance test
 
 With an SD card inserted, the expected screen is:
@@ -64,4 +69,38 @@ Touch: OK
 SD: OK
 ```
 
-The SD self-test writes and reads `/sdcard/phase0.txt`. Touching the panel should produce `board_touch` coordinate logs on the serial console.
+The SD self-test writes and reads `/sd_card/phase0_test.txt` with the content
+`esp32c6-Pwnagotchi phase0`, logging `SD mount/write/read/verify: OK` steps
+separately on the serial console. Touching the panel produces `board_touch`
+coordinate logs. A missing SD card only downgrades the on-screen SD status;
+it must not crash the firmware.
+
+## Phase 0 acceptance record (2026-09-23)
+
+Verified on target hardware (ESP32-C6FH8, 8 MB embedded flash, USB-Serial/JTAG
+on the Waveshare ESP32-C6-Touch-LCD-1.9):
+
+- Firmware commit `1a8ed2bce809553d769388cbb26763414c701399`, built by
+  GitHub Actions (ESP-IDF v5.4) and flashed via `esptool write-flash` at
+  0x0/0x8000/0x10000 from the CI `flasher_args.json`.
+- Boot: clean start, no reboot loop, no Guru Meditation, no watchdog reset.
+- LCD/LVGL: SH8601 170x320 with x-offset 35 renders correctly (visually
+  confirmed), LVGL task refreshes continuously.
+- Touch: five-point check (top-left, top-right, center, bottom-left,
+  bottom-right) produced correct, un-mirrored, in-range coordinates.
+- I2C: 200 kHz bus with CST78x touch at 0x15 responds.
+- SD: mount/write/read/verify all OK on a 972 MB SDSC card.
+- Backlight: lit from boot (inverted PWM, duty 0 = full on), 80% setting OK.
+- 60 s stability monitor after boot: zero errors, zero resets.
+
+Issues found and fixed during on-target acceptance:
+
+1. CI workflow had no artifact upload; it now publishes `firmware.zip`
+   (bootloader, partition table, app, flash_args, flasher_args.json) plus the
+   raw flash files, and stamps the git SHA into the firmware.
+2. SD self-test used `/sdcard/phase0.txt`; aligned to `/sd_card/phase0_test.txt`
+   with the specified content and separate mount/write/read/verify logs.
+3. Backlight initialized to duty 255 (off, inverted logic); now initializes to
+   duty 0 so the panel is lit from boot like the factory program.
+4. Writing `phase0_test.txt` failed with EINVAL until FATFS long filenames
+   were enabled (see note above).

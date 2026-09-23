@@ -1,0 +1,83 @@
+I (108) esp_image: segment 2: paddr=00030020 vaddr=42000020 sizeESP-ROM:esp32c6-20220919
+Build:Sep 19 2022
+rst:0x15 (USB_UART_HPSYS),boot:0x6e (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4001a32c
+SPIWP:0xee
+mode:DIO, clock div:2
+load:0x40875720,len:0x16b8
+load:0x4086c110,len:0xe84
+load:0x4086e610,len:0x3048
+entry 0x4086c11a
+I (23) boot: ESP-IDF v5.4 2nd stage bootloader
+I (23) boot: compile time Sep 23 2026 14:02:19
+I (24) boot: chip revision: v0.2
+I (24) boot: efuse block revision: v0.3
+I (26) boot.esp32c6: SPI Speed      : 80MHz
+I (30) boot.esp32c6: SPI Mode       : DIO
+I (34) boot.esp32c6: SPI Flash Size : 8MB
+I (38) boot: Enabling RNG early entropy source...
+I (42) boot: Partition Table:
+I (45) boot: ## Label            Usage          Type ST Offset   Length
+I (51) boot:  0 nvs              WiFi data        01 02 00009000 00006000
+I (58) boot:  1 phy_init         RF data          01 01 0000f000 00001000
+I (64) boot:  2 factory          factory app      00 00 00010000 00100000
+I (71) boot: End of partition table
+I (74) esp_image: segment 0: paddr=00010020 vaddr=42060020 size=14968h ( 84328) map
+I (97) esp_image: segment 1: paddr=00024990 vaddr=40800000 size=0b688h ( 46728) load
+I (108) esp_image: segment 2: paddr=00030020 vaddr=42000020 size=557c0h (350144) map
+I (173) esp_image: segment 3: paddr=000857e8 vaddr=4080b688 size=085b8h ( 34232) load
+I (181) esp_image: segment 4: paddr=0008dda8 vaddr=40813c40 size=01a58h (  6744) load
+I (184) esp_image: segment 5: paddr=0008f808 vaddr=50000000 size=0001ch (    28) load
+I (190) boot: Loaded app from partition at offset 0x10000
+I (190) boot: Disabling RNG early entropy source...
+I (206) cpu_start: Unicore app
+I (215) cpu_start: Pro cpu start user code
+I (215) cpu_start: cpu freq: 160000000 Hz
+I (215) app_init: Application information:
+I (216) app_init: Project name:     esp32c6_pwnagotchi
+I (220) app_init: App version:      1a8ed2b
+I (224) app_init: Compile time:     Sep 23 2026 14:02:14
+I (229) app_init: ELF file SHA256:  463e676ef...
+I (233) app_init: ESP-IDF:          v5.4
+I (237) efuse_init: Min chip rev:     v0.0
+I (241) efuse_init: Max chip rev:     v0.99 
+I (245) efuse_init: Chip rev:         v0.2
+I (249) heap_init: Initializing. RAM available for dynamic allocation:
+I (255) heap_init: At 40816BD0 len 00065A40 (406 KiB): RAM
+I (260) heap_init: At 4087C610 len 00002F54 (11 KiB): RAM
+I (265) heap_init: At 5000001C len 00003FCC (15 KiB): RTCRAM
+I (271) spi_flash: detected chip: generic
+I (274) spi_flash: flash io: dio
+W (277) i2c: This driver is an old driver, please migrate your application code to adapt `driver/i2c_master.h`
+I (287) sleep_gpio: Configure to isolate all GPIO pins in sleep state
+I (293) sleep_gpio: Enable automatic switching of GPIO sleep configuration
+I (300) coexist: coex firmware version: 49a8cdc
+I (304) coexist: coexist rom version 5b8dcfa
+I (308) main_task: Started on CPU0
+I (310) main_task: Calling app_main()
+I (314) phase0: esp32c6-Pwnagotchi Phase 0 board bring-up
+I (319) phase0: firmware git commit: 1a8ed2bce809553d769388cbb26763414c701399 (1a8ed2b)
+I (327) board_backlight: backlight PWM ready on GPIO15 (inverted, duty 0 = full on)
+I (334) board_i2c: I2C0 ready: SDA=18 SCL=8 @ 200000 Hz
+I (339) board_touch: CST78x touch ready at I2C address 0x15
+I (345) board_spi: SPI2 ready: MOSI=4 MISO=19 SCLK=5
+I (349) gpio: GPIO[6]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 
+I (357) gpio: GPIO[14]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 
+I (366) sh8601: LCD panel create success, version: 1.0.0
+I (693) board_display: LCD/LVGL ready: SH8601 170x320, x-offset=35
+I (694) gpio: GPIO[20]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 
+I (699) sdspi_transaction: cmd=52, R1 response: command not supported
+I (744) sdspi_transaction: cmd=5, R1 response: command not supported
+Name: SA01G
+Type: SDSC
+Speed: 20.00 MHz (limit: 20.00 MHz)
+Size: 972MB
+CSD: ver=1, sector_size=512, capacity=1990656 read_bl_len=9
+SSR: bus_width=1
+I (768) board_sd: SD mount: OK at /sd_card, size 0.95 GB
+I (873) board_sd: SD write: OK (/sd_card/phase0_test.txt)
+I (876) board_sd: SD read: OK -> 'esp32c6-Pwnagotchi phase0'
+I (876) board_sd: SD verify: OK
+I (879) board_backlight: brightness=80%
+I (879) phase0: Phase 0 ready: LCD=OK I2C=OK Touch=OK SD=OK
+I (884) main_task: Returned from app_main()
