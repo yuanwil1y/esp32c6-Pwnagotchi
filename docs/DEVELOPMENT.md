@@ -271,19 +271,25 @@ typedef struct {
 
 第一版不要过度智能化。
 
-Phase 1：
+注意：本节的 HS-1 / HS-2 / HS-3 是**跳频策略自身的阶段**（Hopping
+Strategy stage），不是项目的开发阶段编号；项目阶段见第 11 节。两者曾经
+都写作 "Phase 1/2/3"，容易混淆，现已区分命名。
 
-- 固定信道表轮询
-- 每信道固定 dwell time
+HS-1（已实现，Phase 1D / Phase 1.5）：
+
+- 固定信道表轮询（表来自 esp_wifi_get_country() 的 schan/nchan，缺失或
+  非法时保守回退 1..11，见 docs/PHASE1_5_BUGFIX.md §4）
+- 每信道固定 dwell time（300 ms）
 - 记录 AP/STA 活跃度
+- 确定性无效信道退役；瞬时错误有界重试/本轮跳过，不退役
 
-Phase 2：
+HS-2（对应项目 Phase 2 之后的跳频增强）：
 
 - 对活跃信道增加 dwell
 - 对长时间空闲信道减少 dwell
 - 对有 STA 的 AP 所在信道增加权重
 
-Phase 3：
+HS-3（对应项目 Agent/UI 阶段）：
 
 - Personality 参数参与跳频决策
 - Epoch 活跃度影响 scan 策略
@@ -376,7 +382,21 @@ scanning...
 CH=6 BSSID=AA:BB:CC:DD:EE:FF RSSI=-48 SSID=example
 ```
 
-### Phase 2 - World Model
+### Phase 1.5 - 缺陷修复与回归验收（当前阶段）
+
+目标：
+
+- 修复 Phase 1 review 发现的六组潜在缺陷（RX slot 泄漏、MISC 零
+  payload、信道表/hopper 异常、FCS/IE 边界、不完整观察覆盖、AP 统计
+  语义）
+- host 可运行的生产代码回归测试接入 CI（plain + ASan/UBSan）
+- 实机回归验收（硬件可用时）
+
+完成标准：
+
+- CI host 测试与固件构建全绿；实机项见 docs/PHASE1_5_BUGFIX.md §10
+
+### Phase 2 - World Model（下一项目阶段）
 
 目标：
 

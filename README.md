@@ -6,9 +6,11 @@
 
 ## 当前状态
 
+**Phase 1.5 - 缺陷修复与回归验收进行中。** Phase 1 review 发现的六组缺陷已修复：RX slot 所有权泄漏（错误帧不再耗尽 24-slot pool）、MISC 零 payload 白名单（不再按 sig_len 读 payload）、信道表改为驱动 country 表（`01`/world-safe → 1..11）+ hopper 失败有界重试策略、FCS/IE 边界三态语义（截断不再当坏帧）、不完整观察不再覆盖已知 SSID/security/信道、AP 统计改为 `AP cache`（0..32 去重槽占用，非 total unique AP）。新增 host 生产代码回归测试（plain + ASan/UBSan）接入 CI。详见 [docs/PHASE1_5_BUGFIX.md](docs/PHASE1_5_BUGFIX.md)；实机验收 PENDING。
+
 **Phase 1 — Passive Wi-Fi Sniffer 已全部完成并通过实机总验收（Phase 1A/1B/1C/1D）。** 当前系统：promiscuous RX → 轻量 callback → 固定容量队列 → 解析任务 → 802.11 分类 → Beacon/Probe IE 解析（SSID/BSSID/RSSI/信道/安全基础分类）→ 独立 Channel Hopper Task 以 300ms dwell 在合法信道循环；LCD/LVGL/Touch/SD 正常共存。总验收记录见 [docs/PHASE1_FINAL.md](docs/PHASE1_FINAL.md)。
 
-**Phase 1D - Channel Hopper 已实现并通过实机验收。** `components/radio/channel_hopper`：独立 FreeRTOS task，按驱动 country code 生成合法信道表（US/CA→1..11，其余→1..13，world-safe→1..11），固定 300ms dwell 顺序循环；driver 拒绝的信道运行时退役（hop_errors 计数 + 单条日志），绝不 abort。验收记录同上。
+**Phase 1D - Channel Hopper 已实现并通过实机验收。** `components/radio/channel_hopper`：独立 FreeRTOS task，合法信道表自 `esp_wifi_get_country()` 的 schan/nchan 生成（驱动默认 country `01` 为 world-safe 1..11；表缺失/非法时回退 1..11；如 CN 表为 1..13），固定 300ms dwell 顺序循环；确定性无效信道运行时退役，瞬时错误有界重试后本轮跳过（不退役），绝不 abort。验收记录同上；Phase 1.5 语义修正见 [docs/PHASE1_5_BUGFIX.md](docs/PHASE1_5_BUGFIX.md)。
 
 **Phase 1B - 802.11 Frame Classification 已实现并通过实机验收。** `components/radio` 新增 `ieee80211_parser`：消费任务中对原始 Frame Control 做小端字节组装 + mask/shift 解码（无结构体覆盖、无位域映射），分类 Management / Control / Data 及各 subtype（beacon / probe / auth / RTS / ACK / QoS Data 等），并与 ESP-IDF 驱动分类交叉核对；串口每 3 秒输出分类统计。验收记录见 [docs/PHASE1B_80211_CLASSIFICATION.md](docs/PHASE1B_80211_CLASSIFICATION.md)。
 
