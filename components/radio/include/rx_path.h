@@ -80,6 +80,12 @@ typedef struct {
     uint32_t queue_peak;
 } rx_path_stats_t;
 
+/* Raw wifi_promiscuous_pkt_type_t values; anything else (including
+ * WIFI_PKT_MISC = 3) is whitelisted out of payload handling. */
+#define RX_PATH_TYPE_MGMT 0
+#define RX_PATH_TYPE_CTRL 1
+#define RX_PATH_TYPE_DATA 2
+
 /*
  * Driver-neutral view of one received frame. `type` is the raw
  * wifi_promiscuous_pkt_type_t value (0=MGMT 1=CTRL 2=DATA 3=MISC).

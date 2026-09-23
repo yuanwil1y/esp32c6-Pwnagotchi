@@ -9,18 +9,6 @@
 
 #include "runner.h"
 
-/*
- * Whether MAC body bytes are missing from the capture (the only case in
- * which the parser may report the tail as incomplete instead of judging
- * it). Mirrors rx_path_body_truncated(); kept local so the parser suite
- * stays focused on parser semantics.
- */
-static bool mac_body_cut(const radio_packet_t *pkt)
-{
-    return pkt->orig_length >= 4 &&
-           pkt->length < (uint16_t)(pkt->orig_length - 4);
-}
-
 /* ---------------- frame builders ---------------- */
 
 typedef struct {
@@ -48,6 +36,20 @@ static void beacon_init(frame_t *f, uint8_t fc0, uint8_t fc1)
 static void beacon_init_default(frame_t *f)
 {
     beacon_init(f, 0x80, 0x00); /* mgmt, subtype 8 (beacon) */
+}
+
+/* Probe requests carry no fixed body: their IEs start at offset 24. */
+static void probe_init_default(frame_t *f)
+{
+    memset(f, 0, sizeof(*f));
+    f->buf[0] = 0x40; /* mgmt, subtype 4 (probe request) */
+    f->buf[1] = 0x00;
+    for (int i = 0; i < 6; i++) {
+        f->buf[4 + i] = 0xFF;                 /* addr1 broadcast */
+        f->buf[10 + i] = (uint8_t)(0x30 + i); /* addr2 = SA */
+        f->buf[16 + i] = 0xFF;                /* addr3 broadcast */
+    }
+    f->len = 24;
 }
 
 static void append_ie(frame_t *f, uint8_t id, const uint8_t *data, uint8_t ie_len)
@@ -384,7 +386,7 @@ static void t_fcs_never_walked_as_ie_513(void)
     CHECK(parse_len == 509);
 
     /* Only the FCS was lost, not MAC body bytes: the body is complete. */
-    ieee80211_parse_opts_t opts = {.capture_truncated = mac_body_cut(&pkt)};
+    ieee80211_parse_opts_t opts = {.capture_truncated = rx_path_body_truncated(&pkt)};
     CHECK(opts.capture_truncated == false);
     ieee80211_ap_observation_t obs;
     CHECK(ieee80211_parse_beacon_or_probe_resp(pkt.data, parse_len, &opts, &obs));
@@ -416,9 +418,9 @@ static void t_fcs_never_walked_as_ie_514(void)
     memcpy(pkt.data, copy, 512);
 
     CHECK(rx_path_parse_length(&pkt) == 510);
-    CHECK(mac_body_cut(&pkt) == false);
+    CHECK(rx_path_body_truncated(&pkt) == false);
 
-    ieee80211_parse_opts_t opts = {.capture_truncated = mac_body_cut(&pkt)};
+    ieee80211_parse_opts_t opts = {.capture_truncated = rx_path_body_truncated(&pkt)};
     ieee80211_ap_observation_t obs;
     CHECK(ieee80211_parse_beacon_or_probe_resp(pkt.data,
                                                rx_path_parse_length(&pkt),
@@ -444,9 +446,9 @@ static void t_capture_cut_inside_mac_body(void)
 
     const uint16_t parse_len = rx_path_parse_length(&pkt);
     CHECK(parse_len == 100);
-    CHECK(mac_body_cut(&pkt) == true);
+    CHECK(rx_path_body_truncated(&pkt) == true);
 
-    ieee80211_parse_opts_t opts = {.capture_truncated = mac_body_cut(&pkt)};
+    ieee80211_parse_opts_t opts = {.capture_truncated = rx_path_body_truncated(&pkt)};
     ieee80211_ap_observation_t obs;
     CHECK(ieee80211_parse_beacon_or_probe_resp(pkt.data, parse_len, &opts, &obs));
     CHECK(obs.ie_walk_incomplete == true);
@@ -505,20 +507,21 @@ static void t_deep_parse_rejects_short_fixed_body(void)
 static void t_probe_req_parse_and_truncation(void)
 {
     frame_t f;
-    beacon_init(&f, 0x40, 0x00); /* probe request, subtype 4 */
+    probe_init_default(&f);
     append_ie(&f, IEEE80211_IE_SSID, (const uint8_t *)"XPL", 3);
 
     ieee80211_parse_opts_t opts = {0};
     ieee80211_probe_req_observation_t obs;
     CHECK(ieee80211_parse_probe_request(f.buf, f.len, &opts, &obs));
     CHECK(obs.ssid_len == 3);
+    CHECK(memcmp(obs.ssid, "XPL", 3) == 0);
     CHECK(!obs.wildcard_ssid);
     CHECK(obs.complete == true);
-    CHECK(obs.source[0] == 0x20);
+    CHECK(obs.source[0] == 0x30);
 
     /* Wildcard probe (SSID len 0). */
     frame_t w;
-    beacon_init(&w, 0x40, 0x00);
+    probe_init_default(&w);
     append_ie(&w, IEEE80211_IE_SSID, (const uint8_t *)"", 0);
     CHECK(ieee80211_parse_probe_request(w.buf, w.len, &opts, &obs));
     CHECK(obs.wildcard_ssid == true);

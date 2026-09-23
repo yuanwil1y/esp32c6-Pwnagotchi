@@ -136,6 +136,17 @@ static void promiscuous_rx_cb(void *buf, wifi_promiscuous_pkt_type_t type)
 {
     const wifi_promiscuous_pkt_t *pkt = (const wifi_promiscuous_pkt_t *)buf;
 
+    /* IDF v5.4 payload contract: sig_len is the on-air length including
+     * FCS for MGMT/CTRL/DATA, while MISC packets have a zero-length
+     * payload regardless of sig_len (esp_wifi_types.h). The adapter
+     * therefore only vouches for payload bytes on whitelisted types; the
+     * rx_path core additionally refuses to read payload for anything
+     * else. */
+    uint16_t payload_len = 0;
+    if (type == WIFI_PKT_MGMT || type == WIFI_PKT_CTRL || type == WIFI_PKT_DATA) {
+        payload_len = (uint16_t)pkt->rx_ctrl.sig_len;
+    }
+
     rx_frame_view_t view = {
         .type = (uint8_t)type,
         .channel = (uint8_t)pkt->rx_ctrl.channel,
@@ -143,10 +154,7 @@ static void promiscuous_rx_cb(void *buf, wifi_promiscuous_pkt_type_t type)
         .rx_state = (uint16_t)pkt->rx_ctrl.rx_state,
         .sig_len = (uint16_t)pkt->rx_ctrl.sig_len,
         .payload = pkt->payload,
-        /* INTERMEDIATE (pre-1.5 behavior): sig_len is passed on for every
-         * type including MISC; the Phase 1.5 fix narrows this to the
-         * MGMT/CTRL/DATA whitelist. */
-        .payload_len = (uint16_t)pkt->rx_ctrl.sig_len,
+        .payload_len = payload_len,
     };
 
     rx_path_on_frame(&s_rx_io, &s_rx_stats, &view);
@@ -479,7 +487,7 @@ static void radio_rx_task(void *arg)
 
         const uint16_t parse_len = packet_parse_length(pkt);
         const ieee80211_parse_opts_t opts = {
-            .capture_truncated = pkt->length < pkt->orig_length,
+            .capture_truncated = rx_path_body_truncated(pkt),
         };
 
         ieee80211_frame_info_t info = {0};
@@ -493,21 +501,11 @@ static void radio_rx_task(void *arg)
         }
 #endif
 
+        /* Driver-type counters moved to the RX callback in Phase 1.5
+         * (rx_management/rx_control/rx_data/rx_misc in the rx_path core),
+         * so dropped frames stay in the type accounting too. What remains
+         * here is the Frame Control classification. */
         portENTER_CRITICAL(&s_stats_mux);
-        switch ((wifi_promiscuous_pkt_type_t)pkt->packet_type) {
-        case WIFI_PKT_MGMT:
-            s_stats.rx.rx_management++;
-            break;
-        case WIFI_PKT_CTRL:
-            s_stats.rx.rx_control++;
-            break;
-        case WIFI_PKT_DATA:
-            s_stats.rx.rx_data++;
-            break;
-        default:
-            s_stats.rx.rx_misc++;
-            break;
-        }
         stats_count_parsed_locked(pkt, &info);
         portEXIT_CRITICAL(&s_stats_mux);
 
@@ -618,14 +616,16 @@ void wifi_sniffer_get_stats(radio_stats_t *out)
     }
     out->current_channel = s_current_channel;
 
-    /* Merge hopper state so consumers need a single snapshot call. When
-     * the hopper runs, its channel is the live one. */
+    /* Merge hopper state so consumers need a single snapshot call.
+     * current_channel semantics (Phase 1.5): the hopper's last known good
+     * channel wins whenever it exists - also after the hopper stops - so
+     * the report never falls back to the stale startup channel. */
     channel_hopper_stats_t hop;
     channel_hopper_get_stats(&hop);
     out->hop_count = hop.hop_count;
     out->hop_errors = hop.hop_errors;
     out->dwell_ms = hop.dwell_ms;
-    if (hop.enabled) {
+    if (hop.current_channel != 0) {
         out->current_channel = hop.current_channel;
     }
 }
