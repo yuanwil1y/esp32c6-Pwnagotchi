@@ -9,7 +9,6 @@
 #include "runner.h"
 
 static const uint8_t BSS_A[6] = {0x02, 0x00, 0x00, 0x00, 0x00, 0x01};
-static const uint8_t BSS_B[6] = {0x02, 0x00, 0x00, 0x00, 0x00, 0x02};
 
 static ieee80211_ap_observation_t make_obs(const uint8_t bssid[6],
                                            const char *ssid,

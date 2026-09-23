@@ -163,3 +163,10 @@ void rx_path_slot_release(const rx_path_io_t *io, rx_path_stats_t *stats,
  * otherwise. The FCS is therefore never fed to the IE walk in either case.
  */
 uint16_t rx_path_parse_length(const radio_packet_t *pkt);
+
+/*
+ * True when MAC body bytes (not just FCS bytes) are missing from the
+ * pooled copy. Only then may the parser report its tail as incomplete
+ * instead of judging it; see rx_path_parse_length().
+ */
+bool rx_path_body_truncated(const radio_packet_t *pkt);
