@@ -1,5 +1,6 @@
 #include "board_sd.h"
 
+#include <errno.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -67,7 +68,8 @@ esp_err_t board_sd_self_test(void)
 
     FILE *file = fopen(BOARD_SD_TEST_FILE, "w");
     if (file == NULL) {
-        ESP_LOGE(TAG, "SD write: FAIL (open %s)", BOARD_SD_TEST_FILE);
+        ESP_LOGE(TAG, "SD write: FAIL (open %s, errno=%d '%s')",
+                 BOARD_SD_TEST_FILE, errno, strerror(errno));
         return ESP_FAIL;
     }
 
@@ -82,7 +84,8 @@ esp_err_t board_sd_self_test(void)
     char actual[sizeof(expected) + 8] = {0};
     file = fopen(BOARD_SD_TEST_FILE, "r");
     if (file == NULL) {
-        ESP_LOGE(TAG, "SD read: FAIL (open %s)", BOARD_SD_TEST_FILE);
+        ESP_LOGE(TAG, "SD read: FAIL (open %s, errno=%d '%s')",
+                 BOARD_SD_TEST_FILE, errno, strerror(errno));
         return ESP_FAIL;
     }
 
