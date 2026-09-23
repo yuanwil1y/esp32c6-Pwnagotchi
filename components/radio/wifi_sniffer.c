@@ -109,6 +109,15 @@ static void promiscuous_rx_cb(void *buf, wifi_promiscuous_pkt_type_t type)
         return;
     }
 
+    /* Frames the radio flags as errored (bad FCS etc.) are dropped here;
+     * rx_state is 0 for clean deliveries. */
+    if (pkt->rx_ctrl.rx_state != 0) {
+        portENTER_CRITICAL(&s_stats_mux);
+        s_stats.rx_state_errors++;
+        portEXIT_CRITICAL(&s_stats_mux);
+        return;
+    }
+
     /* rx_ctrl.sig_len is a 12-bit field including FCS, so at most 4095. */
     const uint16_t orig_len = (uint16_t)pkt->rx_ctrl.sig_len;
     const uint16_t copy_len = orig_len > RADIO_PACKET_MAX_LEN
@@ -341,11 +350,22 @@ static bool probe_cache_update(const ieee80211_probe_req_observation_t *obs)
     return true;
 }
 
+/* Length passed to the parser: the pooled copy holds the full on-air frame
+ * including the 4-byte FCS when it was not truncated, and the FCS must not
+ * be fed to the IE walk (it would be read as trailing IEs). */
+static uint16_t packet_ie_length(const radio_packet_t *pkt)
+{
+    if (pkt->length == pkt->orig_length && pkt->length >= 4) {
+        return (uint16_t)(pkt->length - 4);
+    }
+    return pkt->length;
+}
+
 /* Beacon / probe response observation: parse, count, throttle-log. */
 static void handle_ap_observation(const radio_packet_t *pkt, bool is_beacon)
 {
     ieee80211_ap_observation_t obs;
-    if (!ieee80211_parse_beacon_or_probe_resp(pkt->data, pkt->length, &obs)) {
+    if (!ieee80211_parse_beacon_or_probe_resp(pkt->data, packet_ie_length(pkt), &obs)) {
         portENTER_CRITICAL(&s_stats_mux);
         s_stats.beacon_parse_errors++;
         portEXIT_CRITICAL(&s_stats_mux);
@@ -417,7 +437,7 @@ static void handle_ap_observation(const radio_packet_t *pkt, bool is_beacon)
 static void handle_probe_request(const radio_packet_t *pkt)
 {
     ieee80211_probe_req_observation_t obs;
-    if (!ieee80211_parse_probe_request(pkt->data, pkt->length, &obs)) {
+    if (!ieee80211_parse_probe_request(pkt->data, packet_ie_length(pkt), &obs)) {
         portENTER_CRITICAL(&s_stats_mux);
         s_stats.probe_req_errors++;
         portEXIT_CRITICAL(&s_stats_mux);
@@ -536,12 +556,12 @@ static void radio_stats_task(void *arg)
 
         ESP_LOGI(TAG,
                  "rx=%" PRIu32 " queued=%" PRIu32 " processed=%" PRIu32
-                 " drop=%" PRIu32 " trunc=%" PRIu32
+                 " drop=%" PRIu32 " trunc=%" PRIu32 " st_err=%" PRIu32
                  " mgmt=%" PRIu32 " data=%" PRIu32 " ctrl=%" PRIu32
                  " misc=%" PRIu32 " q=%" PRIu32 "/%" PRIu32
                  " heap=%" PRIu32 " min_heap=%" PRIu32,
                  stats.rx_total, stats.rx_queued, stats.rx_processed,
-                 stats.rx_dropped, stats.rx_truncated,
+                 stats.rx_dropped, stats.rx_truncated, stats.rx_state_errors,
                  stats.rx_management, stats.rx_data, stats.rx_control,
                  stats.rx_misc, stats.queue_current, stats.queue_peak,
                  esp_get_free_heap_size(), esp_get_minimum_free_heap_size());

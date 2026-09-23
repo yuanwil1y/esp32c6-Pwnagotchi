@@ -37,6 +37,7 @@ typedef struct {
     uint32_t rx_processed;
     uint32_t rx_dropped;
     uint32_t rx_truncated;
+    uint32_t rx_state_errors;
 
     uint32_t rx_management;
     uint32_t rx_data;
