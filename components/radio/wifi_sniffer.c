@@ -474,10 +474,10 @@ static void radio_rx_task(void *arg)
         }
 
         ieee80211_frame_info_t info = {0};
-        const bool parsed = ieee80211_parse(pkt->data, pkt->length, &info);
+        ieee80211_parse(pkt->data, pkt->length, &info);
 
 #if RADIO_PARSER_DEBUG_N > 0
-        if (parsed && debug_printed < RADIO_PARSER_DEBUG_N) {
+        if (info.valid && debug_printed < RADIO_PARSER_DEBUG_N) {
             debug_printed++;
             ESP_LOGI(TAG_80211, "dbg drv=%u fc_type=%u sub=%u len=%u",
                      pkt->packet_type, info.fc.type, info.fc.subtype, pkt->length);
