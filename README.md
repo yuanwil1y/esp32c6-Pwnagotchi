@@ -6,6 +6,8 @@
 
 ## 当前状态
 
+**Phase 1C - Beacon / Probe IE Parser 已实现并通过实机验收。** `ieee80211_parser` 扩展出管理帧 body 解析：BSSID、Beacon 固定字段（interval/capability）、严格边界 IE 迭代器，提取 SSID（含 hidden 与非打印字符安全转换）、DS Parameter 信道、RSN / WPA vendor 存在性，输出 OPEN/PRIVACY/WPA/RSN 基础安全分类；固定容量去重缓存 + 5 行/秒上限保证串口不刷屏。验收记录见 [docs/PHASE1C_IE_PARSER.md](docs/PHASE1C_IE_PARSER.md)。
+
 **Phase 1B - 802.11 Frame Classification 已实现并通过实机验收。** `components/radio` 新增 `ieee80211_parser`：消费任务中对原始 Frame Control 做小端字节组装 + mask/shift 解码（无结构体覆盖、无位域映射），分类 Management / Control / Data 及各 subtype（beacon / probe / auth / RTS / ACK / QoS Data 等），并与 ESP-IDF 驱动分类交叉核对；串口每 3 秒输出分类统计。验收记录见 [docs/PHASE1B_80211_CLASSIFICATION.md](docs/PHASE1B_80211_CLASSIFICATION.md)。
 
 **Phase 1A - Wi-Fi Promiscuous RX 已实现并通过实机验收。** `components/radio` 提供 promiscuous RX：极轻量 callback → 固定容量 packet pool + 队列 → 消费任务计数，3 秒周期串口统计输出，LVGL 状态页 2 Hz 刷新，本阶段无协议解析。验收记录见 [docs/PHASE1A_WIFI_PROMISCUOUS_RX.md](docs/PHASE1A_WIFI_PROMISCUOUS_RX.md)。

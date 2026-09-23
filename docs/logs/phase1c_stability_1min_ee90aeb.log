@@ -1,0 +1,264 @@
+ESP-ROM:esp32c6-20220919
+Build:Sep 19 2022
+rst:0x15 (USB_UART_HPSYS),boot:0x6e (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4001a33e
+SPIWP:0xee
+mode:DIO, clock div:2
+load:0x40875720,len:0x16b8
+load:0x4086c110,len:0xe84
+load:0x4086e610,len:0x3048
+entry 0x4086c11a
+I (23) boot: ESP-IDF v5.4 2nd stage bootloader
+I (23) boot: compile time Sep 23 2026 16:50:13
+I (24) boot: chip revision: v0.2
+I (24) boot: efuse block revision: v0.3
+I (26) boot.esp32c6: SPI Speed      : 80MHz
+I (30) boot.esp32c6: SPI Mode       : DIO
+I (34) boot.esp32c6: SPI Flash Size : 8MB
+I (38) boot: Enabling RNG early entropy source...
+I (42) boot: Partition Table:
+I (45) boot: ## Label            Usage          Type ST Offset   Length
+I (51) boot:  0 nvs              WiFi data        01 02 00009000 00006000
+I (58) boot:  1 phy_init         RF data          01 01 0000f000 00001000
+I (64) boot:  2 factory          factory app      00 00 00010000 00400000
+I (71) boot: End of partition table
+I (74) esp_image: segment 0: paddr=00010020 vaddr=420e0020 size=26a4ch (158284) map
+I (111) esp_image: segment 1: paddr=00036a74 vaddr=40800000 size=095a4h ( 38308) load
+I (120) esp_image: segment 2: paddr=00040020 vaddr=42000020 size=d08a4h (854180) map
+I (278) esp_image: segment 3: paddr=001108cc vaddr=408095a4 size=18564h ( 99684) load
+I (300) esp_image: segment 4: paddr=00128e38 vaddr=40821b10 size=03dc8h ( 15816) load
+I (304) esp_image: segment 5: paddr=0012cc08 vaddr=50000000 size=0001ch (    28) load
+I (312) boot: Loaded app from partition at offset 0x10000
+I (313) boot: Disabling RNG early entropy source...
+I (325) cpu_start: Unicore app
+I (333) cpu_start: Pro cpu start user code
+I (334) cpu_start: cpu freq: 160000000 Hz
+I (334) app_init: Application information:
+I (334) app_init: Project name:     esp32c6_pwnagotchi
+I (338) app_init: App version:      ee90aeb
+I (342) app_init: Compile time:     Sep 23 2026 16:50:07
+I (347) app_init: ELF file SHA256:  79c699447...
+I (352) app_init: ESP-IDF:          v5.4
+I (355) efuse_init: Min chip rev:     v0.0
+I (359) efuse_init: Max chip rev:     v0.99 
+I (363) efuse_init: Chip rev:         v0.2
+I (367) heap_init: Initializing. RAM available for dynamic allocation:
+I (373) heap_init: At 4082EC30 len 0004D9E0 (310 KiB): RAM
+I (379) heap_init: At 4087C610 len 00002F54 (11 KiB): RAM
+I (384) heap_init: At 5000001C len 00003FCC (15 KiB): RTCRAM
+I (390) spi_flash: detected chip: generic
+I (393) spi_flash: flash io: dio
+W (396) i2c: This driver is an old driver, please migrate your application code to adapt `driver/i2c_master.h`
+I (406) sleep_gpio: Configure to isolate all GPIO pins in sleep state
+I (412) sleep_gpio: Enable automatic switching of GPIO sleep configuration
+I (418) coexist: coex firmware version: 49a8cdc
+I (423) coexist: coexist rom version 5b8dcfa
+I (427) main_task: Started on CPU0
+I (429) main_task: Calling app_main()
+I (433) phase1c: esp32c6-Pwnagotchi Phase 1C beacon/probe IE parser
+I (439) phase1c: firmware git commit: ee90aeb5fc3d1d39099f7db9a2735fa1abd707fb (ee90aeb)
+I (447) board_backlight: backlight PWM ready on GPIO15 (inverted, duty 0 = full on)
+I (454) board_i2c: I2C0 ready: SDA=18 SCL=8 @ 200000 Hz
+I (459) board_touch: CST78x touch ready at I2C address 0x15
+I (465) board_spi: SPI2 ready: MOSI=4 MISO=19 SCLK=5
+I (469) gpio: GPIO[6]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 
+I (477) gpio: GPIO[14]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 
+I (485) sh8601: LCD panel create success, version: 1.0.0
+I (813) board_display: LCD/LVGL ready: SH8601 170x320, x-offset=35
+I (814) gpio: GPIO[20]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 
+I (819) sdspi_transaction: cmd=52, R1 response: command not supported
+I (864) sdspi_transaction: cmd=5, R1 response: command not supported
+Name: SA01G
+Type: SDSC
+Speed: 20.00 MHz (limit: 20.00 MHz)
+Size: 972MB
+CSD: ver=1, sector_size=512, capacity=1990656 read_bl_len=9
+SSR: bus_width=1
+I (888) board_sd: SD mount: OK at /sd_card, size 0.95 GB
+I (922) board_sd: SD write: OK (/sd_card/phase0_test.txt)
+I (924) board_sd: SD read: OK -> 'esp32c6-Pwnagotchi phase0'
+I (925) board_sd: SD verify: OK
+I (933) pp: pp rom version: 5b8dcfa
+I (934) net80211: net80211 rom version: 5b8dcfa
+I (936) wifi:wifi driver task: 4084866c, prio:23, stack:6656, core=0
+I (941) wifi:wifi firmware version: 48ea317a7
+I (942) wifi:wifi certification version: v7.0
+I (946) wifi:config NVS flash: enabled
+I (949) wifi:config nano formatting: disabled
+I (953) wifi:mac_version:HAL_MAC_ESP32AX_761,ut_version:N, band mode:0x1
+I (960) wifi:Init data frame dynamic rx buffer num: 32
+I (965) wifi:Init static rx mgmt buffer num: 5
+I (969) wifi:Init management short buffer num: 32
+I (973) wifi:Init dynamic tx buffer num: 32
+I (977) wifi:Init static tx FG buffer num: 2
+I (981) wifi:Init static rx buffer size: 1700 (rxctrl:92, csi:512)
+I (987) wifi:Init static rx buffer num: 10
+I (991) wifi:Init dynamic rx buffer num: 32
+I (996) wifi_init: rx ba win: 6
+I (998) wifi_init: accept mbox: 6
+I (1001) wifi_init: tcpip mbox: 32
+I (1004) wifi_init: udp mbox: 6
+I (1007) wifi_init: tcp mbox: 6
+I (1009) wifi_init: tcp tx win: 5760
+I (1013) wifi_init: tcp rx win: 5760
+I (1016) wifi_init: tcp mss: 1440
+I (1019) wifi_init: WiFi IRAM OP enabled
+I (1023) wifi_init: WiFi RX IRAM OP enabled
+I (1027) wifi_init: WiFi SLP IRAM OP enabled
+I (1031) RADIO: wifi driver ready (pool=24 pkts x 520 B, queues=24)
+I (1037) phy_init: phy_version 320,348a293,Sep  3 2024,16:33:12
+W (1124) wifi:ACK_TAB0   :0x   90a0b, QAM16:0x9 (24Mbps), QPSK:0xa (12Mbps), BPSK:0xb (6Mbps)
+W (1124) wifi:CTS_TAB0   :0x   90a0b, QAM16:0x9 (24Mbps), QPSK:0xa (12Mbps), BPSK:0xb (6Mbps)
+W (1129) wifi:(agc)0x600a7128:0xd213d9ea, min.avgNF:0xce->0xd2(dB), RCalCount:0x13d, min.RRssi:0x9ea(-97.38)
+W (1139) wifi:(TB)WDEV_PWR_TB_MCS0:19
+W (1142) wifi:(TB)WDEV_PWR_TB_MCS1:19
+W (1146) wifi:(TB)WDEV_PWR_TB_MCS2:19
+W (1149) wifi:(TB)WDEV_PWR_TB_MCS3:19
+W (1152) wifi:(TB)WDEV_PWR_TB_MCS4:19
+W (1156) wifi:(TB)WDEV_PWR_TB_MCS5:19
+W (1159) wifi:(TB)WDEV_PWR_TB_MCS6:18
+W (1162) wifi:(TB)WDEV_PWR_TB_MCS7:18
+W (1166) wifi:(TB)WDEV_PWR_TB_MCS8:17
+W (1169) wifi:(TB)WDEV_PWR_TB_MCS9:15
+W (1173) wifi:(TB)WDEV_PWR_TB_MCS10:15
+W (1176) wifi:(TB)WDEV_PWR_TB_MCS11:15
+I (1180) wifi:11ax coex: WDEVAX_PTI0(0x55777555), WDEVAX_PTI1(0x00003377).
+
+I (1187) wifi:mode : sta (ac:eb:e6:3a:53:18)
+I (1190) wifi:enable tsf
+I (1195) wifi:ic_enable_sniffer
+I (1196) RADIO: promiscuous RX started on channel 6
+I (1203) board_backlight: brightness=80%
+I (1204) phase1c: Phase 1C ready: LCD=OK I2C=OK Touch=OK SD=OK WiFi=SNIFFING
+I (1211) main_task: Returned from app_main()
+I (1297) OBS: AP bssid=DA:33:2A:21:5D:40 ssid="@DLMU" rssi=-78 rx_ch=6 adv_ch=6 bintv=100 sec=OPEN
+I (1852) OBS: AP bssid=00:AD:D5:A9:82:DD ssid=<hidden> rssi=-83 rx_ch=6 adv_ch=6 bintv=100 sec=RSN
+I (3669) OBS: PROBE src=58:0D:0D:CA:D3:D6 ssid="TP-LINK_B334" rssi=-85 ch=6
+I (4031) RADIO: rx=61 queued=61 processed=61 drop=0 trunc=0 st_err=0 mgmt=59 data=0 ctrl=2 misc=0 q=0/1 heap=201780 min_heap=197012
+I (4031) 80211: total=61 err=0 invalid=0 mismatch=0
+I (4036) 80211: MGMT=59 beacon=53 probe_req=3 probe_resp=3 auth=0 assoc_req=0 deauth=0 other=0
+I (4044) 80211: CTRL=2 rts=0 cts=0 ack=2 bar=0 ba=0 other=0
+I (4049) 80211: DATA=0 qos_data=0 qos_null=0 null=0 other=0
+I (4055) OBS: ap=4 beacon=53 berr=0 preq=3 perr=0 presp=3 ie=1237 ie_err=0 ssid=55 hidden=1 rsn=1 wpa=0 ds=56
+I (4285) OBS: PROBE src=46:44:43:62:3F:6B ssid=<wildcard> rssi=-84 ch=6
+I (4826) OBS: AP bssid=00:AD:D5:A9:82:D9 ssid=<hidden> rssi=-84 rx_ch=6 adv_ch=6 bintv=100 sec=RSN
+I (5147) OBS: AP bssid=00:AD:D5:A9:82:D8 ssid="402" rssi=-84 rx_ch=6 adv_ch=6 bintv=100 sec=RSN
+I (7065) RADIO: rx=131 queued=131 processed=131 drop=0 trunc=0 st_err=0 mgmt=129 data=0 ctrl=2 misc=0 q=0/1 heap=201784 min_heap=197012
+I (7066) 80211: total=131 err=0 invalid=0 mismatch=0
+I (7070) 80211: MGMT=129 beacon=115 probe_req=8 probe_resp=6 auth=0 assoc_req=0 deauth=0 other=0
+I (7079) 80211: CTRL=2 rts=0 cts=0 ack=2 bar=0 ba=0 other=0
+I (7084) 80211: DATA=0 qos_data=0 qos_null=0 null=0 other=0
+I (7089) OBS: ap=6 beacon=115 berr=0 preq=8 perr=0 presp=6 ie=2683 ie_err=0 ssid=118 hidden=3 rsn=4 wpa=1 ds=121
+I (10099) RADIO: rx=196 queued=196 processed=196 drop=0 trunc=0 st_err=0 mgmt=189 data=4 ctrl=3 misc=0 q=0/1 heap=201784 min_heap=197012
+I (10100) 80211: total=196 err=0 invalid=0 mismatch=0
+I (10104) 80211: MGMT=189 beacon=165 probe_req=12 probe_resp=12 auth=0 assoc_req=0 deauth=0 other=0
+I (10113) 80211: CTRL=3 rts=0 cts=0 ack=3 bar=0 ba=0 other=0
+I (10119) 80211: DATA=4 qos_data=0 qos_null=0 null=0 other=0
+I (10124) OBS: ap=6 beacon=165 berr=0 preq=12 perr=0 presp=12 ie=3924 ie_err=0 ssid=174 hidden=3 rsn=5 wpa=2 ds=177
+I (11525) OBS: PROBE src=70:08:94:26:12:6D ssid="@DLMU" rssi=-62 ch=6
+I (13134) RADIO: rx=233 queued=233 processed=233 drop=0 trunc=0 st_err=0 mgmt=222 data=5 ctrl=6 misc=0 q=0/1 heap=201780 min_heap=197012
+I (13135) 80211: total=233 err=0 invalid=0 mismatch=0
+I (13139) 80211: MGMT=222 beacon=194 probe_req=14 probe_resp=14 auth=0 assoc_req=0 deauth=0 other=0
+I (13148) 80211: CTRL=6 rts=0 cts=0 ack=6 bar=0 ba=0 other=0
+I (13154) 80211: DATA=5 qos_data=0 qos_null=0 null=0 other=0
+I (13159) OBS: ap=6 beacon=194 berr=0 preq=14 perr=0 presp=14 ie=4616 ie_err=0 ssid=205 hidden=3 rsn=5 wpa=2 ds=208
+I (16169) RADIO: rx=277 queued=277 processed=277 drop=0 trunc=0 st_err=0 mgmt=265 data=6 ctrl=6 misc=0 q=0/1 heap=201780 min_heap=197012
+I (16170) 80211: total=277 err=0 invalid=0 mismatch=0
+I (16174) 80211: MGMT=265 beacon=233 probe_req=18 probe_resp=14 auth=0 assoc_req=0 deauth=0 other=0
+I (16183) 80211: CTRL=6 rts=0 cts=0 ack=6 bar=0 ba=0 other=0
+I (16189) 80211: DATA=6 qos_data=0 qos_null=0 null=0 other=0
+I (16194) OBS: ap=6 beacon=233 berr=0 preq=18 perr=0 presp=14 ie=5484 ie_err=0 ssid=243 hidden=4 rsn=6 wpa=2 ds=247
+I (19204) RADIO: rx=341 queued=341 processed=341 drop=0 trunc=0 st_err=0 mgmt=325 data=10 ctrl=6 misc=0 q=0/1 heap=201780 min_heap=197012
+I (19205) 80211: total=341 err=0 invalid=0 mismatch=0
+I (19210) 80211: MGMT=325 beacon=289 probe_req=22 probe_resp=14 auth=0 assoc_req=0 deauth=0 other=0
+I (19218) 80211: CTRL=6 rts=0 cts=0 ack=6 bar=0 ba=0 other=0
+I (19224) 80211: DATA=10 qos_data=0 qos_null=0 null=0 other=0
+I (19229) OBS: ap=6 beacon=289 berr=0 preq=22 perr=0 presp=14 ie=6724 ie_err=0 ssid=296 hidden=7 rsn=11 wpa=4 ds=303
+I (20050) OBS: AP bssid=58:EA:1F:B2:AC:CA ssid="..................10cm" rssi=-91 rx_ch=6 adv_ch=6 bintv=100 sec=RSN
+I (20425) OBS: PROBE src=58:0D:0D:CA:EA:BD ssid="LAPTOP-56UAK3KF 7981" rssi=-92 ch=6
+I (20804) OBS: AP bssid=D6:84:09:1D:4F:03 ssid="....." rssi=-93 rx_ch=6 adv_ch=0 bintv=100 sec=RSN
+I (22008) OBS: AP bssid=F6:FC:49:36:4F:CC ssid=<hidden> rssi=-84 rx_ch=6 adv_ch=8 bintv=100 sec=RSN
+I (22240) RADIO: rx=504 queued=504 processed=504 drop=0 trunc=0 st_err=0 mgmt=476 data=22 ctrl=6 misc=0 q=0/1 heap=201780 min_heap=197012
+I (22241) 80211: total=504 err=0 invalid=0 mismatch=0
+I (22246) 80211: MGMT=476 beacon=427 probe_req=32 probe_resp=17 auth=0 assoc_req=0 deauth=0 other=0
+I (22254) 80211: CTRL=6 rts=0 cts=0 ack=6 bar=0 ba=0 other=0
+I (22260) 80211: DATA=22 qos_data=0 qos_null=0 null=0 other=0
+I (22307) OBS: ap=11 beacon=427 berr=0 preq=32 perr=0 presp=17 ie=9697 ie_err=0 ssid=397 hidden=47 rsn=96 wpa=31 ds=438
+I (25309) RADIO: rx=710 queued=710 processed=710 drop=0 trunc=0 st_err=0 mgmt=649 data=55 ctrl=6 misc=0 q=0/1 heap=201780 min_heap=197012
+I (25310) 80211: total=710 err=0 invalid=0 mismatch=0
+I (25315) 80211: MGMT=649 beacon=598 probe_req=34 probe_resp=17 auth=0 assoc_req=0 deauth=0 other=0
+I (25324) 80211: CTRL=6 rts=0 cts=0 ack=6 bar=0 ba=0 other=0
+I (25329) 80211: DATA=55 qos_data=0 qos_null=0 null=0 other=0
+I (25334) OBS: ap=11 beacon=598 berr=0 preq=34 perr=0 presp=17 ie=13227 ie_err=0 ssid=514 hidden=101 rsn=214 wpa=70 ds=596
+I (25688) OBS: PROBE src=D6:84:09:1D:4F:03 ssid="BsdOjShAVbuzEX5tOJcWov1Jt1oEgra0" rssi=-94 ch=6
+I (25923) OBS: PROBE src=EA:41:C9:61:82:1A ssid=<wildcard> rssi=-92 ch=6
+I (28345) RADIO: rx=870 queued=870 processed=870 drop=0 trunc=0 st_err=0 mgmt=808 data=56 ctrl=6 misc=0 q=0/1 heap=201776 min_heap=197012
+I (28346) 80211: total=870 err=0 invalid=0 mismatch=0
+I (28351) 80211: MGMT=808 beacon=750 probe_req=36 probe_resp=22 auth=0 assoc_req=0 deauth=0 other=0
+I (28360) 80211: CTRL=6 rts=0 cts=0 ack=6 bar=0 ba=0 other=0
+I (28365) 80211: DATA=56 qos_data=0 qos_null=0 null=0 other=0
+I (28370) OBS: ap=11 beacon=750 berr=0 preq=36 perr=0 presp=22 ie=16442 ie_err=0 ssid=614 hidden=158 rsn=333 wpa=105 ds=746
+I (31381) RADIO: rx=997 queued=997 processed=997 drop=0 trunc=4 st_err=0 mgmt=933 data=58 ctrl=6 misc=0 q=0/1 heap=201776 min_heap=197012
+I (31382) 80211: total=997 err=0 invalid=0 mismatch=0
+I (31387) 80211: MGMT=933 beacon=868 probe_req=39 probe_resp=26 auth=0 assoc_req=0 deauth=0 other=0
+I (31395) 80211: CTRL=6 rts=0 cts=0 ack=6 bar=0 ba=0 other=0
+I (31401) 80211: DATA=58 qos_data=0 qos_null=0 null=0 other=0
+I (31406) OBS: ap=11 beacon=868 berr=0 preq=39 perr=0 presp=26 ie=18953 ie_err=4 ssid=693 hidden=201 rsn=423 wpa=131 ds=864
+I (34417) RADIO: rx=1138 queued=1138 processed=1138 drop=0 trunc=4 st_err=0 mgmt=1074 data=58 ctrl=6 misc=0 q=0/1 heap=201776 min_heap=197012
+I (34418) 80211: total=1138 err=0 invalid=0 mismatch=0
+I (34423) 80211: MGMT=1074 beacon=1007 probe_req=41 probe_resp=26 auth=0 assoc_req=0 deauth=0 other=0
+I (34432) 80211: CTRL=6 rts=0 cts=0 ack=6 bar=0 ba=0 other=0
+I (34437) 80211: DATA=58 qos_data=0 qos_null=0 null=0 other=0
+I (34443) OBS: ap=11 beacon=1007 berr=0 preq=41 perr=0 presp=26 ie=21771 ie_err=4 ssid=784 hidden=249 rsn=532 wpa=163 ds=995
+I (36046) OBS: AP bssid=AA:BA:70:DC:E3:36 ssid=<hidden> rssi=-92 rx_ch=6 adv_ch=6 bintv=100 sec=OPEN
+I (37454) RADIO: rx=1310 queued=1310 processed=1310 drop=0 trunc=4 st_err=0 mgmt=1246 data=58 ctrl=6 misc=0 q=0/1 heap=201768 min_heap=197012
+I (37455) 80211: total=1310 err=0 invalid=0 mismatch=0
+I (37460) 80211: MGMT=1246 beacon=1168 probe_req=47 probe_resp=31 auth=0 assoc_req=0 deauth=0 other=0
+I (37469) 80211: CTRL=6 rts=0 cts=0 ack=6 bar=0 ba=0 other=0
+I (37474) 80211: DATA=58 qos_data=0 qos_null=0 null=0 other=0
+I (37480) OBS: ap=13 beacon=1168 berr=0 preq=47 perr=0 presp=31 ie=25209 ie_err=4 ssid=904 hidden=295 rsn=638 wpa=193 ds=1153
+I (40491) RADIO: rx=1481 queued=1481 processed=1481 drop=0 trunc=5 st_err=0 mgmt=1411 data=64 ctrl=6 misc=0 q=0/1 heap=201780 min_heap=197012
+I (40492) 80211: total=1481 err=0 invalid=0 mismatch=0
+I (40497) 80211: MGMT=1411 beacon=1326 probe_req=50 probe_resp=35 auth=0 assoc_req=0 deauth=0 other=0
+I (40506) 80211: CTRL=6 rts=0 cts=0 ack=6 bar=0 ba=0 other=0
+I (40511) 80211: DATA=64 qos_data=0 qos_null=0 null=0 other=0
+I (40517) OBS: ap=13 beacon=1326 berr=0 preq=50 perr=0 presp=35 ie=28534 ie_err=5 ssid=1021 hidden=340 rsn=747 wpa=226 ds=1307
+I (43528) RADIO: rx=1649 queued=1649 processed=1649 drop=0 trunc=5 st_err=0 mgmt=1578 data=65 ctrl=6 misc=0 q=0/1 heap=201776 min_heap=197012
+I (43529) 80211: total=1649 err=0 invalid=0 mismatch=0
+I (43534) 80211: MGMT=1578 beacon=1486 probe_req=54 probe_resp=38 auth=0 assoc_req=0 deauth=0 other=0
+I (43543) 80211: CTRL=6 rts=0 cts=0 ack=6 bar=0 ba=0 other=0
+I (43548) 80211: DATA=65 qos_data=0 qos_null=0 null=0 other=0
+I (43554) OBS: ap=13 beacon=1486 berr=0 preq=54 perr=0 presp=38 ie=31834 ie_err=5 ssid=1146 hidden=378 rsn=854 wpa=257 ds=1458
+I (43792) OBS: PROBE src=6A:B0:D8:EE:A8:84 ssid=<wildcard> rssi=-93 ch=6
+I (46565) RADIO: rx=1834 queued=1834 processed=1834 drop=0 trunc=5 st_err=0 mgmt=1761 data=66 ctrl=7 misc=0 q=0/1 heap=201776 min_heap=197012
+I (46566) 80211: total=1834 err=0 invalid=0 mismatch=0
+I (46571) 80211: MGMT=1761 beacon=1657 probe_req=60 probe_resp=44 auth=0 assoc_req=0 deauth=0 other=0
+I (46580) 80211: CTRL=7 rts=0 cts=0 ack=7 bar=0 ba=0 other=0
+I (46585) 80211: DATA=66 qos_data=0 qos_null=0 null=0 other=0
+I (46591) OBS: ap=13 beacon=1657 berr=0 preq=60 perr=0 presp=44 ie=35507 ie_err=5 ssid=1274 hidden=427 rsn=971 wpa=298 ds=1620
+I (49602) RADIO: rx=2020 queued=2020 processed=2020 drop=0 trunc=5 st_err=0 mgmt=1937 data=76 ctrl=7 misc=0 q=0/1 heap=201780 min_heap=197012
+I (49603) 80211: total=2020 err=0 invalid=0 mismatch=0
+I (49608) 80211: MGMT=1937 beacon=1827 probe_req=65 probe_resp=45 auth=0 assoc_req=0 deauth=0 other=0
+I (49617) 80211: CTRL=7 rts=0 cts=0 ack=7 bar=0 ba=0 other=0
+I (49622) 80211: DATA=76 qos_data=0 qos_null=0 null=0 other=0
+I (49628) OBS: ap=13 beacon=1827 berr=0 preq=65 perr=0 presp=45 ie=39084 ie_err=5 ssid=1400 hidden=472 rsn=1070 wpa=333 ds=1779
+I (51262) OBS: PROBE src=12:8A:67:DF:B6:A3 ssid=<wildcard> rssi=-94 ch=6
+I (52639) RADIO: rx=2188 queued=2188 processed=2188 drop=0 trunc=5 st_err=0 mgmt=2104 data=77 ctrl=7 misc=0 q=0/1 heap=201776 min_heap=197012
+I (52640) 80211: total=2188 err=0 invalid=0 mismatch=0
+I (52645) 80211: MGMT=2104 beacon=1987 probe_req=67 probe_resp=50 auth=0 assoc_req=0 deauth=0 other=0
+I (52654) 80211: CTRL=7 rts=0 cts=0 ack=7 bar=0 ba=0 other=0
+I (52659) 80211: DATA=77 qos_data=0 qos_null=0 null=0 other=0
+I (52665) OBS: ap=13 beacon=1987 berr=0 preq=67 perr=0 presp=50 ie=42558 ie_err=5 ssid=1525 hidden=512 rsn=1160 wpa=364 ds=1939
+I (55676) RADIO: rx=2404 queued=2404 processed=2404 drop=0 trunc=5 st_err=0 mgmt=2269 data=108 ctrl=27 misc=0 q=0/1 heap=201776 min_heap=197012
+I (55677) 80211: total=2404 err=0 invalid=0 mismatch=0
+I (55682) 80211: MGMT=2269 beacon=2150 probe_req=68 probe_resp=51 auth=0 assoc_req=0 deauth=0 other=0
+I (55691) 80211: CTRL=27 rts=17 cts=0 ack=10 bar=0 ba=0 other=0
+I (55697) 80211: DATA=108 qos_data=18 qos_null=0 null=0 other=0
+I (55702) OBS: ap=13 beacon=2150 berr=0 preq=68 perr=0 presp=51 ie=46003 ie_err=5 ssid=1640 hidden=561 rsn=1251 wpa=389 ds=2100
+I (58339) OBS: AP bssid=E0:EF:02:CB:ED:99 ssid="lululu" rssi=-96 rx_ch=6 adv_ch=6 bintv=100 sec=RSN
+I (58714) RADIO: rx=2661 queued=2661 processed=2661 drop=0 trunc=5 st_err=0 mgmt=2437 data=163 ctrl=61 misc=0 q=0/1 heap=201776 min_heap=197012
+I (58715) 80211: total=2661 err=0 invalid=0 mismatch=0
+I (58720) 80211: MGMT=2437 beacon=2313 probe_req=73 probe_resp=51 auth=0 assoc_req=0 deauth=0 other=0
+I (58729) 80211: CTRL=61 rts=51 cts=0 ack=10 bar=0 ba=0 other=0
+I (58735) 80211: DATA=163 qos_data=71 qos_null=0 null=0 other=0
+I (58740) OBS: ap=14 beacon=2313 berr=0 preq=73 perr=0 presp=51 ie=49451 ie_err=5 ssid=1755 hidden=609 rsn=1345 wpa=414 ds=2262
