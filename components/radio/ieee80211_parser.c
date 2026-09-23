@@ -55,27 +55,33 @@ bool ieee80211_parse(const uint8_t *frame, uint16_t length,
 }
 
 /*
- * INTERMEDIATE Phase 1.5 commit: the parse opts / status plumbing is in
- * place, but the walk below still has the pre-1.5 semantics on purpose so
- * the regression tests can demonstrate the defects:
- *   - a 1-byte tail in a COMPLETE body is silently ignored (no malformed),
- *   - a tail cut by a truncated capture is reported malformed instead of
- *     ie_walk_incomplete,
- *   - SSID all-zero bytes are stored as a name instead of hidden,
- *   - a duplicate SSID IE overwrites the first one,
- *   - DS Parameter with an out-of-range channel value is still accepted,
- *   - no protocol-version / order-bit / fragment guards on deep parse.
- * The Phase 1.5 fixes land in later commits and flip the tests without
- * changing them.
+ * Strict IE walk over frame[ie_start .. length). Semantics (Phase 1.5):
+ *
+ * - two header bytes must exist and the declared 2+len body must fit
+ *   inside the frame; when it does not because the CAPTURE was cut
+ *   (capture_truncated), the tail is marked ie_walk_incomplete - it
+ *   cannot be judged and is NOT evidence of a bad frame. The same
+ *   violation in a COMPLETE body is malformed_ie.
+ * - a leftover byte in a complete body is trailing garbage (malformed);
+ *   with a truncated capture it is just an unknowable tail (incomplete).
+ * - the SSID IE and the DS Parameter IE are "critical": the FIRST
+ *   occurrence wins, further occurrences set dup_critical_ie and are
+ *   ignored (they cannot poison fields already parsed).
+ * - SSID: length > 32 is malformed and not stored; all-zero bytes are
+ *   the hidden-SSID representation, stored as ssid_len = 0.
+ * - DS Parameter: only length == 1 is well-formed (other lengths are
+ *   malformed); only channel values 1..14 are written into
+ *   advertised_channel, anything else is ignored (rx_channel stays
+ *   independent).
  */
+typedef struct {
+    bool ssid_seen;
+    bool ds_seen;
+} ie_walk_state_t;
 
-/*
- * Strict IE walk over frame[ie_start .. length). For each element requires
- * two header bytes to exist and 2+len bytes to fit inside the frame; a
- * violation marks the observation malformed and stops the walk safely.
- */
 static void walk_information_elements(const uint8_t *frame, uint16_t length,
                                       uint16_t ie_start, bool capture_truncated,
+                                      ie_walk_state_t *st,
                                       ieee80211_ap_observation_t *ap_out,
                                       ieee80211_probe_req_observation_t *probe_out)
 {
@@ -86,13 +92,20 @@ static void walk_information_elements(const uint8_t *frame, uint16_t length,
         const uint8_t ie_len = frame[pos + 1];
 
         if ((uint32_t)ie_len > (uint32_t)(length - pos - 2)) {
-            if (ap_out != NULL) {
-                ap_out->malformed_ie = true;
-                ap_out->ie_walk_incomplete = capture_truncated;
-            }
-            if (probe_out != NULL) {
-                probe_out->malformed_ie = true;
-                probe_out->ie_walk_incomplete = capture_truncated;
+            if (capture_truncated) {
+                if (ap_out != NULL) {
+                    ap_out->ie_walk_incomplete = true;
+                }
+                if (probe_out != NULL) {
+                    probe_out->ie_walk_incomplete = true;
+                }
+            } else {
+                if (ap_out != NULL) {
+                    ap_out->malformed_ie = true;
+                }
+                if (probe_out != NULL) {
+                    probe_out->malformed_ie = true;
+                }
             }
             return;
         }
@@ -102,7 +115,7 @@ static void walk_information_elements(const uint8_t *frame, uint16_t length,
         switch (id) {
         case IEEE80211_IE_SSID:
             if (ie_len > IEEE80211_SSID_MAX_LEN) {
-                /* Illegal SSID length: treat as malformed, do not store. */
+                /* Illegal SSID length: structural, regardless of capture. */
                 if (ap_out != NULL) {
                     ap_out->malformed_ie = true;
                 }
@@ -111,23 +124,76 @@ static void walk_information_elements(const uint8_t *frame, uint16_t length,
                 }
                 return;
             }
+            if (st->ssid_seen) {
+                if (ap_out != NULL) {
+                    ap_out->dup_critical_ie = true;
+                }
+                if (probe_out != NULL) {
+                    probe_out->dup_critical_ie = true;
+                }
+                break; /* first occurrence wins */
+            }
+            st->ssid_seen = true;
+
+            /* All-zero bytes are the hidden-SSID representation. */
+            bool all_zero = true;
+            for (uint8_t k = 0; k < ie_len; k++) {
+                if (data[k] != 0x00) {
+                    all_zero = false;
+                    break;
+                }
+            }
+
             if (ap_out != NULL) {
-                memcpy(ap_out->ssid, data, ie_len);
-                ap_out->ssid[ie_len] = '\0';
-                ap_out->ssid_len = ie_len;
-                ap_out->hidden_ssid = ie_len == 0;
+                if (all_zero) {
+                    ap_out->ssid_len = 0;
+                    ap_out->ssid[0] = '\0';
+                    ap_out->hidden_ssid = true;
+                } else {
+                    memcpy(ap_out->ssid, data, ie_len);
+                    ap_out->ssid[ie_len] = '\0';
+                    ap_out->ssid_len = ie_len;
+                    ap_out->hidden_ssid = ie_len == 0;
+                }
             }
             if (probe_out != NULL) {
-                memcpy(probe_out->ssid, data, ie_len);
-                probe_out->ssid[ie_len] = '\0';
-                probe_out->ssid_len = ie_len;
-                probe_out->wildcard_ssid = ie_len == 0;
+                if (all_zero) {
+                    probe_out->ssid_len = 0;
+                    probe_out->ssid[0] = '\0';
+                    probe_out->wildcard_ssid = true;
+                } else {
+                    memcpy(probe_out->ssid, data, ie_len);
+                    probe_out->ssid[ie_len] = '\0';
+                    probe_out->ssid_len = ie_len;
+                    probe_out->wildcard_ssid = ie_len == 0;
+                }
             }
             break;
         case IEEE80211_IE_DS_PARAM:
-            if (ap_out != NULL && ie_len >= 1) {
-                ap_out->advertised_channel = data[0];
-                ap_out->ds_param_present = true;
+            if (ie_len != 1) {
+                /* DS Parameter Set is exactly one octet. */
+                if (ap_out != NULL) {
+                    ap_out->malformed_ie = true;
+                }
+                if (probe_out != NULL) {
+                    probe_out->malformed_ie = true;
+                }
+                return;
+            }
+            if (st->ds_seen) {
+                if (ap_out != NULL) {
+                    ap_out->dup_critical_ie = true;
+                }
+                break; /* first occurrence wins */
+            }
+            st->ds_seen = true;
+            if (ap_out != NULL) {
+                if (data[0] >= 1 && data[0] <= 14) {
+                    ap_out->advertised_channel = data[0];
+                    ap_out->ds_param_present = true;
+                }
+                /* Out-of-range values: not written; advertised_channel
+                 * stays 0 and rx_channel remains independent. */
             }
             break;
         case IEEE80211_IE_RSN:
@@ -156,9 +222,25 @@ static void walk_information_elements(const uint8_t *frame, uint16_t length,
         }
     }
 
-    /* The walk only exits the loop cleanly; any 1-byte tail is currently
-     * ignored here (pre-1.5 behavior, flagged by the Phase 1.5 tests). */
-    (void)capture_truncated;
+    /* Leftover byte(s) after the walk. */
+    if (length - pos > 0) {
+        if (capture_truncated) {
+            if (ap_out != NULL) {
+                ap_out->ie_walk_incomplete = true;
+            }
+            if (probe_out != NULL) {
+                probe_out->ie_walk_incomplete = true;
+            }
+        } else {
+            /* Trailing garbage in a complete body. */
+            if (ap_out != NULL) {
+                ap_out->malformed_ie = true;
+            }
+            if (probe_out != NULL) {
+                probe_out->malformed_ie = true;
+            }
+        }
+    }
 }
 
 bool ieee80211_parse_beacon_or_probe_resp(const uint8_t *frame, uint16_t length,
@@ -174,6 +256,17 @@ bool ieee80211_parse_beacon_or_probe_resp(const uint8_t *frame, uint16_t length,
         return false;
     }
 
+    /* Conservative deep-parse guards: a nonzero protocol version, the
+     * order bit (an HT control field follows the FC: a variable header
+     * this parser does not model) and fragmented bodies are rejected
+     * before any fixed-field or IE read. */
+    ieee80211_frame_info_t fc_info = {0};
+    if (!ieee80211_parse(frame, 2, &fc_info) ||
+        fc_info.fc.protocol_version != 0 ||
+        fc_info.fc.order || fc_info.fc.more_fragments) {
+        return false;
+    }
+
     memcpy(out->bssid, &frame[IEEE80211_MGMT_ADDR3_OFF], sizeof(out->bssid));
 
     /* Timestamp (8 bytes) is deliberately skipped, not stored. */
@@ -182,12 +275,18 @@ bool ieee80211_parse_beacon_or_probe_resp(const uint8_t *frame, uint16_t length,
     out->privacy = (out->capability & IEEE80211_CAP_PRIVACY) != 0;
 
     const bool capture_truncated = opts != NULL && opts->capture_truncated;
+    ie_walk_state_t st = {0};
     walk_information_elements(frame, length,
                               IEEE80211_MGMT_HDR_LEN + IEEE80211_BEACON_FIXED_LEN,
-                              capture_truncated, out, NULL);
+                              capture_truncated, &st, out, NULL);
 
+    /* A truncated capture never yields a complete observation, even when
+     * the walk reached a clean boundary: IEs after the cut are unknowable. */
+    if (capture_truncated) {
+        out->ie_walk_incomplete = true;
+    }
     out->complete = !out->malformed_ie && !out->ie_walk_incomplete &&
-                    !capture_truncated;
+                    !out->dup_critical_ie;
     return true;
 }
 
@@ -204,14 +303,26 @@ bool ieee80211_parse_probe_request(const uint8_t *frame, uint16_t length,
         return false;
     }
 
+    /* Same deep-parse guards as the beacon path. */
+    ieee80211_frame_info_t fc_info = {0};
+    if (!ieee80211_parse(frame, 2, &fc_info) ||
+        fc_info.fc.protocol_version != 0 ||
+        fc_info.fc.order || fc_info.fc.more_fragments) {
+        return false;
+    }
+
     memcpy(out->source, &frame[IEEE80211_MGMT_ADDR2_OFF], sizeof(out->source));
 
     const bool capture_truncated = opts != NULL && opts->capture_truncated;
+    ie_walk_state_t st = {0};
     walk_information_elements(frame, length, IEEE80211_MGMT_HDR_LEN,
-                              capture_truncated, NULL, out);
+                              capture_truncated, &st, NULL, out);
 
+    if (capture_truncated) {
+        out->ie_walk_incomplete = true;
+    }
     out->complete = !out->malformed_ie && !out->ie_walk_incomplete &&
-                    !capture_truncated;
+                    !out->dup_critical_ie;
     return true;
 }
 
