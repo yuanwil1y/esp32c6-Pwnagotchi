@@ -1,5 +1,6 @@
 #include "wifi_sniffer.h"
 
+#include "channel_hopper.h"
 #include "ieee80211_parser.h"
 
 #include <stdbool.h>
@@ -600,6 +601,11 @@ static void radio_stats_task(void *arg)
                  stats.ssid_found, stats.hidden_ssid_count,
                  stats.rsn_ie_count, stats.wpa_vendor_ie_count,
                  stats.channel_ie_count);
+        ESP_LOGI(TAG,
+                 "HOP ch=%u hops=%" PRIu32 " errors=%" PRIu32
+                 " dwell=%" PRIu32 "ms",
+                 stats.current_channel, stats.hop_count, stats.hop_errors,
+                 stats.dwell_ms);
     }
 }
 
@@ -617,6 +623,17 @@ void wifi_sniffer_get_stats(radio_stats_t *out)
         out->queue_current = uxQueueMessagesWaiting(s_rx_queue);
     }
     out->current_channel = s_current_channel;
+
+    /* Merge hopper state so consumers need a single snapshot call. When
+     * the hopper runs, its channel is the live one. */
+    channel_hopper_stats_t hop;
+    channel_hopper_get_stats(&hop);
+    out->hop_count = hop.hop_count;
+    out->hop_errors = hop.hop_errors;
+    out->dwell_ms = hop.dwell_ms;
+    if (hop.enabled) {
+        out->current_channel = hop.current_channel;
+    }
 }
 
 esp_err_t wifi_sniffer_init(void)

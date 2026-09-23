@@ -26,5 +26,10 @@ esp_err_t board_display_update_phase1c(uint32_t rx_total, uint32_t ap_unique,
                                        uint32_t ie_errors, const char *last_ssid,
                                        uint8_t channel, int8_t rssi);
 
+/* Phase 1 final status screen: channel (hopper), AP seen, RX and drop. */
+esp_err_t board_display_show_phase1_status(bool touch_ok, bool sd_ok, bool wifi_ok);
+esp_err_t board_display_update_phase1(uint8_t channel, uint32_t ap_unique,
+                                      uint32_t rx_total, uint32_t rx_dropped);
+
 bool board_display_lock(uint32_t timeout_ms);
 void board_display_unlock(void);

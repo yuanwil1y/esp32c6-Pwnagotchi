@@ -39,6 +39,11 @@ typedef struct {
     uint32_t rx_truncated;
     uint32_t rx_state_errors;
 
+    /* Phase 1D: channel hopper (merged into the snapshot). */
+    uint32_t hop_count;
+    uint32_t hop_errors;
+    uint32_t dwell_ms;
+
     uint32_t rx_management;
     uint32_t rx_data;
     uint32_t rx_control;

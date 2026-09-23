@@ -46,6 +46,7 @@ typedef enum {
     STATUS_SCREEN_PHASE1A,
     STATUS_SCREEN_PHASE1B,
     STATUS_SCREEN_PHASE1C,
+    STATUS_SCREEN_PHASE1,
 } status_screen_kind_t;
 
 static lv_obj_t *s_status_label;
@@ -535,6 +536,73 @@ esp_err_t board_display_update_phase1c(uint32_t rx_total, uint32_t ap_unique,
     }
 
     phase1c_refresh_locked(rx_total, ap_unique, ie_errors, last_ssid, channel, rssi);
+
+    board_display_unlock();
+    return ESP_OK;
+}
+
+/* Requires the LVGL mutex to be held. */
+static void phase1_refresh_locked(uint8_t channel, uint32_t ap_unique,
+                                  uint32_t rx_total, uint32_t rx_dropped)
+{
+    if (s_status_label == NULL || s_screen_kind != STATUS_SCREEN_PHASE1) {
+        return;
+    }
+
+    lv_label_set_text_fmt(s_status_label,
+                          "esp32c6-Pwnagotchi\n"
+                          "\n"
+                          "Phase 1\n"
+                          "LCD: OK\n"
+                          "Touch: %s\n"
+                          "SD: %s\n"
+                          "WiFi: %s\n"
+                          "\n"
+                          "CH: %u\n"
+                          "AP: %lu\n"
+                          "RX: %lu\n"
+                          "DROP: %lu\n"
+                          "\n"
+                          "sniffing...",
+                          s_status_touch_ok ? "OK" : "FAIL",
+                          s_status_sd_ok ? "OK" : "FAIL",
+                          s_status_wifi_ok ? "SNIFFING" : "FAIL",
+                          (unsigned)channel,
+                          (unsigned long)ap_unique,
+                          (unsigned long)rx_total,
+                          (unsigned long)rx_dropped);
+}
+
+esp_err_t board_display_show_phase1_status(bool touch_ok, bool sd_ok, bool wifi_ok)
+{
+    if (!board_display_lock(BOARD_DISPLAY_WAIT_FOREVER)) {
+        return ESP_ERR_INVALID_STATE;
+    }
+
+    s_status_touch_ok = touch_ok;
+    s_status_sd_ok = sd_ok;
+    s_status_wifi_ok = wifi_ok;
+    s_screen_kind = STATUS_SCREEN_PHASE1;
+
+    if (status_screen_create_locked() == NULL) {
+        s_screen_kind = STATUS_SCREEN_NONE;
+        board_display_unlock();
+        return ESP_ERR_NO_MEM;
+    }
+    phase1_refresh_locked(0, 0, 0, 0);
+
+    board_display_unlock();
+    return ESP_OK;
+}
+
+esp_err_t board_display_update_phase1(uint8_t channel, uint32_t ap_unique,
+                                      uint32_t rx_total, uint32_t rx_dropped)
+{
+    if (!board_display_lock(BOARD_DISPLAY_WAIT_FOREVER)) {
+        return ESP_ERR_INVALID_STATE;
+    }
+
+    phase1_refresh_locked(channel, ap_unique, rx_total, rx_dropped);
 
     board_display_unlock();
     return ESP_OK;
