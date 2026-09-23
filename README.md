@@ -6,7 +6,7 @@
 
 ## 当前状态
 
-**Phase 1.5 - 缺陷修复与回归验收进行中。** Phase 1 review 发现的六组缺陷已修复：RX slot 所有权泄漏（错误帧不再耗尽 24-slot pool）、MISC 零 payload 白名单（不再按 sig_len 读 payload）、信道表改为驱动 country 表（`01`/world-safe → 1..11）+ hopper 失败有界重试策略、FCS/IE 边界三态语义（截断不再当坏帧）、不完整观察不再覆盖已知 SSID/security/信道、AP 统计改为 `AP cache`（0..32 去重槽占用，非 total unique AP）。新增 host 生产代码回归测试（plain + ASan/UBSan）接入 CI。详见 [docs/PHASE1_5_BUGFIX.md](docs/PHASE1_5_BUGFIX.md)；实机验收 PENDING。
+**Phase 1.5 - 缺陷修复与回归验收已完成（PASS）。** Phase 1 review 发现的六组缺陷已修复：RX slot 所有权泄漏（错误帧不再耗尽 24-slot pool）、MISC 零 payload 白名单（不再按 sig_len 读 payload）、信道表改为驱动 country 表（`01`/world-safe → 1..11）+ hopper 失败有界重试策略、FCS/IE 边界三态语义（截断不再当坏帧）、不完整观察不再覆盖已知 SSID/security/信道、AP 统计改为 `AP cache`（0..32 去重槽占用，非 total unique AP）。新增 host 生产代码回归测试（plain + ASan/UBSan）接入 CI。实机验收已通过（固件 3e20b47：`country 01 → 1..11`、10.1 hops/s errors=0、215 s 零 drop heap 平坦、无重启），日志见 [docs/logs/phase15_boot_3e20b47.log](docs/logs/phase15_boot_3e20b47.log)，完整验收记录见 [docs/PHASE1_5_BUGFIX.md](docs/PHASE1_5_BUGFIX.md)。
 
 **Phase 1 — Passive Wi-Fi Sniffer 已全部完成并通过实机总验收（Phase 1A/1B/1C/1D）。** 当前系统：promiscuous RX → 轻量 callback → 固定容量队列 → 解析任务 → 802.11 分类 → Beacon/Probe IE 解析（SSID/BSSID/RSSI/信道/安全基础分类）→ 独立 Channel Hopper Task 以 300ms dwell 在合法信道循环；LCD/LVGL/Touch/SD 正常共存。总验收记录见 [docs/PHASE1_FINAL.md](docs/PHASE1_FINAL.md)。
 

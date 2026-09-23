@@ -11,7 +11,7 @@ Phase 2（World Model 仍是下一项目阶段）。Phase 0/1 的历史验收文
 |---|------|--------|------|----------|
 | 1 | RX slot 所有权泄漏（rx_state 错误帧不归还 slot） | P1 | 已修复 | 静态确认 + host 自动复现（修复前红/修复后绿） |
 | 2 | MISC 零 payload 被按 sig_len 复制 | P1 | 已修复 | 静态确认 + 官方文档核对 + host 自动复现 |
-| 3 | 信道表 `01` 走 1..13、hopper 失败处理过激、task 失败 enabled 不回退、目标信道提前生效、停止后回退陈旧信道 | P2 | 已修复 | 静态确认 + 官方文档核对 + host 单测（策略层）；task/驱动路径为静态审查（见 §7 实机 PENDING） |
+| 3 | 信道表 `01` 走 1..13、hopper 失败处理过激、task 失败 enabled 不回退、目标信道提前生效、停止后回退陈旧信道 | P2 | 已修复 | 静态确认 + 官方文档核对 + host 单测（策略层）+ 实机确认（country 01→1..11、10.1 hops/s、errors=0，见 §10） |
 | 4 | captured length / FCS / IE 边界（截断副本含部分 FCS 进 IE walk、尾部 1 字节漏判、截断与坏帧混淆） | P2 | 已修复 | 静态确认 + host 自动复现 |
 | 5 | 不完整观察覆盖可靠字段（清 SSID/降级 RSN→OPEN/清 advertised channel） | P2 | 已修复 | 静态确认 + host 自动复现 |
 | 6 | AP 统计含义错误（ap_unique 重复增长、UI 称 AP） | P2 | 已修复 | 静态确认 + host 回归护栏 + UI/串口文案修正 |
@@ -224,31 +224,64 @@ cache 变化而非"新 AP"）。日志限流只影响打印，不影响 cache �
   HS-1/2/3），与项目阶段编号无关；下一**项目**阶段仍是 Phase 2
   （World Model）。
 
-## 10. 实机回归（PENDING）
+## 10. 实机回归（已完成，2026-09-24）
 
-硬件（Waveshare ESP32-C6-Touch-LCD-1.9）当前不可用/未获烧录授权，
-**Phase 1.5 实机验收状态：PENDING**。不伪造 PASS；编译通过不等于硬件
-验收。授权后按以下步骤执行并保存原始日志到 `docs/logs/phase15_*.log`
-（commit 对应 `ae58b69` 或更新的 final）：
+硬件 Waveshare ESP32-C6-Touch-LCD-1.9，COM3，烧录 CI 产物
+`firmware-3e20b4736e157d268c48cdc6e5ba3b54a59f9366.zip`（GitHub Actions
+run 35907863519，esptool v5.4.0 `write-flash` 校验通过）。
+**固件 commit = 3e20b47 = 本文档所在提交，固件与日志一一对应。**
 
-1. `idf.py -p <PORT> flash monitor`，记录 boot 段：country 表行
-   （应出现 `country 01 channels 1..11 (11 entries)` 或回退告警）、
-   `hopping N channels, dwell=300 ms`。
-2. 3 分钟以上流量环境观察：`rx=` 持续增长；`drop=` 可解释（环境拥塞时
-   允许非零，但 `st_err`/`misc`/`drop` 与 rx_total 满足 §2 恒等式）；
-   `HOP ch=.. hops≈10/s errors=0`；heap 无持续下降；无 reboot/watchdog；
-   LCD/触摸初始化正常、SD 自检通过。
-3. 记录 free/min heap、queue 峰值（`q=cur/peak`）与当时实际环境流量
-   描述，不以空闲环境 heap 平坦作为唯一判据。
-4. 若看到 `ie_inc`（不完整观察）或 `skip=`，确认伴随的 `ie_err`/payload
-   截断语义（相关性说明见下），不要求无线发射制造异常帧。
+原始日志（未加工，本仓库内）：
 
-历史说明纠正（不改写旧文档）：Phase 1C 文档中 "ie_err fell to 0.01%
-(environmental noise, which also proves...)" 与 Phase 1 Final 中
-"ie_err only real noise" 的表述，只能说明 trunc 与 ie_err 计数相关；
-在 Phase 1.5 之前截断副本的部分 FCS 字节确实可能进入 IE walk（缺陷 4），
-因此不能无证据地把历史 ie_err 全部归因于环境噪声。该语义以本文档为准，
-历史 PASS 记录保持原样。
+- `docs/logs/phase15_boot_3e20b47.log` —— RTS 复位后从头采集的完整
+  boot + 215 s 运行窗口。
+- `docs/logs/phase15_stability_run1_3e20b47.log` —— 首次烧录后 200 s
+  运行窗口（开表晚于 boot，boot 段以上一文件为准）。
+
+Boot 段判据（全部满足）：
+
+```text
+I (434) phase1: esp32c6-Pwnagotchi Phase 1.5 bugfix baseline
+I (439) phase1: firmware git commit: 3e20b4736e157d268c48cdc6e5ba3b54a59f9366 (3e20b47)
+I (889) board_sd: SD mount: OK at /sd_card, size 0.95 GB
+I (924/927) board_sd: SD write/read/verify: OK
+I (1200) RADIO: promiscuous RX started on channel 6
+I (1204) HOP: country 01 channels 1..11 (11 entries)   <- 缺陷 3 修复的实机确认
+I (1209) HOP: hopping 11 channels, dwell=300 ms
+I (1217) phase1: Phase 1 ready: LCD=OK I2C=OK Touch=OK SD=OK WiFi=SNIFFING HOP=ON
+```
+
+运行窗口判据（t=4 s .. 214.5 s，215 s 单次上电，无重启）：
+
+```text
+rx:            44 -> 4284（持续增长）
+queued==processed: 4284 == 4284（队列零积压，q 峰值 2）
+drop=0  st_err=0  misc=0          （计数恒等式成立）
+trunc=68                          （>512 帧按边界截断并计数）
+hops=710 (~10.1/s), errors=0      （实测信道集合恰为 1..11，无 12/13）
+heap=199068 -> 199064, min_heap=194116（平坦，无持续下降）
+APCACHE occ=26/32 ins=26 evict=0 skip=68
+ie_err=0  ie_inc=66               （截断尾部计 incomplete，不再计 malformed）
+berr=0  beacon=2972  preq=387  presp=124
+crash/panic/watchdog/reboot 标记: 0
+```
+
+多信道发现（OBS 行节选，含 hidden 与非打印 SSID 清洗显示）：
+
+```text
+AP bssid=E2:C3:13:2F:E3:53 ssid="HUAWEI-CR16D8" rssi=-79 rx_ch=1 adv_ch=1 sec=RSN
+AP bssid=78:11:DC:1E:89:80 ssid=".................." rssi=-85 rx_ch=2 adv_ch=2 sec=RSN
+AP bssid=C2:7C:A6:79:B6:44 ssid=<hidden> rssi=-43 rx_ch=9 adv_ch=9 sec=RSN
+AP bssid=DA:33:2A:21:60:00 ssid="@DLMU" rssi=-88 rx_ch=11 adv_ch=11 sec=OPEN
+```
+
+`skip=68 / ie_inc=66` 直接演示缺陷 5 的新语义：截断/不完整观察被计数并
+跳过，不污染 cache；`ie_err=0` 而非历史上的 5 个 malformed，与
+`ie_inc` 的分离使截断与坏帧不再混计。
+
+保留说明：屏幕触摸交互仍为 init OK、实际触屏事件待维护者确认（与
+Phase 1 相同，非本阶段回归项）。错误帧、无 payload MISC 与边界长度由
+host 注入覆盖，未要求无线发射制造异常。
 
 ## 11. 提交清单
 
@@ -258,10 +291,16 @@ cache 变化而非"新 AP"）。日志限流只影响打印，不影响 cache �
 - `6575f8e` phase1.5 fix 4: FCS/captured-length/IE boundary semantics in the parser
 - `7604a61` phase1.5 fix 5: incomplete observations never degrade cached knowledge
 - `ae58b69` phase1.5 fix 6: AP cache statistics semantics (UI + serial)
-- docs 提交（本文档）：Phase 1.5 bugfix acceptance record
+- `3e20b47` docs: Phase 1.5 bugfix acceptance record（本文档）
+- 实机日志：`docs/logs/phase15_boot_3e20b47.log`、`docs/logs/phase15_stability_run1_3e20b47.log`
 
 ## Phase 1.5 验收状态
 
-- 代码 + 自动回归 + 固件构建：**完成（CI 全绿）**。
-- 实机验收：**PENDING**（等待硬件/烧录授权；步骤见 §10）。
-- 在 §10 完成并记录日志前，Phase 1.5 不标记 PASS。
+- 代码 + 自动回归（host 40/40，plain + ASan/UBSan）：**PASS**
+- ESP-IDF v5.4 / esp32c6 固件构建：**PASS**（run 35907019585 / 35907863519）
+- 实机回归（boot + 215 s 稳定窗口，§10 全部判据）：**PASS**
+  （固件 3e20b47，日志 docs/logs/phase15_*.log）
+
+**PHASE 1.5: PASS**
+
+下一阶段为 Phase 2（World Model），未提前开工。
