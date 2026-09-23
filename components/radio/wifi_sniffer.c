@@ -464,6 +464,17 @@ esp_err_t wifi_sniffer_start(uint8_t channel)
         return err;
     }
 
+    /* The control subtype filter defaults to "none": without opting in,
+     * the driver delivers no RTS/CTS/ACK/BA frames at all. */
+    const wifi_promiscuous_filter_t ctrl_filter = {
+        .filter_mask = WIFI_PROMIS_CTRL_FILTER_MASK_ALL,
+    };
+    err = esp_wifi_set_promiscuous_ctrl_filter(&ctrl_filter);
+    if (err != ESP_OK) {
+        /* Sniffing stays functional without control frames. */
+        ESP_LOGW(TAG, "set_promiscuous_ctrl_filter failed: %s", esp_err_to_name(err));
+    }
+
     err = esp_wifi_set_promiscuous(true);
     if (err != ESP_OK) {
         ESP_LOGE(TAG, "set_promiscuous(true) failed: %s", esp_err_to_name(err));
