@@ -6,7 +6,9 @@
 
 ## 当前状态
 
-**Phase 1C - Beacon / Probe IE Parser 已实现并通过实机验收。** `ieee80211_parser` 扩展出管理帧 body 解析：BSSID、Beacon 固定字段（interval/capability）、严格边界 IE 迭代器，提取 SSID（含 hidden 与非打印字符安全转换）、DS Parameter 信道、RSN / WPA vendor 存在性，输出 OPEN/PRIVACY/WPA/RSN 基础安全分类；固定容量去重缓存 + 5 行/秒上限保证串口不刷屏。验收记录见 [docs/PHASE1C_IE_PARSER.md](docs/PHASE1C_IE_PARSER.md)。
+**Phase 1 — Passive Wi-Fi Sniffer 已全部完成并通过实机总验收（Phase 1A/1B/1C/1D）。** 当前系统：promiscuous RX → 轻量 callback → 固定容量队列 → 解析任务 → 802.11 分类 → Beacon/Probe IE 解析（SSID/BSSID/RSSI/信道/安全基础分类）→ 独立 Channel Hopper Task 以 300ms dwell 在合法信道循环；LCD/LVGL/Touch/SD 正常共存。总验收记录见 [docs/PHASE1_FINAL.md](docs/PHASE1_FINAL.md)。
+
+**Phase 1D - Channel Hopper 已实现并通过实机验收。** `components/radio/channel_hopper`：独立 FreeRTOS task，按驱动 country code 生成合法信道表（US/CA→1..11，其余→1..13，world-safe→1..11），固定 300ms dwell 顺序循环；driver 拒绝的信道运行时退役（hop_errors 计数 + 单条日志），绝不 abort。验收记录同上。
 
 **Phase 1B - 802.11 Frame Classification 已实现并通过实机验收。** `components/radio` 新增 `ieee80211_parser`：消费任务中对原始 Frame Control 做小端字节组装 + mask/shift 解码（无结构体覆盖、无位域映射），分类 Management / Control / Data 及各 subtype（beacon / probe / auth / RTS / ACK / QoS Data 等），并与 ESP-IDF 驱动分类交叉核对；串口每 3 秒输出分类统计。验收记录见 [docs/PHASE1B_80211_CLASSIFICATION.md](docs/PHASE1B_80211_CLASSIFICATION.md)。
 
