@@ -2,6 +2,8 @@
 
 #include "channel_hopper.h"
 #include "ieee80211_parser.h"
+#include "obs_cache.h"
+#include "rx_path.h"
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -39,26 +41,19 @@ static QueueHandle_t s_rx_queue;   /* radio_packet_t* filled by the callback */
 
 static portMUX_TYPE s_stats_mux = portMUX_INITIALIZER_UNLOCKED;
 static radio_stats_t s_stats;
+static rx_path_stats_t s_rx_stats;
 static uint8_t s_current_channel;
 static bool s_initialized;
 
 /*
- * Phase 1C observation log throttling: fixed-size dedup caches so the
+ * Phase 1.5 observation log throttling: fixed-size dedup caches so the
  * console gets one line per new/changed AP and per new (src, ssid) probe,
  * never one line per beacon. This is deliberately NOT an AP database.
  * Touched only from radio_rx_task, so no extra locking.
  */
-#define RADIO_AP_CACHE_SIZE     32
 #define RADIO_PROBE_CACHE_SIZE  16
 
-typedef struct {
-    bool used;
-    uint8_t bssid[6];
-    uint8_t ssid_len;
-    char ssid[33];
-    uint8_t adv_channel;
-    uint8_t sec; /* ieee80211_security_t */
-} ap_cache_entry_t;
+static obs_ap_cache_t s_ap_cache;
 
 typedef struct {
     bool used;
@@ -67,8 +62,6 @@ typedef struct {
     char ssid[33];
 } probe_cache_entry_t;
 
-static ap_cache_entry_t s_ap_cache[RADIO_AP_CACHE_SIZE];
-static uint8_t s_ap_cache_next;
 static probe_cache_entry_t s_probe_cache[RADIO_PROBE_CACHE_SIZE];
 static uint8_t s_probe_cache_next;
 
@@ -88,68 +81,75 @@ static bool obs_log_rate_ok(void)
     return true;
 }
 
+/* --- rx_path io hooks: FreeRTOS queue mapping (never blocks) --- */
+
+static bool io_slot_alloc(void *ctx, radio_packet_t **out)
+{
+    (void)ctx;
+    return xQueueReceive(s_free_queue, out, 0) == pdTRUE;
+}
+
+static bool io_rx_push(void *ctx, radio_packet_t *slot)
+{
+    (void)ctx;
+    return xQueueSend(s_rx_queue, &slot, 0) == pdTRUE;
+}
+
+static bool io_slot_return(void *ctx, radio_packet_t *slot)
+{
+    (void)ctx;
+    return xQueueSend(s_free_queue, &slot, 0) == pdTRUE;
+}
+
+static void io_lock(void *ctx)
+{
+    (void)ctx;
+    portENTER_CRITICAL(&s_stats_mux);
+}
+
+static void io_unlock(void *ctx)
+{
+    (void)ctx;
+    portEXIT_CRITICAL(&s_stats_mux);
+}
+
+static const rx_path_io_t s_rx_io = {
+    .ctx = NULL,
+    .slot_alloc = io_slot_alloc,
+    .rx_push = io_rx_push,
+    .slot_return = io_slot_return,
+    .lock = io_lock,
+    .unlock = io_unlock,
+};
+
 /*
  * Promiscuous RX callback. Runs in the Wi-Fi driver task context: only read
- * driver metadata, copy at most RADIO_PACKET_MAX_LEN bytes into a pooled
- * buffer, and hand it to the consumer queue. Never blocks, never logs, never
- * allocates. Drops (with counter) when the bounded queue is full.
+ * driver metadata and hand the frame to the rx_path core (bounded copy into
+ * a pooled buffer + enqueue). Never blocks, never logs, never allocates.
+ *
+ * rx_ctrl.rx_state: 0 = clean delivery, non-zero = driver-reported error
+ * (IDF v5.4 esp_wifi_types_native.h). rx_ctrl.sig_len is the on-air length
+ * including FCS. For WIFI_PKT_MISC the driver's payload is zero length;
+ * handling that whitelist lives in the rx_path core (Phase 1.5).
  */
 static void promiscuous_rx_cb(void *buf, wifi_promiscuous_pkt_type_t type)
 {
     const wifi_promiscuous_pkt_t *pkt = (const wifi_promiscuous_pkt_t *)buf;
 
-    portENTER_CRITICAL(&s_stats_mux);
-    s_stats.rx_total++;
-    portEXIT_CRITICAL(&s_stats_mux);
+    rx_frame_view_t view = {
+        .type = (uint8_t)type,
+        .channel = (uint8_t)pkt->rx_ctrl.channel,
+        .rssi = (int8_t)pkt->rx_ctrl.rssi,
+        .rx_state = (uint16_t)pkt->rx_ctrl.rx_state,
+        .sig_len = (uint16_t)pkt->rx_ctrl.sig_len,
+        .payload = pkt->payload,
+        /* INTERMEDIATE (pre-1.5 behavior): sig_len is passed on for every
+         * type including MISC; the Phase 1.5 fix narrows this to the
+         * MGMT/CTRL/DATA whitelist. */
+        .payload_len = (uint16_t)pkt->rx_ctrl.sig_len,
+    };
 
-    radio_packet_t *slot = NULL;
-    if (xQueueReceive(s_free_queue, &slot, 0) != pdTRUE) {
-        portENTER_CRITICAL(&s_stats_mux);
-        s_stats.rx_dropped++;
-        portEXIT_CRITICAL(&s_stats_mux);
-        return;
-    }
-
-    /* Frames the radio flags as errored (bad FCS etc.) are dropped here;
-     * rx_state is 0 for clean deliveries. */
-    if (pkt->rx_ctrl.rx_state != 0) {
-        portENTER_CRITICAL(&s_stats_mux);
-        s_stats.rx_state_errors++;
-        portEXIT_CRITICAL(&s_stats_mux);
-        return;
-    }
-
-    /* rx_ctrl.sig_len is a 12-bit field including FCS, so at most 4095. */
-    const uint16_t orig_len = (uint16_t)pkt->rx_ctrl.sig_len;
-    const uint16_t copy_len = orig_len > RADIO_PACKET_MAX_LEN
-                                  ? RADIO_PACKET_MAX_LEN
-                                  : orig_len;
-
-    slot->rssi = (int8_t)pkt->rx_ctrl.rssi;
-    slot->channel = (uint8_t)pkt->rx_ctrl.channel;
-    slot->orig_length = orig_len;
-    slot->length = copy_len;
-    slot->packet_type = (uint8_t)type;
-    memcpy(slot->data, pkt->payload, copy_len);
-
-    if (xQueueSend(s_rx_queue, &slot, 0) != pdTRUE) {
-        (void)xQueueSend(s_free_queue, &slot, 0);
-        portENTER_CRITICAL(&s_stats_mux);
-        s_stats.rx_dropped++;
-        portEXIT_CRITICAL(&s_stats_mux);
-        return;
-    }
-
-    portENTER_CRITICAL(&s_stats_mux);
-    s_stats.rx_queued++;
-    if (orig_len > RADIO_PACKET_MAX_LEN) {
-        s_stats.rx_truncated++;
-    }
-    s_stats.queue_current++;
-    if (s_stats.queue_current > s_stats.queue_peak) {
-        s_stats.queue_peak = s_stats.queue_current;
-    }
-    portEXIT_CRITICAL(&s_stats_mux);
+    rx_path_on_frame(&s_rx_io, &s_rx_stats, &view);
 }
 
 /* Maps the driver packet type onto the raw Frame Control type value for
@@ -293,38 +293,6 @@ static void stats_count_parsed_locked(const radio_packet_t *pkt,
     }
 }
 
-/* Returns true when this AP should produce a console line (first sight or
- * changed ssid/channel/security). Updates the cache entry either way. */
-static bool ap_cache_update(const ieee80211_ap_observation_t *obs, uint8_t sec)
-{
-    for (int i = 0; i < RADIO_AP_CACHE_SIZE; i++) {
-        ap_cache_entry_t *e = &s_ap_cache[i];
-        if (!e->used || memcmp(e->bssid, obs->bssid, sizeof(e->bssid)) != 0) {
-            continue;
-        }
-
-        const bool changed = e->ssid_len != obs->ssid_len ||
-                             memcmp(e->ssid, obs->ssid, obs->ssid_len) != 0 ||
-                             e->adv_channel != obs->advertised_channel ||
-                             e->sec != sec;
-        e->ssid_len = obs->ssid_len;
-        memcpy(e->ssid, obs->ssid, sizeof(e->ssid));
-        e->adv_channel = obs->advertised_channel;
-        e->sec = sec;
-        return changed;
-    }
-
-    ap_cache_entry_t *e = &s_ap_cache[s_ap_cache_next % RADIO_AP_CACHE_SIZE];
-    s_ap_cache_next++;
-    e->used = true;
-    memcpy(e->bssid, obs->bssid, sizeof(e->bssid));
-    e->ssid_len = obs->ssid_len;
-    memcpy(e->ssid, obs->ssid, sizeof(e->ssid));
-    e->adv_channel = obs->advertised_channel;
-    e->sec = sec;
-    return true;
-}
-
 /* Returns true when this (src, ssid) probe has not been logged yet. */
 static bool probe_cache_update(const ieee80211_probe_req_observation_t *obs)
 {
@@ -351,22 +319,24 @@ static bool probe_cache_update(const ieee80211_probe_req_observation_t *obs)
     return true;
 }
 
-/* Length passed to the parser: the pooled copy holds the full on-air frame
- * including the 4-byte FCS when it was not truncated, and the FCS must not
- * be fed to the IE walk (it would be read as trailing IEs). */
-static uint16_t packet_ie_length(const radio_packet_t *pkt)
+/*
+ * Length passed to the parser: the MAC body of the pooled copy, without
+ * the FCS. See rx_path_parse_length() in rx_path.h for the captured /
+ * original length contract.
+ */
+static uint16_t packet_parse_length(const radio_packet_t *pkt)
 {
-    if (pkt->length == pkt->orig_length && pkt->length >= 4) {
-        return (uint16_t)(pkt->length - 4);
-    }
-    return pkt->length;
+    return rx_path_parse_length(pkt);
 }
 
 /* Beacon / probe response observation: parse, count, throttle-log. */
-static void handle_ap_observation(const radio_packet_t *pkt, bool is_beacon)
+static void handle_ap_observation(const radio_packet_t *pkt,
+                                  uint16_t parse_len,
+                                  const ieee80211_parse_opts_t *opts,
+                                  bool is_beacon)
 {
     ieee80211_ap_observation_t obs;
-    if (!ieee80211_parse_beacon_or_probe_resp(pkt->data, packet_ie_length(pkt), &obs)) {
+    if (!ieee80211_parse_beacon_or_probe_resp(pkt->data, parse_len, opts, &obs)) {
         portENTER_CRITICAL(&s_stats_mux);
         s_stats.beacon_parse_errors++;
         portEXIT_CRITICAL(&s_stats_mux);
@@ -376,7 +346,7 @@ static void handle_ap_observation(const radio_packet_t *pkt, bool is_beacon)
     obs.rx_channel = pkt->channel;
 
     const ieee80211_security_t sec = ieee80211_classify_security(&obs);
-    const bool log_this = ap_cache_update(&obs, (uint8_t)sec);
+    const obs_ap_result_t res = obs_ap_cache_update(&s_ap_cache, &obs, (uint8_t)sec);
 
     portENTER_CRITICAL(&s_stats_mux);
     if (is_beacon) {
@@ -387,6 +357,9 @@ static void handle_ap_observation(const radio_packet_t *pkt, bool is_beacon)
     s_stats.ie_total += obs.ie_count;
     if (obs.malformed_ie) {
         s_stats.ie_malformed++;
+    }
+    if (obs.ie_walk_incomplete) {
+        s_stats.ie_incomplete++;
     }
     if (obs.ssid_len > 0) {
         s_stats.ssid_found++;
@@ -403,8 +376,12 @@ static void handle_ap_observation(const radio_packet_t *pkt, bool is_beacon)
     if (obs.ds_param_present) {
         s_stats.channel_ie_count++;
     }
-    if (log_this) {
-        s_stats.ap_unique++;
+    s_stats.ap_cache_inserts = res.inserts;
+    s_stats.ap_cache_updates = res.updates;
+    s_stats.ap_cache_evictions = res.evictions;
+    s_stats.ap_cache_occupied = res.occupied;
+    if (res.action == OBS_AP_SKIPPED) {
+        s_stats.ap_obs_skipped++;
     }
     memcpy(s_stats.last_ssid, obs.ssid, sizeof(s_stats.last_ssid));
     s_stats.last_ssid_len = obs.ssid_len;
@@ -414,7 +391,7 @@ static void handle_ap_observation(const radio_packet_t *pkt, bool is_beacon)
     s_stats.last_ap_rssi = obs.rssi;
     portEXIT_CRITICAL(&s_stats_mux);
 
-    if (!log_this || !obs_log_rate_ok()) {
+    if (!res.should_log || !obs_log_rate_ok()) {
         return;
     }
 
@@ -435,10 +412,12 @@ static void handle_ap_observation(const radio_packet_t *pkt, bool is_beacon)
 }
 
 /* Probe request observation: parse, count, throttle-log. */
-static void handle_probe_request(const radio_packet_t *pkt)
+static void handle_probe_request(const radio_packet_t *pkt,
+                                 uint16_t parse_len,
+                                 const ieee80211_parse_opts_t *opts)
 {
     ieee80211_probe_req_observation_t obs;
-    if (!ieee80211_parse_probe_request(pkt->data, packet_ie_length(pkt), &obs)) {
+    if (!ieee80211_parse_probe_request(pkt->data, parse_len, opts, &obs)) {
         portENTER_CRITICAL(&s_stats_mux);
         s_stats.probe_req_errors++;
         portEXIT_CRITICAL(&s_stats_mux);
@@ -454,6 +433,9 @@ static void handle_probe_request(const radio_packet_t *pkt)
     s_stats.ie_total += obs.ie_count;
     if (obs.malformed_ie) {
         s_stats.ie_malformed++;
+    }
+    if (obs.ie_walk_incomplete) {
+        s_stats.ie_incomplete++;
     }
     portEXIT_CRITICAL(&s_stats_mux);
 
@@ -478,7 +460,8 @@ static void handle_probe_request(const radio_packet_t *pkt)
 /*
  * Consumer task. Phase 1A driver-type counting plus Phase 1B Frame Control
  * classification via the pure parser. All parsing happens here, never in
- * the Wi-Fi callback.
+ * the Wi-Fi callback. The slot goes back to the free pool only after the
+ * last read of its bytes.
  */
 static void radio_rx_task(void *arg)
 {
@@ -494,6 +477,11 @@ static void radio_rx_task(void *arg)
             continue;
         }
 
+        const uint16_t parse_len = packet_parse_length(pkt);
+        const ieee80211_parse_opts_t opts = {
+            .capture_truncated = pkt->length < pkt->orig_length,
+        };
+
         ieee80211_frame_info_t info = {0};
         ieee80211_parse(pkt->data, pkt->length, &info);
 
@@ -508,40 +496,38 @@ static void radio_rx_task(void *arg)
         portENTER_CRITICAL(&s_stats_mux);
         switch ((wifi_promiscuous_pkt_type_t)pkt->packet_type) {
         case WIFI_PKT_MGMT:
-            s_stats.rx_management++;
+            s_stats.rx.rx_management++;
             break;
         case WIFI_PKT_CTRL:
-            s_stats.rx_control++;
+            s_stats.rx.rx_control++;
             break;
         case WIFI_PKT_DATA:
-            s_stats.rx_data++;
+            s_stats.rx.rx_data++;
             break;
         default:
-            s_stats.rx_misc++;
+            s_stats.rx.rx_misc++;
             break;
         }
-        s_stats.rx_processed++;
-        s_stats.queue_current--;
         stats_count_parsed_locked(pkt, &info);
         portEXIT_CRITICAL(&s_stats_mux);
 
         if (info.valid && info.type == IEEE80211_TYPE_MGMT) {
             switch (info.fc.subtype) {
             case IEEE80211_MGMT_BEACON:
-                handle_ap_observation(pkt, true);
+                handle_ap_observation(pkt, parse_len, &opts, true);
                 break;
             case IEEE80211_MGMT_PROBE_RESP:
-                handle_ap_observation(pkt, false);
+                handle_ap_observation(pkt, parse_len, &opts, false);
                 break;
             case IEEE80211_MGMT_PROBE_REQ:
-                handle_probe_request(pkt);
+                handle_probe_request(pkt, parse_len, &opts);
                 break;
             default:
                 break;
             }
         }
 
-        (void)xQueueSend(s_free_queue, &pkt, 0);
+        rx_path_slot_release(&s_rx_io, &s_rx_stats, pkt);
     }
 }
 
@@ -561,10 +547,11 @@ static void radio_stats_task(void *arg)
                  " mgmt=%" PRIu32 " data=%" PRIu32 " ctrl=%" PRIu32
                  " misc=%" PRIu32 " q=%" PRIu32 "/%" PRIu32
                  " heap=%" PRIu32 " min_heap=%" PRIu32,
-                 stats.rx_total, stats.rx_queued, stats.rx_processed,
-                 stats.rx_dropped, stats.rx_truncated, stats.rx_state_errors,
-                 stats.rx_management, stats.rx_data, stats.rx_control,
-                 stats.rx_misc, stats.queue_current, stats.queue_peak,
+                 stats.rx.rx_total, stats.rx.rx_queued, stats.rx.rx_processed,
+                 stats.rx.rx_dropped_pool + stats.rx.rx_dropped_queue,
+                 stats.rx.rx_truncated, stats.rx.rx_state_errors,
+                 stats.rx.rx_management, stats.rx.rx_data, stats.rx.rx_control,
+                 stats.rx.rx_misc, stats.rx.queue_current, stats.rx.queue_peak,
                  esp_get_free_heap_size(), esp_get_minimum_free_heap_size());
 
         ESP_LOGI(TAG_80211,
@@ -590,14 +577,20 @@ static void radio_stats_task(void *arg)
                  stats.data_total, stats.qos_data_count, stats.qos_null_count,
                  stats.null_count, stats.data_other_count);
         ESP_LOGI(TAG_OBS,
-                 "ap=%" PRIu32 " beacon=%" PRIu32 " berr=%" PRIu32
+                 "APCACHE occ=%u/32 ins=%" PRIu32 " upd=%" PRIu32
+                 " evict=%" PRIu32 " skip=%" PRIu32
+                 " beacon=%" PRIu32 " berr=%" PRIu32
                  " preq=%" PRIu32 " perr=%" PRIu32 " presp=%" PRIu32
-                 " ie=%" PRIu32 " ie_err=%" PRIu32
+                 " ie=%" PRIu32 " ie_err=%" PRIu32 " ie_inc=%" PRIu32
                  " ssid=%" PRIu32 " hidden=%" PRIu32
                  " rsn=%" PRIu32 " wpa=%" PRIu32 " ds=%" PRIu32,
-                 stats.ap_unique, stats.beacon_parsed, stats.beacon_parse_errors,
+                 stats.ap_cache_occupied,
+                 stats.ap_cache_inserts, stats.ap_cache_updates,
+                 stats.ap_cache_evictions, stats.ap_obs_skipped,
+                 stats.beacon_parsed, stats.beacon_parse_errors,
                  stats.probe_req_parsed, stats.probe_req_errors,
                  stats.probe_resp_parsed, stats.ie_total, stats.ie_malformed,
+                 stats.ie_incomplete,
                  stats.ssid_found, stats.hidden_ssid_count,
                  stats.rsn_ie_count, stats.wpa_vendor_ie_count,
                  stats.channel_ie_count);
@@ -617,10 +610,11 @@ void wifi_sniffer_get_stats(radio_stats_t *out)
 
     portENTER_CRITICAL(&s_stats_mux);
     *out = s_stats;
+    out->rx = s_rx_stats;
     portEXIT_CRITICAL(&s_stats_mux);
 
     if (s_rx_queue != NULL) {
-        out->queue_current = uxQueueMessagesWaiting(s_rx_queue);
+        out->rx.queue_current = uxQueueMessagesWaiting(s_rx_queue);
     }
     out->current_channel = s_current_channel;
 
@@ -693,6 +687,8 @@ esp_err_t wifi_sniffer_init(void)
     }
 
     memset(&s_stats, 0, sizeof(s_stats));
+    memset(&s_rx_stats, 0, sizeof(s_rx_stats));
+    obs_ap_cache_init(&s_ap_cache);
     for (size_t i = 0; i < RADIO_PACKET_POOL_SIZE; i++) {
         radio_packet_t *slot = &s_packet_pool[i];
         (void)xQueueSend(s_free_queue, &slot, 0);

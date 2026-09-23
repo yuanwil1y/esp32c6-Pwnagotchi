@@ -2,11 +2,23 @@ name: ESP-IDF Build
 
 on:
   push:
-    branches: [main]
+    branches: [main, 'phase1.5*']
   pull_request:
   workflow_dispatch:
 
 jobs:
+  host-tests:
+    name: Host regression tests (Phase 1.5)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run host tests (plain + ASan/UBSan)
+        run: |
+          bash tests/host/run.sh
+
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 30

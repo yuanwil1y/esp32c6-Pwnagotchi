@@ -55,12 +55,27 @@ bool ieee80211_parse(const uint8_t *frame, uint16_t length,
 }
 
 /*
+ * INTERMEDIATE Phase 1.5 commit: the parse opts / status plumbing is in
+ * place, but the walk below still has the pre-1.5 semantics on purpose so
+ * the regression tests can demonstrate the defects:
+ *   - a 1-byte tail in a COMPLETE body is silently ignored (no malformed),
+ *   - a tail cut by a truncated capture is reported malformed instead of
+ *     ie_walk_incomplete,
+ *   - SSID all-zero bytes are stored as a name instead of hidden,
+ *   - a duplicate SSID IE overwrites the first one,
+ *   - DS Parameter with an out-of-range channel value is still accepted,
+ *   - no protocol-version / order-bit / fragment guards on deep parse.
+ * The Phase 1.5 fixes land in later commits and flip the tests without
+ * changing them.
+ */
+
+/*
  * Strict IE walk over frame[ie_start .. length). For each element requires
  * two header bytes to exist and 2+len bytes to fit inside the frame; a
  * violation marks the observation malformed and stops the walk safely.
  */
 static void walk_information_elements(const uint8_t *frame, uint16_t length,
-                                      uint16_t ie_start,
+                                      uint16_t ie_start, bool capture_truncated,
                                       ieee80211_ap_observation_t *ap_out,
                                       ieee80211_probe_req_observation_t *probe_out)
 {
@@ -73,9 +88,11 @@ static void walk_information_elements(const uint8_t *frame, uint16_t length,
         if ((uint32_t)ie_len > (uint32_t)(length - pos - 2)) {
             if (ap_out != NULL) {
                 ap_out->malformed_ie = true;
+                ap_out->ie_walk_incomplete = capture_truncated;
             }
             if (probe_out != NULL) {
                 probe_out->malformed_ie = true;
+                probe_out->ie_walk_incomplete = capture_truncated;
             }
             return;
         }
@@ -138,9 +155,14 @@ static void walk_information_elements(const uint8_t *frame, uint16_t length,
             probe_out->ie_count++;
         }
     }
+
+    /* The walk only exits the loop cleanly; any 1-byte tail is currently
+     * ignored here (pre-1.5 behavior, flagged by the Phase 1.5 tests). */
+    (void)capture_truncated;
 }
 
 bool ieee80211_parse_beacon_or_probe_resp(const uint8_t *frame, uint16_t length,
+                                          const ieee80211_parse_opts_t *opts,
                                           ieee80211_ap_observation_t *out)
 {
     if (frame == NULL || out == NULL) {
@@ -159,13 +181,18 @@ bool ieee80211_parse_beacon_or_probe_resp(const uint8_t *frame, uint16_t length,
     out->capability = read_le16(&frame[IEEE80211_BEACON_CAP_OFF]);
     out->privacy = (out->capability & IEEE80211_CAP_PRIVACY) != 0;
 
+    const bool capture_truncated = opts != NULL && opts->capture_truncated;
     walk_information_elements(frame, length,
                               IEEE80211_MGMT_HDR_LEN + IEEE80211_BEACON_FIXED_LEN,
-                              out, NULL);
+                              capture_truncated, out, NULL);
+
+    out->complete = !out->malformed_ie && !out->ie_walk_incomplete &&
+                    !capture_truncated;
     return true;
 }
 
 bool ieee80211_parse_probe_request(const uint8_t *frame, uint16_t length,
+                                   const ieee80211_parse_opts_t *opts,
                                    ieee80211_probe_req_observation_t *out)
 {
     if (frame == NULL || out == NULL) {
@@ -179,8 +206,12 @@ bool ieee80211_parse_probe_request(const uint8_t *frame, uint16_t length,
 
     memcpy(out->source, &frame[IEEE80211_MGMT_ADDR2_OFF], sizeof(out->source));
 
+    const bool capture_truncated = opts != NULL && opts->capture_truncated;
     walk_information_elements(frame, length, IEEE80211_MGMT_HDR_LEN,
-                              NULL, out);
+                              capture_truncated, NULL, out);
+
+    out->complete = !out->malformed_ie && !out->ie_walk_incomplete &&
+                    !capture_truncated;
     return true;
 }
 

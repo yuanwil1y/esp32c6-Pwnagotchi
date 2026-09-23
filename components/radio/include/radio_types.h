@@ -3,56 +3,37 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "rx_path.h"
+
 /*
- * Phase 1A radio constants.
- *
- * RADIO_PACKET_MAX_LEN: 802.11 management frames (beacon/probe) that matter
- * for later phases stay well below this size. Longer frames are stored
- * truncated and counted in rx_truncated. The bound also caps the static
- * packet pool memory: pool size * (RADIO_PACKET_MAX_LEN + header).
+ * Phase 1A radio constants (packet pool constants and radio_packet_t live
+ * in rx_path.h; both are part of the RX path).
  */
-#define RADIO_PACKET_MAX_LEN     512
-#define RADIO_PACKET_POOL_SIZE   24
 #define RADIO_DEFAULT_CHANNEL    6
 
 /*
- * Snapshot of one captured frame as handed from the promiscuous RX callback
- * to the consumer task. `length` is the number of bytes actually stored in
- * data[] (<= orig_length); `orig_length` is the on-air frame length
- * including FCS as reported by the Wi-Fi driver.
+ * Concurrency-safe snapshot via wifi_sniffer_get_stats().
+ *
+ * Phase 1.5 counter semantics:
+ * - `rx` holds the RX front-end counters, including consumer-queue
+ *   occupancy (rx.queue_current / rx.queue_peak); see rx_path.h for the
+ *   accounting identity.
+ * - `ap_cache_*` are cache-change bookkeeping for the 32-slot dedup
+ *   cache: inserts/updates/evictions count changes, `ap_cache_occupied`
+ *   is the current slot usage (0..32). They are NOT "total unique APs"
+ *   and not a TTL-based online count.
+ * - `ap_obs_skipped` counts observations that were not merged because
+ *   they were incomplete/malformed (diagnostic).
  */
 typedef struct {
-    int8_t rssi;
-    uint8_t channel;
-    uint16_t length;
-    uint16_t orig_length;
-    uint8_t packet_type; /* wifi_promiscuous_pkt_type_t value */
-    uint8_t data[RADIO_PACKET_MAX_LEN];
-} radio_packet_t;
+    rx_path_stats_t rx; /* RX front-end (callback + queue) counters */
 
-/* Concurrency-safe snapshot via wifi_sniffer_get_stats(). */
-typedef struct {
-    uint32_t rx_total;
-    uint32_t rx_queued;
-    uint32_t rx_processed;
-    uint32_t rx_dropped;
-    uint32_t rx_truncated;
-    uint32_t rx_state_errors;
-
-    /* Phase 1D: channel hopper (merged into the snapshot). */
+    /* Channel hopper (merged into the snapshot). */
     uint32_t hop_count;
     uint32_t hop_errors;
     uint32_t dwell_ms;
 
-    uint32_t rx_management;
-    uint32_t rx_data;
-    uint32_t rx_control;
-    uint32_t rx_misc;
-
-    uint32_t queue_current;
-    uint32_t queue_peak;
-
-    /* Phase 1B: classification from the raw 802.11 Frame Control, counted
+    /* Classification from the raw 802.11 Frame Control, counted
      * independently of the driver packet type counters above. */
     uint32_t parser_total;
     uint32_t parser_errors;
@@ -91,7 +72,7 @@ typedef struct {
     uint32_t qos_null_count;
     uint32_t data_other_count;
 
-    /* Phase 1C: beacon/probe observations. Fixed-size fields only. */
+    /* Beacon/probe observations. Fixed-size fields only. */
     uint32_t beacon_parsed;
     uint32_t beacon_parse_errors;
     uint32_t probe_req_parsed;
@@ -99,12 +80,19 @@ typedef struct {
     uint32_t probe_resp_parsed;
     uint32_t ie_total;
     uint32_t ie_malformed;
+    uint32_t ie_incomplete;
     uint32_t ssid_found;
     uint32_t hidden_ssid_count;
     uint32_t rsn_ie_count;
     uint32_t wpa_vendor_ie_count;
     uint32_t channel_ie_count;
-    uint32_t ap_unique;
+
+    /* AP dedup cache bookkeeping (0..32 slots), NOT a unique-AP counter. */
+    uint32_t ap_cache_inserts;
+    uint32_t ap_cache_updates;
+    uint32_t ap_cache_evictions;
+    uint8_t ap_cache_occupied;
+    uint32_t ap_obs_skipped;
 
     /* Last AP observation, for the UI. 33 = 32 SSID bytes + NUL. */
     char last_ssid[33];
@@ -113,5 +101,8 @@ typedef struct {
     uint8_t last_ap_channel;
     int8_t last_ap_rssi;
 
+    /* Last known successful channel: the startup channel until the hopper
+     * reports its own, then the hopper's last good channel (also kept
+     * after the hopper stops). 0 would mean unknown. */
     uint8_t current_channel;
 } radio_stats_t;

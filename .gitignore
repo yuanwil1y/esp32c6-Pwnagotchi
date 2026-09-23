@@ -3,3 +3,6 @@
 /sdkconfig
 /sdkconfig.old
 main/build_info.h
+
+# host test build output
+tests/host/build/

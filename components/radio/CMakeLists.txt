@@ -1,6 +1,9 @@
 idf_component_register(
     SRCS
         "wifi_sniffer.c"
+        "rx_path.c"
+        "obs_cache.c"
+        "hopper_policy.c"
         "ieee80211_parser.c"
         "channel_hopper.c"
     INCLUDE_DIRS "include"

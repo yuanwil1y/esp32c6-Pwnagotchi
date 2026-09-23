@@ -41,10 +41,14 @@ static void phase1_ui_task(void *arg)
 
         radio_stats_t stats;
         wifi_sniffer_get_stats(&stats);
+        /* Same number the Phase 1 status page showed before Phase 1.5
+         * (cache inserts + attribute changes); relabelled in the Phase 1.5
+         * stats/UI commit. */
         (void)board_display_update_phase1(stats.current_channel,
-                                          stats.ap_unique,
-                                          stats.rx_total,
-                                          stats.rx_dropped);
+                                          stats.ap_cache_inserts + stats.ap_cache_updates,
+                                          stats.rx.rx_total,
+                                          stats.rx.rx_dropped_pool +
+                                          stats.rx.rx_dropped_queue);
     }
 }
 

@@ -155,8 +155,24 @@ typedef enum {
 /*
  * Beacon / probe response observation. rx_channel and rssi come from the
  * ESP-IDF RX metadata and are filled in by the caller after parsing.
- * advertised_channel comes from the DS Parameter Set IE (0 when absent)
- * and is deliberately stored separately from rx_channel.
+ * advertised_channel comes from the DS Parameter Set IE (0 when absent or
+ * invalid) and is deliberately stored separately from rx_channel.
+ *
+ * Phase 1.5 observation status:
+ * - malformed_ie       : structurally illegal frame content (declared IE
+ *                        body runs past a COMPLETE frame end, trailing
+ *                        garbage in a complete body, illegal SSID length,
+ *                        bad DS Parameter length)
+ * - ie_walk_incomplete : the capture (not the air) ended inside the IE
+ *                        area, so the tail cannot be judged; NOT evidence
+ *                        of a bad frame
+ * - dup_critical_ie    : a critical IE (SSID or DS Parameter) appeared
+ *                        more than once; only the first occurrence is used
+ * - complete           : true only when the whole MAC body was present in
+ *                        the capture and the walk finished cleanly with no
+ *                        malformed, incomplete or duplicated critical IEs.
+ *                        Only complete observations may carry negative
+ *                        evidence (e.g. "no RSN IE seen").
  */
 typedef struct {
     uint8_t bssid[6];
@@ -180,9 +196,15 @@ typedef struct {
 
     uint16_t ie_count;
     bool malformed_ie;
+
+    /* Phase 1.5 status fields. */
+    bool ie_walk_incomplete;
+    bool dup_critical_ie;
+    bool complete;
 } ieee80211_ap_observation_t;
 
-/* Probe request observation; rssi/rx_channel filled in by the caller. */
+/* Probe request observation; rssi/rx_channel filled in by the caller.
+ * Status fields have the same meaning as in the AP observation. */
 typedef struct {
     uint8_t source[6];
 
@@ -195,7 +217,23 @@ typedef struct {
 
     uint16_t ie_count;
     bool malformed_ie;
+
+    /* Phase 1.5 status fields. */
+    bool ie_walk_incomplete;
+    bool dup_critical_ie;
+    bool complete;
 } ieee80211_probe_req_observation_t;
+
+/*
+ * Parse options: `capture_truncated` tells the parser that the buffer ends
+ * because the capture was cut (radio_packet_t.length < orig_length), not
+ * because the frame ended. The walk then reports ie_walk_incomplete
+ * instead of malformed_ie for the cut tail. Phase 1.5: always fill this
+ * struct (designated initializers keep unknown fields safe).
+ */
+typedef struct {
+    bool capture_truncated;
+} ieee80211_parse_opts_t;
 
 /*
  * Parse the Frame Control from the first bytes of a raw 802.11 frame.
@@ -213,17 +251,20 @@ bool ieee80211_parse(const uint8_t *frame, uint16_t length,
  * WPA vendor presence (221, OUI 00:50:F2 type 01). Requires at least the
  * 24-byte management header plus the 12 fixed bytes; returns false below
  * that without touching `out` beyond zeroing it. Malformed IEs stop the
- * walk, set malformed_ie, and are not an error return.
+ * walk, set malformed_ie, and are not an error return. `opts` may be NULL
+ * for "capture not truncated".
  */
 bool ieee80211_parse_beacon_or_probe_resp(const uint8_t *frame, uint16_t length,
+                                          const ieee80211_parse_opts_t *opts,
                                           ieee80211_ap_observation_t *out);
 
 /*
  * Parse a probe request: source address (address 2) plus the IE walk for
  * the requested SSID. SSID length 0 is a wildcard probe, not hidden AP.
- * Requires the 24-byte management header.
+ * Requires the 24-byte management header. `opts` may be NULL.
  */
 bool ieee80211_parse_probe_request(const uint8_t *frame, uint16_t length,
+                                   const ieee80211_parse_opts_t *opts,
                                    ieee80211_probe_req_observation_t *out);
 
 /* Coarse security from observation flags: RSN > WPA > PRIVACY > OPEN. */
