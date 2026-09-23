@@ -9,12 +9,18 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           submodules: recursive
+
+      - name: Stamp git commit into firmware
+        run: |
+          printf '#define APP_BUILD_GIT_SHA "%s"\n#define APP_BUILD_GIT_SHORT "%s"\n' \
+            "${GITHUB_SHA}" "${GITHUB_SHA::7}" > main/build_info.h
+          cat main/build_info.h
 
       - name: Build ESP32-C6 firmware
         uses: espressif/esp-idf-ci-action@v1
@@ -22,3 +28,36 @@ jobs:
           esp_idf_version: v5.4
           target: esp32c6
           path: .
+
+      - name: Assemble firmware.zip
+        run: |
+          mkdir -p firmware
+          cp build/bootloader/bootloader.bin firmware/
+          cp build/partition_table/partition-table.bin firmware/
+          cp build/*.bin firmware/
+          cp build/flash_args firmware/ 2>/dev/null || true
+          cp build/flasher_args.json firmware/ 2>/dev/null || true
+          cp build/project_description.json firmware/ 2>/dev/null || true
+          cp build/config/sdkconfig.h firmware/ 2>/dev/null || true
+          echo "${GITHUB_SHA}" > firmware/git_commit.txt
+          cd firmware && zip -r ../firmware.zip . && cd ..
+          unzip -l firmware.zip
+
+      - name: Upload firmware artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware-${{ github.sha }}
+          path: firmware.zip
+          if-no-files-found: error
+
+      - name: Upload full flash files
+        uses: actions/upload-artifact@v4
+        with:
+          name: flash-files-${{ github.sha }}
+          path: |
+            build/bootloader/bootloader.bin
+            build/partition_table/partition-table.bin
+            build/*.bin
+            build/flash_args
+            build/flasher_args.json
+          if-no-files-found: error

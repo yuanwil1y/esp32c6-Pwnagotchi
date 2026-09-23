@@ -9,11 +9,19 @@
 #include "board_sd.h"
 #include "board_touch.h"
 
+#if __has_include("build_info.h")
+#include "build_info.h"
+#else
+#define APP_BUILD_GIT_SHA  "unknown"
+#define APP_BUILD_GIT_SHORT "unknown"
+#endif
+
 static const char *TAG = "phase0";
 
 void app_main(void)
 {
     ESP_LOGI(TAG, "esp32c6-Pwnagotchi Phase 0 board bring-up");
+    ESP_LOGI(TAG, "firmware git commit: %s (%s)", APP_BUILD_GIT_SHA, APP_BUILD_GIT_SHORT);
 
     ESP_ERROR_CHECK(board_backlight_init());
 
@@ -44,7 +52,8 @@ void app_main(void)
                                                      sd_result == ESP_OK));
     ESP_ERROR_CHECK(board_backlight_set_percent(80));
 
-    ESP_LOGI(TAG, "Phase 0 ready: LCD=OK Touch=%s SD=%s",
+    ESP_LOGI(TAG, "Phase 0 ready: LCD=OK I2C=%s Touch=%s SD=%s",
+             i2c_result == ESP_OK ? "OK" : "FAIL",
              touch_result == ESP_OK ? "OK" : "FAIL",
              sd_result == ESP_OK ? "OK" : "FAIL");
 }

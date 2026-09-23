@@ -42,12 +42,12 @@ esp_err_t board_sd_init(void)
                                   &mount_config, &s_card);
     if (err != ESP_OK) {
         s_card = NULL;
-        ESP_LOGW(TAG, "mount failed: %s", esp_err_to_name(err));
+        ESP_LOGW(TAG, "SD mount: FAIL (%s)", esp_err_to_name(err));
         return err;
     }
 
     sdmmc_card_print_info(stdout, s_card);
-    ESP_LOGI(TAG, "SD mounted at %s, size %.2f GB", BOARD_SD_MOUNT_POINT,
+    ESP_LOGI(TAG, "SD mount: OK at %s, size %.2f GB", BOARD_SD_MOUNT_POINT,
              (double)s_card->csd.capacity / 2048.0 / 1024.0);
     return ESP_OK;
 }
@@ -63,40 +63,42 @@ esp_err_t board_sd_self_test(void)
         return ESP_ERR_INVALID_STATE;
     }
 
-    static const char expected[] = "esp32c6-Pwnagotchi Phase 0 SD test\n";
+    static const char expected[] = "esp32c6-Pwnagotchi phase0";
 
     FILE *file = fopen(BOARD_SD_TEST_FILE, "w");
     if (file == NULL) {
-        ESP_LOGE(TAG, "open for write failed: %s", BOARD_SD_TEST_FILE);
+        ESP_LOGE(TAG, "SD write: FAIL (open %s)", BOARD_SD_TEST_FILE);
         return ESP_FAIL;
     }
 
     const int written = fputs(expected, file);
     const int close_write_result = fclose(file);
     if (written == EOF || close_write_result != 0) {
-        ESP_LOGE(TAG, "write failed: %s", BOARD_SD_TEST_FILE);
+        ESP_LOGE(TAG, "SD write: FAIL (%s)", BOARD_SD_TEST_FILE);
         return ESP_FAIL;
     }
+    ESP_LOGI(TAG, "SD write: OK (%s)", BOARD_SD_TEST_FILE);
 
     char actual[sizeof(expected) + 8] = {0};
     file = fopen(BOARD_SD_TEST_FILE, "r");
     if (file == NULL) {
-        ESP_LOGE(TAG, "open for read failed: %s", BOARD_SD_TEST_FILE);
+        ESP_LOGE(TAG, "SD read: FAIL (open %s)", BOARD_SD_TEST_FILE);
         return ESP_FAIL;
     }
 
     const char *read_result = fgets(actual, sizeof(actual), file);
     fclose(file);
     if (read_result == NULL) {
-        ESP_LOGE(TAG, "read failed: %s", BOARD_SD_TEST_FILE);
+        ESP_LOGE(TAG, "SD read: FAIL (%s)", BOARD_SD_TEST_FILE);
         return ESP_FAIL;
     }
+    ESP_LOGI(TAG, "SD read: OK -> '%s'", actual);
 
     if (strcmp(actual, expected) != 0) {
-        ESP_LOGE(TAG, "self-test mismatch: expected '%s', got '%s'", expected, actual);
+        ESP_LOGE(TAG, "SD verify: FAIL (expected '%s')", expected);
         return ESP_ERR_INVALID_RESPONSE;
     }
 
-    ESP_LOGI(TAG, "self-test OK: wrote and read %s", BOARD_SD_TEST_FILE);
+    ESP_LOGI(TAG, "SD verify: OK");
     return ESP_OK;
 }

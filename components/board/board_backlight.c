@@ -41,7 +41,9 @@ esp_err_t board_backlight_init(void)
         .channel = BOARD_BACKLIGHT_LEDC_CHANNEL,
         .intr_type = LEDC_INTR_DISABLE,
         .timer_sel = BOARD_BACKLIGHT_LEDC_TIMER,
-        .duty = BOARD_BACKLIGHT_MAX_DUTY,
+        /* Inverted backlight: duty 0 is fully on, matching the factory
+         * program turning the backlight on before anything else. */
+        .duty = 0,
         .hpoint = 0,
     };
 
@@ -51,7 +53,8 @@ esp_err_t board_backlight_init(void)
     }
 
     s_initialized = true;
-    ESP_LOGI(TAG, "backlight PWM ready on GPIO%d", BOARD_PIN_LCD_BACKLIGHT);
+    ESP_LOGI(TAG, "backlight PWM ready on GPIO%d (inverted, duty 0 = full on)",
+             BOARD_PIN_LCD_BACKLIGHT);
     return ESP_OK;
 }
 
