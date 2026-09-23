@@ -1,5 +1,7 @@
 idf_component_register(
-    SRCS "wifi_sniffer.c"
+    SRCS
+        "wifi_sniffer.c"
+        "ieee80211_parser.c"
     INCLUDE_DIRS "include"
     PRIV_REQUIRES
         esp_wifi

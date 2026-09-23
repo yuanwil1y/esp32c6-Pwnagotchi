@@ -37,12 +37,19 @@ static lv_indev_drv_t s_touch_driver;
 static lv_color_t *s_buffer_a;
 static lv_color_t *s_buffer_b;
 
-/* Phase 1A status screen: one label refreshed at a low rate from a task
- * that owns no Wi-Fi context. NULL when the screen is not active. */
-static lv_obj_t *s_phase1a_label;
-static bool s_phase1a_touch_ok;
-static bool s_phase1a_sd_ok;
-static bool s_phase1a_wifi_ok;
+/* Status screen (Phase 1A / 1B variants): one label refreshed at a low rate
+ * from a task that owns no Wi-Fi context. NULL when no screen is active. */
+typedef enum {
+    STATUS_SCREEN_NONE = 0,
+    STATUS_SCREEN_PHASE1A,
+    STATUS_SCREEN_PHASE1B,
+} status_screen_kind_t;
+
+static lv_obj_t *s_status_label;
+static status_screen_kind_t s_screen_kind;
+static bool s_status_touch_ok;
+static bool s_status_sd_ok;
+static bool s_status_wifi_ok;
 
 /* Exact initialization table used by Waveshare 08_FactoryProgram. */
 static const sh8601_lcd_init_cmd_t s_lcd_init_commands[] = {
@@ -301,14 +308,39 @@ esp_err_t board_display_show_phase0_status(bool touch_ok, bool sd_ok)
     return ESP_OK;
 }
 
+/* Requires the LVGL mutex to be held. Destroys any previous screen content
+ * and creates the shared status label; NULL on allocation failure. */
+static lv_obj_t *status_screen_create_locked(void)
+{
+    s_status_label = NULL;
+
+    lv_obj_t *screen = lv_scr_act();
+    lv_obj_clean(screen);
+    lv_obj_set_style_bg_color(screen, lv_color_black(), 0);
+    lv_obj_set_style_bg_opa(screen, LV_OPA_COVER, 0);
+
+    lv_obj_t *label = lv_label_create(screen);
+    if (label == NULL) {
+        return NULL;
+    }
+
+    lv_obj_set_width(label, BOARD_LCD_H_RES - 12);
+    lv_obj_set_style_text_align(label, LV_TEXT_ALIGN_CENTER, 0);
+    lv_obj_set_style_text_color(label, lv_color_white(), 0);
+    lv_obj_set_style_text_line_space(label, 5, 0);
+    lv_obj_center(label);
+    s_status_label = label;
+    return label;
+}
+
 /* Requires the LVGL mutex to be held. */
 static void phase1a_refresh_locked(uint32_t rx_total, uint32_t rx_dropped)
 {
-    if (s_phase1a_label == NULL) {
+    if (s_status_label == NULL || s_screen_kind != STATUS_SCREEN_PHASE1A) {
         return;
     }
 
-    lv_label_set_text_fmt(s_phase1a_label,
+    lv_label_set_text_fmt(s_status_label,
                           "esp32c6-Pwnagotchi\n"
                           "\n"
                           "Phase 1A\n"
@@ -319,11 +351,43 @@ static void phase1a_refresh_locked(uint32_t rx_total, uint32_t rx_dropped)
                           "\n"
                           "RX: %lu\n"
                           "DROP: %lu",
-                          s_phase1a_touch_ok ? "OK" : "FAIL",
-                          s_phase1a_sd_ok ? "OK" : "FAIL",
-                          s_phase1a_wifi_ok ? "SNIFFING" : "FAIL",
+                          s_status_touch_ok ? "OK" : "FAIL",
+                          s_status_sd_ok ? "OK" : "FAIL",
+                          s_status_wifi_ok ? "SNIFFING" : "FAIL",
                           (unsigned long)rx_total,
                           (unsigned long)rx_dropped);
+}
+
+/* Requires the LVGL mutex to be held. */
+static void phase1b_refresh_locked(uint32_t rx_total, uint32_t mgmt, uint32_t data,
+                                   uint32_t ctrl, uint32_t errors)
+{
+    if (s_status_label == NULL || s_screen_kind != STATUS_SCREEN_PHASE1B) {
+        return;
+    }
+
+    lv_label_set_text_fmt(s_status_label,
+                          "esp32c6-Pwnagotchi\n"
+                          "\n"
+                          "Phase 1B\n"
+                          "LCD: OK\n"
+                          "Touch: %s\n"
+                          "SD: %s\n"
+                          "WiFi: %s\n"
+                          "\n"
+                          "RX: %lu\n"
+                          "MGMT: %lu\n"
+                          "DATA: %lu\n"
+                          "CTRL: %lu\n"
+                          "ERR: %lu",
+                          s_status_touch_ok ? "OK" : "FAIL",
+                          s_status_sd_ok ? "OK" : "FAIL",
+                          s_status_wifi_ok ? "SNIFFING" : "FAIL",
+                          (unsigned long)rx_total,
+                          (unsigned long)mgmt,
+                          (unsigned long)data,
+                          (unsigned long)ctrl,
+                          (unsigned long)errors);
 }
 
 esp_err_t board_display_show_phase1a_status(bool touch_ok, bool sd_ok, bool wifi_ok)
@@ -332,29 +396,16 @@ esp_err_t board_display_show_phase1a_status(bool touch_ok, bool sd_ok, bool wifi
         return ESP_ERR_INVALID_STATE;
     }
 
-    s_phase1a_touch_ok = touch_ok;
-    s_phase1a_sd_ok = sd_ok;
-    s_phase1a_wifi_ok = wifi_ok;
+    s_status_touch_ok = touch_ok;
+    s_status_sd_ok = sd_ok;
+    s_status_wifi_ok = wifi_ok;
+    s_screen_kind = STATUS_SCREEN_PHASE1A;
 
-    lv_obj_t *screen = lv_scr_act();
-    lv_obj_clean(screen);
-    lv_obj_set_style_bg_color(screen, lv_color_black(), 0);
-    lv_obj_set_style_bg_opa(screen, LV_OPA_COVER, 0);
-
-    lv_obj_t *label = lv_label_create(screen);
-    if (label == NULL) {
-        s_phase1a_label = NULL;
+    if (status_screen_create_locked() == NULL) {
+        s_screen_kind = STATUS_SCREEN_NONE;
         board_display_unlock();
         return ESP_ERR_NO_MEM;
     }
-
-    lv_obj_set_width(label, BOARD_LCD_H_RES - 12);
-    lv_obj_set_style_text_align(label, LV_TEXT_ALIGN_CENTER, 0);
-    lv_obj_set_style_text_color(label, lv_color_white(), 0);
-    lv_obj_set_style_text_line_space(label, 5, 0);
-    lv_obj_center(label);
-    s_phase1a_label = label;
-
     phase1a_refresh_locked(0, 0);
 
     board_display_unlock();
@@ -368,6 +419,41 @@ esp_err_t board_display_update_phase1a(uint32_t rx_total, uint32_t rx_dropped)
     }
 
     phase1a_refresh_locked(rx_total, rx_dropped);
+
+    board_display_unlock();
+    return ESP_OK;
+}
+
+esp_err_t board_display_show_phase1b_status(bool touch_ok, bool sd_ok, bool wifi_ok)
+{
+    if (!board_display_lock(BOARD_DISPLAY_WAIT_FOREVER)) {
+        return ESP_ERR_INVALID_STATE;
+    }
+
+    s_status_touch_ok = touch_ok;
+    s_status_sd_ok = sd_ok;
+    s_status_wifi_ok = wifi_ok;
+    s_screen_kind = STATUS_SCREEN_PHASE1B;
+
+    if (status_screen_create_locked() == NULL) {
+        s_screen_kind = STATUS_SCREEN_NONE;
+        board_display_unlock();
+        return ESP_ERR_NO_MEM;
+    }
+    phase1b_refresh_locked(0, 0, 0, 0, 0);
+
+    board_display_unlock();
+    return ESP_OK;
+}
+
+esp_err_t board_display_update_phase1b(uint32_t rx_total, uint32_t mgmt, uint32_t data,
+                                       uint32_t ctrl, uint32_t errors)
+{
+    if (!board_display_lock(BOARD_DISPLAY_WAIT_FOREVER)) {
+        return ESP_ERR_INVALID_STATE;
+    }
+
+    phase1b_refresh_locked(rx_total, mgmt, data, ctrl, errors);
 
     board_display_unlock();
     return ESP_OK;

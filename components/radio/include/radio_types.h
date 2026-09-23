@@ -45,5 +45,44 @@ typedef struct {
     uint32_t queue_current;
     uint32_t queue_peak;
 
+    /* Phase 1B: classification from the raw 802.11 Frame Control, counted
+     * independently of the driver packet type counters above. */
+    uint32_t parser_total;
+    uint32_t parser_errors;
+    uint32_t invalid_frames;
+    uint32_t fc_type_mismatch; /* driver type vs Frame Control type */
+
+    uint32_t mgmt_total;
+    uint32_t ctrl_total;
+    uint32_t data_total;
+    uint32_t ext_total;
+
+    uint32_t beacon_count;
+    uint32_t probe_req_count;
+    uint32_t probe_resp_count;
+    uint32_t auth_count;
+    uint32_t assoc_req_count;
+    uint32_t assoc_resp_count;
+    uint32_t reassoc_req_count;
+    uint32_t reassoc_resp_count;
+    uint32_t atim_count;
+    uint32_t disassoc_count;
+    uint32_t deauth_count;
+    uint32_t action_count;
+    uint32_t mgmt_other_count;
+
+    uint32_t rts_count;
+    uint32_t cts_count;
+    uint32_t ack_count;
+    uint32_t bar_count;
+    uint32_t ba_count;
+    uint32_t ctrl_other_count;
+
+    uint32_t fc_data_count;
+    uint32_t null_count;
+    uint32_t qos_data_count;
+    uint32_t qos_null_count;
+    uint32_t data_other_count;
+
     uint8_t current_channel;
 } radio_stats_t;

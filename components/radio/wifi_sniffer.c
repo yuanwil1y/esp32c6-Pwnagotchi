@@ -1,5 +1,7 @@
 #include "wifi_sniffer.h"
 
+#include "ieee80211_parser.h"
+
 #include <stdbool.h>
 #include <stddef.h>
 #include <inttypes.h>
@@ -16,12 +18,17 @@
 #include "nvs_flash.h"
 
 static const char *TAG = "RADIO";
+static const char *TAG_80211 = "80211";
 
 #define RADIO_RX_TASK_STACK       2048
 #define RADIO_RX_TASK_PRIO        5
 #define RADIO_STATS_TASK_STACK    3072
 #define RADIO_STATS_TASK_PRIO     2
 #define RADIO_STATS_PERIOD_MS     3000
+
+/* Debug aid: print the classification of the first N parsed frames.
+ * Keep 0 in normal builds; never gates or touches the RX callback. */
+#define RADIO_PARSER_DEBUG_N      0
 
 /* Fixed packet pool: no dynamic memory in the RX path. */
 static radio_packet_t s_packet_pool[RADIO_PACKET_POOL_SIZE];
@@ -88,19 +95,176 @@ static void promiscuous_rx_cb(void *buf, wifi_promiscuous_pkt_type_t type)
     portEXIT_CRITICAL(&s_stats_mux);
 }
 
+/* Maps the driver packet type onto the raw Frame Control type value for
+ * the consistency cross-check. 0xFF for types without an FC counterpart. */
+static uint8_t driver_pkt_type_to_fc_type(uint8_t packet_type)
+{
+    switch ((wifi_promiscuous_pkt_type_t)packet_type) {
+    case WIFI_PKT_MGMT:
+        return IEEE80211_FC_TYPE_VALUE_MGMT;
+    case WIFI_PKT_CTRL:
+        return IEEE80211_FC_TYPE_VALUE_CTRL;
+    case WIFI_PKT_DATA:
+        return IEEE80211_FC_TYPE_VALUE_DATA;
+    default:
+        return 0xFF;
+    }
+}
+
+/* Counters for one parsed frame. Requires the stats lock. */
+static void stats_count_parsed_locked(const radio_packet_t *pkt,
+                                      const ieee80211_frame_info_t *info)
+{
+    s_stats.parser_total++;
+
+    if (!info->valid) {
+        /* Empty or too-short packet: safe return, no further reads. */
+        s_stats.parser_errors++;
+        s_stats.invalid_frames++;
+        return;
+    }
+
+    const uint8_t driver_type = driver_pkt_type_to_fc_type(pkt->packet_type);
+    if (driver_type != 0xFF && driver_type != info->fc.type) {
+        s_stats.fc_type_mismatch++;
+    }
+
+    switch (info->type) {
+    case IEEE80211_TYPE_MGMT:
+        s_stats.mgmt_total++;
+        switch (info->fc.subtype) {
+        case IEEE80211_MGMT_ASSOC_REQ:
+            s_stats.assoc_req_count++;
+            break;
+        case IEEE80211_MGMT_ASSOC_RESP:
+            s_stats.assoc_resp_count++;
+            break;
+        case IEEE80211_MGMT_REASSOC_REQ:
+            s_stats.reassoc_req_count++;
+            break;
+        case IEEE80211_MGMT_REASSOC_RESP:
+            s_stats.reassoc_resp_count++;
+            break;
+        case IEEE80211_MGMT_PROBE_REQ:
+            s_stats.probe_req_count++;
+            break;
+        case IEEE80211_MGMT_PROBE_RESP:
+            s_stats.probe_resp_count++;
+            break;
+        case IEEE80211_MGMT_BEACON:
+            s_stats.beacon_count++;
+            break;
+        case IEEE80211_MGMT_ATIM:
+            s_stats.atim_count++;
+            break;
+        case IEEE80211_MGMT_DISASSOC:
+            s_stats.disassoc_count++;
+            break;
+        case IEEE80211_MGMT_AUTH:
+            s_stats.auth_count++;
+            break;
+        case IEEE80211_MGMT_DEAUTH:
+            s_stats.deauth_count++;
+            break;
+        case IEEE80211_MGMT_ACTION:
+            s_stats.action_count++;
+            break;
+        default:
+            s_stats.mgmt_other_count++;
+            break;
+        }
+        break;
+    case IEEE80211_TYPE_CTRL:
+        s_stats.ctrl_total++;
+        switch (info->fc.subtype) {
+        case IEEE80211_CTRL_RTS:
+            s_stats.rts_count++;
+            break;
+        case IEEE80211_CTRL_CTS:
+            s_stats.cts_count++;
+            break;
+        case IEEE80211_CTRL_ACK:
+            s_stats.ack_count++;
+            break;
+        case IEEE80211_CTRL_BAR:
+            s_stats.bar_count++;
+            break;
+        case IEEE80211_CTRL_BA:
+            s_stats.ba_count++;
+            break;
+        default:
+            s_stats.ctrl_other_count++;
+            break;
+        }
+        break;
+    case IEEE80211_TYPE_DATA:
+        s_stats.data_total++;
+        switch (info->fc.subtype) {
+        case IEEE80211_DATA_DATA:
+        case IEEE80211_DATA_DATA_CFACK:
+        case IEEE80211_DATA_DATA_CFPOLL:
+        case IEEE80211_DATA_DATA_CFACK_CFPOLL:
+            s_stats.fc_data_count++;
+            break;
+        case IEEE80211_DATA_NULL:
+        case IEEE80211_DATA_CFACK:
+        case IEEE80211_DATA_CFPOLL:
+        case IEEE80211_DATA_CFACK_CFPOLL:
+            s_stats.null_count++;
+            break;
+        case IEEE80211_DATA_QOS_DATA:
+        case IEEE80211_DATA_QOS_DATA_CFACK:
+        case IEEE80211_DATA_QOS_DATA_CFPOLL:
+        case IEEE80211_DATA_QOS_DATA_CFACK_CFPOLL:
+            s_stats.qos_data_count++;
+            break;
+        case IEEE80211_DATA_QOS_NULL:
+            s_stats.qos_null_count++;
+            break;
+        default:
+            s_stats.data_other_count++;
+            break;
+        }
+        break;
+    case IEEE80211_TYPE_EXT:
+        s_stats.ext_total++;
+        break;
+    default:
+        /* Not reachable with a 2-bit FC type, kept for safety. */
+        s_stats.parser_errors++;
+        break;
+    }
+}
+
 /*
- * Consumer task. Phase 1A does no 802.11 parsing: it only counts frames by
- * the type the driver already classified and recycles the buffer.
+ * Consumer task. Phase 1A driver-type counting plus Phase 1B Frame Control
+ * classification via the pure parser. All parsing happens here, never in
+ * the Wi-Fi callback.
  */
 static void radio_rx_task(void *arg)
 {
     (void)arg;
+
+#if RADIO_PARSER_DEBUG_N > 0
+    uint32_t debug_printed = 0;
+#endif
 
     while (true) {
         radio_packet_t *pkt = NULL;
         if (xQueueReceive(s_rx_queue, &pkt, portMAX_DELAY) != pdTRUE) {
             continue;
         }
+
+        ieee80211_frame_info_t info = {0};
+        const bool parsed = ieee80211_parse(pkt->data, pkt->length, &info);
+
+#if RADIO_PARSER_DEBUG_N > 0
+        if (parsed && debug_printed < RADIO_PARSER_DEBUG_N) {
+            debug_printed++;
+            ESP_LOGI(TAG_80211, "dbg drv=%u fc_type=%u sub=%u len=%u",
+                     pkt->packet_type, info.fc.type, info.fc.subtype, pkt->length);
+        }
+#endif
 
         portENTER_CRITICAL(&s_stats_mux);
         switch ((wifi_promiscuous_pkt_type_t)pkt->packet_type) {
@@ -119,6 +283,7 @@ static void radio_rx_task(void *arg)
         }
         s_stats.rx_processed++;
         s_stats.queue_current--;
+        stats_count_parsed_locked(pkt, &info);
         portEXIT_CRITICAL(&s_stats_mux);
 
         (void)xQueueSend(s_free_queue, &pkt, 0);
@@ -146,6 +311,29 @@ static void radio_stats_task(void *arg)
                  stats.rx_management, stats.rx_data, stats.rx_control,
                  stats.rx_misc, stats.queue_current, stats.queue_peak,
                  esp_get_free_heap_size(), esp_get_minimum_free_heap_size());
+
+        ESP_LOGI(TAG_80211,
+                 "total=%" PRIu32 " err=%" PRIu32 " invalid=%" PRIu32
+                 " mismatch=%" PRIu32,
+                 stats.parser_total, stats.parser_errors, stats.invalid_frames,
+                 stats.fc_type_mismatch);
+        ESP_LOGI(TAG_80211,
+                 "MGMT=%" PRIu32 " beacon=%" PRIu32 " probe_req=%" PRIu32
+                 " probe_resp=%" PRIu32 " auth=%" PRIu32 " assoc_req=%" PRIu32
+                 " deauth=%" PRIu32 " other=%" PRIu32,
+                 stats.mgmt_total, stats.beacon_count, stats.probe_req_count,
+                 stats.probe_resp_count, stats.auth_count, stats.assoc_req_count,
+                 stats.deauth_count, stats.mgmt_other_count);
+        ESP_LOGI(TAG_80211,
+                 "CTRL=%" PRIu32 " rts=%" PRIu32 " cts=%" PRIu32 " ack=%" PRIu32
+                 " bar=%" PRIu32 " ba=%" PRIu32 " other=%" PRIu32,
+                 stats.ctrl_total, stats.rts_count, stats.cts_count, stats.ack_count,
+                 stats.bar_count, stats.ba_count, stats.ctrl_other_count);
+        ESP_LOGI(TAG_80211,
+                 "DATA=%" PRIu32 " qos_data=%" PRIu32 " qos_null=%" PRIu32
+                 " null=%" PRIu32 " other=%" PRIu32,
+                 stats.data_total, stats.qos_data_count, stats.qos_null_count,
+                 stats.null_count, stats.data_other_count);
     }
 }
 
