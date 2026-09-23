@@ -10,6 +10,9 @@ idf_component_register(
     PRIV_INCLUDE_DIRS "."
     PRIV_REQUIRES
         driver
+        esp_driver_spi
+        esp_driver_ledc
+        esp_driver_sdspi
         esp_lcd
         esp_timer
         fatfs
