@@ -41,11 +41,10 @@ static void phase1_ui_task(void *arg)
 
         radio_stats_t stats;
         wifi_sniffer_get_stats(&stats);
-        /* Same number the Phase 1 status page showed before Phase 1.5
-         * (cache inserts + attribute changes); relabelled in the Phase 1.5
-         * stats/UI commit. */
+        /* Phase 1.5: the status line shows the dedup cache occupancy
+         * (0..32), explicitly not a total-unique-AP count. */
         (void)board_display_update_phase1(stats.current_channel,
-                                          stats.ap_cache_inserts + stats.ap_cache_updates,
+                                          stats.ap_cache_occupied,
                                           stats.rx.rx_total,
                                           stats.rx.rx_dropped_pool +
                                           stats.rx.rx_dropped_queue);
@@ -54,7 +53,7 @@ static void phase1_ui_task(void *arg)
 
 void app_main(void)
 {
-    ESP_LOGI(TAG, "esp32c6-Pwnagotchi Phase 1D channel hopper");
+    ESP_LOGI(TAG, "esp32c6-Pwnagotchi Phase 1.5 bugfix baseline");
     ESP_LOGI(TAG, "firmware git commit: %s (%s)", APP_BUILD_GIT_SHA, APP_BUILD_GIT_SHORT);
 
     ESP_ERROR_CHECK(board_backlight_init());

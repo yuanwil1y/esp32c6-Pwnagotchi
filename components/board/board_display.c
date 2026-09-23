@@ -542,7 +542,7 @@ esp_err_t board_display_update_phase1c(uint32_t rx_total, uint32_t ap_unique,
 }
 
 /* Requires the LVGL mutex to be held. */
-static void phase1_refresh_locked(uint8_t channel, uint32_t ap_unique,
+static void phase1_refresh_locked(uint8_t channel, uint32_t ap_cache_occupied,
                                   uint32_t rx_total, uint32_t rx_dropped)
 {
     if (s_status_label == NULL || s_screen_kind != STATUS_SCREEN_PHASE1) {
@@ -559,7 +559,7 @@ static void phase1_refresh_locked(uint8_t channel, uint32_t ap_unique,
                           "WiFi: %s\n"
                           "\n"
                           "CH: %u\n"
-                          "AP: %lu\n"
+                          "AP cache: %lu\n"
                           "RX: %lu\n"
                           "DROP: %lu\n"
                           "\n"
@@ -568,7 +568,7 @@ static void phase1_refresh_locked(uint8_t channel, uint32_t ap_unique,
                           s_status_sd_ok ? "OK" : "FAIL",
                           s_status_wifi_ok ? "SNIFFING" : "FAIL",
                           (unsigned)channel,
-                          (unsigned long)ap_unique,
+                          (unsigned long)ap_cache_occupied,
                           (unsigned long)rx_total,
                           (unsigned long)rx_dropped);
 }
@@ -595,14 +595,14 @@ esp_err_t board_display_show_phase1_status(bool touch_ok, bool sd_ok, bool wifi_
     return ESP_OK;
 }
 
-esp_err_t board_display_update_phase1(uint8_t channel, uint32_t ap_unique,
+esp_err_t board_display_update_phase1(uint8_t channel, uint32_t ap_cache_occupied,
                                       uint32_t rx_total, uint32_t rx_dropped)
 {
     if (!board_display_lock(BOARD_DISPLAY_WAIT_FOREVER)) {
         return ESP_ERR_INVALID_STATE;
     }
 
-    phase1_refresh_locked(channel, ap_unique, rx_total, rx_dropped);
+    phase1_refresh_locked(channel, ap_cache_occupied, rx_total, rx_dropped);
 
     board_display_unlock();
     return ESP_OK;
