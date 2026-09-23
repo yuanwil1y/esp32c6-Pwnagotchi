@@ -195,9 +195,7 @@ esp_err_t wifi_sniffer_init(void)
         return err;
     }
 
-    /* Static storage: the default config struct is too large for the
-     * app_main task stack. */
-    static wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
+    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     err = esp_wifi_init(&cfg);
     if (err != ESP_OK) {
         ESP_LOGE(TAG, "esp_wifi_init failed: %s", esp_err_to_name(err));
