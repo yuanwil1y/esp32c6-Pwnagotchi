@@ -8,3 +8,8 @@ CONFIG_LV_COLOR_16_SWAP=y
 CONFIG_LV_MEM_CUSTOM=y
 CONFIG_LV_MEMCPY_MEMSET_STD=y
 CONFIG_LV_ATTRIBUTE_FAST_MEM_USE_IRAM=y
+
+# Phase 0 SD test file /sd_card/phase0_test.txt is not an 8.3 name; FATFS
+# long filename support is required to create it (factory demo only used
+# test.txt and shipped with LFN disabled).
+CONFIG_FATFS_LFN_HEAP=y
