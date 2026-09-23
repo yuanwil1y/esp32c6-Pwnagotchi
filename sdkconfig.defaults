@@ -3,6 +3,11 @@ CONFIG_IDF_TARGET="esp32c6"
 CONFIG_ESPTOOLPY_FLASHSIZE_8MB=y
 CONFIG_FREERTOS_HZ=1000
 
+# Phase 1A: the Wi-Fi driver pushes the app past the default 1 MB factory
+# slot; use a custom table with a 4 MB app partition (8 MB flash).
+CONFIG_PARTITION_TABLE_CUSTOM=y
+CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions.csv"
+
 # Waveshare's SH8601/LVGL path uses RGB565 byte swap.
 CONFIG_LV_COLOR_16_SWAP=y
 CONFIG_LV_MEM_CUSTOM=y
