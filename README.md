@@ -4,6 +4,12 @@
 
 本项目参考 Pwnagotchi 的交互体验、Epoch / Personality / Agent 思路，但运行平台改为 ESP32-C6 + ESP-IDF。首阶段采用**被动监听路线**：不依赖 Linux、不依赖 Bettercap，不把 deauth、主动 association/PMKID 或任意 802.11 帧注入作为 V1 目标。
 
+## 当前状态
+
+**Phase 0 - Board Bring-up 已实现。** 当前工程已经从 Waveshare FactoryProgram 中抽出最小 board 层，包含 LCD/LVGL、Touch、SD、I2C 和背光；LVGL 运行在独立 FreeRTOS Task 中。
+
+硬件实机验收重点见 [docs/PHASE0_BOARD_BRINGUP.md](docs/PHASE0_BOARD_BRINGUP.md)。
+
 ## 硬件基线
 
 官方 Waveshare 工程以 Git submodule 引入到：
@@ -14,7 +20,7 @@
 
 `vendor/waveshare/02_Example/ESP-IDF/08_FactoryProgram`
 
-该官方工程覆盖 LCD、触摸、SD、Wi-Fi、ADC、IMU、LVGL 等板级能力，可作为本项目的 bring-up / 引脚 / 驱动参考。
+该官方工程覆盖 LCD、触摸、SD、Wi-Fi、ADC、IMU、LVGL 等板级能力，可作为本项目的 bring-up / 引脚 / 驱动参考。`vendor/waveshare` 保持只读，本项目代码位于自己的 `main/` 和 `components/` 中。
 
 克隆仓库时请带上 submodule：
 
@@ -27,6 +33,18 @@ git clone --recursive https://github.com/yuanwil1y/esp32c6-Pwnagotchi.git
 ```bash
 git submodule update --init --recursive
 ```
+
+## Phase 0 构建
+
+建议使用 ESP-IDF 5.4.x，与 Waveshare FactoryProgram 的开发环境保持一致：
+
+```bash
+idf.py set-target esp32c6
+idf.py build
+idf.py -p <PORT> flash monitor
+```
+
+首次构建会通过 IDF Component Manager 获取 `espressif/esp_lcd_sh8601` 和 LVGL 8.3.11。
 
 ## 项目方向
 
@@ -50,4 +68,4 @@ V1 计划实现：
 - Waveshare ESP32-C6-LCD-1.9: https://github.com/waveshareteam/ESP32-C6-LCD-1.9
 - ESP-IDF: https://github.com/espressif/esp-idf
 
-> 本仓库当前处于 bring-up / 架构阶段。主动无线交互能力不属于 V1 范围。
+> 主动无线交互能力不属于 V1 范围。
