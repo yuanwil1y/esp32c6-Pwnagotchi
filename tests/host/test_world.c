@@ -548,7 +548,7 @@ static void t_parser_to_world_end_to_end(void)
     for (int i = 0; i < 6; i++) {
         frame[4 + i] = 0xFF;       /* addr1 broadcast */
         frame[10 + i] = 0x0A;      /* addr2 transmitter */
-        frame[16 + i] = 0x0B;      /* addr3 BSSID */
+        frame[16 + i] = 0x0C;      /* addr3 BSSID */
     }
     frame[24 + 8] = 0x64; /* beacon interval */
     frame[24 + 10] = 0x00; /* capability: no privacy */
@@ -571,7 +571,7 @@ static void t_parser_to_world_end_to_end(void)
     CHECK(world_check_invariants(&w));
 
     world_ap_view_t v;
-    uint8_t bssid[6] = {0x0B, 0x0B, 0x0B, 0x0B, 0x0B, 0x0B};
+    uint8_t bssid[6] = {0x0C, 0x0C, 0x0C, 0x0C, 0x0C, 0x0C};
     CHECK(ap_find_view(bssid, &v));
     CHECK(v.ap.ssid_known && v.ap.ssid_len == 5);
     CHECK(v.ap.advertised_channel == 6);
