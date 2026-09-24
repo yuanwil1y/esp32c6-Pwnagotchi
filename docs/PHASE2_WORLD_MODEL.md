@@ -12,8 +12,8 @@ Epoch、Personality、完整 UI 与自适应跳频仍属后续阶段。
 |---|------|------|
 | 2A AP DB（host 测试 + IDF 构建） | PASS | CI run 35953748323（commit 40dd701） |
 | 2B STA DB + 关系（host 测试 + IDF 构建） | PASS | CI run 35954791715（commit e883eb7） |
-| 2C security parser（host 测试 + IDF 构建） | PASS | 见 §6（commit 6e9d9a4 起全绿） |
-| 2D 接入/文档（host 测试 + IDF 构建） | PASS | 见 §6（最终 commit） |
+| 2C security parser（host 测试 + IDF 构建） | PASS | run 35955317691（6e9d9a4） |
+| 2D 接入/文档（host 测试 + IDF 构建） | PASS | run 35955699646（c2e7ee4） |
 | Phase 1.5 回归保留 | PASS | 同上（callback/IE 套件原样运行） |
 | 实机验收（≥1 min 稳定 + 受控 AP 对照） | **PENDING** | 见 §8 待执行清单 |
 
@@ -237,9 +237,11 @@ CI（GitHub Actions `ESP-IDF Build`）：host-tests job（plain+ASan/UBSan）
 - 2B 全绿：run **35954791715**（e883eb7；f3794eb 首推暴露
   `ap_remove` 未清 station_count 的真缺陷 + 两个测试时间线错误，由
   91e10be/e883eb7 修复，见提交说明）。
-- 2C/2D 全绿：最终 run 号与固件 SHA 见 §8 表格（本文件随最终提交
-  更新；b862765 首推暴露 Phase 1.5 fixture 非法 RSN 与一处测试指针
-  笔误，6e9d9a4 修复）。
+- 2C 全绿：run **35955317691**（6e9d9a4；b862765 首推暴露 Phase 1.5
+  fixture 非法 RSN 与一处测试指针笔误，6e9d9a4 修复）。
+- 2D 全绿：run **35955699646**（c2e7ee4）＝本分支最新代码提交；该
+  run 的 `firmware-c2e7ee4…zip` 即实机验收烧录产物（§8）。后续的
+  docs-only 提交不改代码路径。
 
 ## 7. 已知限制与 Phase 3 交接
 
@@ -258,8 +260,18 @@ CI（GitHub Actions `ESP-IDF Build`）：host-tests job（plain+ASan/UBSan）
 > 硬件 Waveshare ESP32-C6-Touch-LCD-1.9。维护者执行前不改代码；
 > 结果回填本节并把状态改为 PASS/FAIL（不可用编译通过冒充实机 PASS）。
 
-烧录：CI 产物 `firmware-<SHA>.zip`（esptool v5.4 write-flash 校验），
-记录固件 commit SHA：__________（= 本文件所在提交）。
+烧录：CI run 35955699646 产物 `firmware-c2e7ee4736….zip`（固件
+commit SHA = c2e7ee4 = 最新代码提交；esptool v5.4 write-flash 自带
+校验）。精确步骤（维护者实机执行，COM 口按 Phase 1.5 为 COM3）：
+
+```bash
+unzip firmware-<SHA>.zip -d fw2d
+esptool.py --chip esp32c6 --port COM3 --baud 460800     --before default-reset --after hard-reset write-flash     @flash_args
+# 或按 flasher_args.json 分区地址逐 bin 烧写；RTS 复位后重新开表
+```
+
+记录固件 commit SHA：**c2e7ee4**（boot 段
+`firmware git commit:` 行与之一一对应）。
 
 稳定运行 ≥1 分钟判据（对照 Phase 1.5 §10 风格）：
 
@@ -298,7 +310,7 @@ min_heap、stk_rx/stk_stat 最小值、世界计数终值、崩溃标记 0。
 - `e883eb7` phase2b fix: ap_remove resets station_count; correct test timelines
 - `b862765` phase2c: strict RSN/WPA suite parser and world security merge
 - `6e9d9a4` phase2c fix: legal RSN fixture in Phase 1.5 regression; pointer misuse
-- `________` phase2d: UI/observability integration + docs（本提交）
+- `c2e7ee4` phase2d: UI/observability integration + docs
 
 ## Phase 2 验收状态
 
