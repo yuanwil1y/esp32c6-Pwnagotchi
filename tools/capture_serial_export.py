@@ -108,6 +108,9 @@ def _read_info(ser, session_id: str):
 
 def _stream_file(ser, session_id: str, kind: str, index: int, size: int,
                  path: Path, timeout: float) -> None:
+    wire_kind = {"pcap": "P", "summary": "S"}.get(kind.lower())
+    if wire_kind is None:
+        raise ValueError(f"unsupported export kind: {kind}")
     path.parent.mkdir(parents=True, exist_ok=True)
     if path.exists():
         raise FileExistsError(f"refusing to overwrite {path}")
@@ -145,7 +148,7 @@ def _stream_file(ser, session_id: str, kind: str, index: int, size: int,
                 text = clean_line(raw)
                 if text.startswith("!PCAP,ERROR,"):
                     raise RuntimeError(text)
-                if text.startswith(f"!PCAP,END,{kind},{index},"):
+                if text.startswith(f"!PCAP,END,{wire_kind},{index},"):
                     try:
                         reported_size = int(text.rsplit(",", 1)[1], 10)
                     except ValueError as exc:
@@ -161,7 +164,7 @@ def _stream_file(ser, session_id: str, kind: str, index: int, size: int,
                 if frame is None:
                     continue
                 frame_kind, frame_index, offset, payload = frame
-                if frame_kind != kind or frame_index != index:
+                if frame_kind != wire_kind or frame_index != index:
                     continue
                 if offset == expected and offset + len(payload) <= size:
                     output.seek(offset)
