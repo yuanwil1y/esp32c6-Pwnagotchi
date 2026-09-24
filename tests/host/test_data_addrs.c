@@ -139,7 +139,7 @@ static void t_short_headers_rejected(void)
     CHECK(a.status == IEEE80211_DATA_ADDRS_TOO_SHORT);
 
     /* QoS+HT control cut. */
-    data_init(&f, 0x88, 0x81, 31);
+    data_init(&f, 0x88, 0x81, 29);
     CHECK(!ieee80211_parse_data_addresses(f.buf, f.len, &a));
     CHECK(a.status == IEEE80211_DATA_ADDRS_TOO_SHORT);
 
