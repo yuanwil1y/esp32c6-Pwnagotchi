@@ -1,12 +1,13 @@
 # Phase 3C — Bounded asynchronous SD logger
 
-Status: host/IDF CI passed for the console-isolation revision
-`e43968db4d8181b5cd00dd586184c2ce300e921b` on run
-[35993675554](https://github.com/yuanwil1y/esp32c6-Pwnagotchi/actions/runs/35993675554).
-Live testing then identified insufficient stack in the isolated console
-initialization task. Its stack is being raised from 12 KiB to 16 KiB for the
-next CI and hardware attempt. Real capture, controlled stop, extracted-file
-TShark readback, and live display/hopping/heap observation remain **PENDING**.
+Status: host/IDF CI passed for `c56dca3ff54f9de50caa55eb92457eeb2a327df0`
+on run
+[35994419351](https://github.com/yuanwil1y/esp32c6-Pwnagotchi/actions/runs/35994419351).
+Hardware revalidation found that the isolated `sd_console_init` task still
+overflows its 16 KiB stack by 24 bytes at the captured guard boundary. This
+revision raises it to 20 KiB; CI and another hardware boot attempt are pending.
+Real capture, controlled stop, extracted-file TShark readback, and live
+display/hopping/heap observation remain **PENDING**.
 The user confirmed that an SD card is inserted and authorized creating new
 uniquely named files. No existing file is formatted, deleted, or overwritten.
 
@@ -83,8 +84,18 @@ at `D:\pwn\phase3c-evidence\35993675554\phase3c-com3-boot.raw.log` (SHA-256
 window shows seven stack protection faults in `sd_console_init`; captured SP
 `0x4084bc10` crossed its lower bound `0x4084bed8` by 712 B. The main stack did
 not fault, but console initialization never completed, so Wi-Fi and capture
-still did not start. The next revision raises only this temporary setup-task
-stack to 16,384 B; CI and hardware revalidation are pending.
+still did not start. The 16,384 B revision passed host/IDF CI in run
+35994419351, but the `c56dca3ff54f9de50caa55eb92457eeb2a327df0` hardware boot
+still triggered stack protection in `sd_console_init`. Its 71,205-byte raw
+COM3 log is at
+`D:\pwn\phase3c-evidence\35994419351\phase3c-com3-boot.raw.log` (SHA-256
+`B1D1BFD222FBCA717455D34B0CA13A9BBD293FFD4E9F6299CCFAB3F8525E8FBD`). At the
+fault, SP `0x4084bec0` was 24 B below the reported lower bound `0x4084bed8`;
+the captured window contains eight visible stack faults and nine successful
+unique self-test writes. Console initialization did not complete, Wi-Fi did
+not start, and no recording session began. The device is now disconnected.
+The current revision raises the temporary console stack to 20,480 B; this is
+not a claim that the hardware issue is resolved.
 
 ## Ownership and data flow
 
@@ -256,9 +267,9 @@ recorded with hardware results. Logger-specific atomics/counters/paths and
 other storage control BSS are also reflected in that value and linker size
 output.
 
-The task stack request is 6,144 B for `sd_logger`, 16,384 B for the temporary
+The task stack request is 6,144 B for `sd_logger`, 20,480 B for the temporary
 `sd_console_init` task, and 4,096 B for the persistent UART REPL. Together these
-new task stacks request 26,624 B at their peak overlap; the temporary startup
+new task stacks request 30,720 B at their peak overlap; the temporary startup
 stack is released after the REPL starts. They are runtime allocations, not
 static BSS; FreeRTOS task control objects and one event group are also runtime
 allocations. The IDF main task remains at its default 3,584 B. Existing UI

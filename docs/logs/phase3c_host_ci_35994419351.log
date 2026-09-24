@@ -1,0 +1,952 @@
+Host regression tests	Set up job	﻿2026-09-24T11:40:50.7339366Z Current runner version: '2.337.0'
+Host regression tests	Set up job	2026-09-24T11:40:50.7366983Z ##[group]Runner Image Provisioner
+Host regression tests	Set up job	2026-09-24T11:40:50.7367932Z Hosted Compute Agent
+Host regression tests	Set up job	2026-09-24T11:40:50.7368513Z Version: 20260828.587
+Host regression tests	Set up job	2026-09-24T11:40:50.7369262Z Commit: abac92662cab4cc7352de4f9f9d2e2419aad9c29
+Host regression tests	Set up job	2026-09-24T11:40:50.7370109Z Build Date: 2026-08-28T16:44:25Z
+Host regression tests	Set up job	2026-09-24T11:40:50.7371066Z Worker ID: {a4da341b-e513-4b92-9b7b-5d2f34fc751c}
+Host regression tests	Set up job	2026-09-24T11:40:50.7371857Z Azure Region: westus
+Host regression tests	Set up job	2026-09-24T11:40:50.7372442Z ##[endgroup]
+Host regression tests	Set up job	2026-09-24T11:40:50.7374269Z ##[group]Operating System
+Host regression tests	Set up job	2026-09-24T11:40:50.7374945Z Ubuntu
+Host regression tests	Set up job	2026-09-24T11:40:50.7375643Z 24.04.5
+Host regression tests	Set up job	2026-09-24T11:40:50.7376189Z LTS
+Host regression tests	Set up job	2026-09-24T11:40:50.7376705Z ##[endgroup]
+Host regression tests	Set up job	2026-09-24T11:40:50.7377336Z ##[group]Runner Image
+Host regression tests	Set up job	2026-09-24T11:40:50.7377940Z Image: ubuntu-24.04
+Host regression tests	Set up job	2026-09-24T11:40:50.7378489Z Version: 20260920.314.1
+Host regression tests	Set up job	2026-09-24T11:40:50.7379620Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260920.314/images/ubuntu/Ubuntu2404-Readme.md
+Host regression tests	Set up job	2026-09-24T11:40:50.7381778Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260920.314
+Host regression tests	Set up job	2026-09-24T11:40:50.7382858Z ##[endgroup]
+Host regression tests	Set up job	2026-09-24T11:40:50.7384107Z ##[group]GITHUB_TOKEN Permissions
+Host regression tests	Set up job	2026-09-24T11:40:50.7385985Z Contents: read
+Host regression tests	Set up job	2026-09-24T11:40:50.7387070Z Metadata: read
+Host regression tests	Set up job	2026-09-24T11:40:50.7387751Z Packages: read
+Host regression tests	Set up job	2026-09-24T11:40:50.7388317Z ##[endgroup]
+Host regression tests	Set up job	2026-09-24T11:40:50.7390692Z Secret source: Actions
+Host regression tests	Set up job	2026-09-24T11:40:50.7392147Z Cache mode: write
+Host regression tests	Set up job	2026-09-24T11:40:50.7392954Z Prepare workflow directory
+Host regression tests	Set up job	2026-09-24T11:40:50.7730623Z Prepare all required actions
+Host regression tests	Set up job	2026-09-24T11:40:50.7787783Z Getting action download info
+Host regression tests	Set up job	2026-09-24T11:40:51.1591479Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+Host regression tests	Set up job	2026-09-24T11:40:51.2873467Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+Host regression tests	Set up job	2026-09-24T11:40:51.5604923Z Complete job name: Host regression tests
+Host regression tests	Checkout	﻿2026-09-24T11:40:51.6391071Z ##[group]Run actions/checkout@v4
+Host regression tests	Checkout	2026-09-24T11:40:51.6392047Z with:
+Host regression tests	Checkout	2026-09-24T11:40:51.6392529Z   repository: yuanwil1y/esp32c6-Pwnagotchi
+Host regression tests	Checkout	2026-09-24T11:40:51.6396253Z   token: ***
+Host regression tests	Checkout	2026-09-24T11:40:51.6396686Z   ssh-strict: true
+Host regression tests	Checkout	2026-09-24T11:40:51.6397132Z   ssh-user: git
+Host regression tests	Checkout	2026-09-24T11:40:51.6397583Z   persist-credentials: true
+Host regression tests	Checkout	2026-09-24T11:40:51.6398077Z   clean: true
+Host regression tests	Checkout	2026-09-24T11:40:51.6398529Z   sparse-checkout-cone-mode: true
+Host regression tests	Checkout	2026-09-24T11:40:51.6399054Z   fetch-depth: 1
+Host regression tests	Checkout	2026-09-24T11:40:51.6399476Z   fetch-tags: false
+Host regression tests	Checkout	2026-09-24T11:40:51.6399911Z   show-progress: true
+Host regression tests	Checkout	2026-09-24T11:40:51.6400349Z   lfs: false
+Host regression tests	Checkout	2026-09-24T11:40:51.6400996Z   submodules: false
+Host regression tests	Checkout	2026-09-24T11:40:51.6401464Z   set-safe-directory: true
+Host regression tests	Checkout	2026-09-24T11:40:51.6401973Z   allow-unsafe-pr-checkout: false
+Host regression tests	Checkout	2026-09-24T11:40:51.6402800Z ##[endgroup]
+Host regression tests	Checkout	2026-09-24T11:40:51.7466666Z Syncing repository: yuanwil1y/esp32c6-Pwnagotchi
+Host regression tests	Checkout	2026-09-24T11:40:51.7469277Z ##[group]Getting Git version info
+Host regression tests	Checkout	2026-09-24T11:40:51.7470594Z Working directory is '/home/runner/work/esp32c6-Pwnagotchi/esp32c6-Pwnagotchi'
+Host regression tests	Checkout	2026-09-24T11:40:51.7472791Z [command]/usr/bin/git version
+Host regression tests	Checkout	2026-09-24T11:40:51.7532816Z git version 2.55.0
+Host regression tests	Checkout	2026-09-24T11:40:51.7556354Z ##[endgroup]
+Host regression tests	Checkout	2026-09-24T11:40:51.7582969Z Temporarily overriding HOME='/home/runner/work/_temp/8aeba7bf-8ce3-4153-8959-11678905f8c7' before making global git config changes
+Host regression tests	Checkout	2026-09-24T11:40:51.7585688Z Adding repository directory to the temporary git global config as a safe directory
+Host regression tests	Checkout	2026-09-24T11:40:51.7612241Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/esp32c6-Pwnagotchi/esp32c6-Pwnagotchi
+Host regression tests	Checkout	2026-09-24T11:40:51.7630346Z Deleting the contents of '/home/runner/work/esp32c6-Pwnagotchi/esp32c6-Pwnagotchi'
+Host regression tests	Checkout	2026-09-24T11:40:51.7635365Z ##[group]Initializing the repository
+Host regression tests	Checkout	2026-09-24T11:40:51.7639333Z [command]/usr/bin/git init /home/runner/work/esp32c6-Pwnagotchi/esp32c6-Pwnagotchi
+Host regression tests	Checkout	2026-09-24T11:40:51.7747307Z hint: Using 'master' as the name for the initial branch. This default branch name
+Host regression tests	Checkout	2026-09-24T11:40:51.7749485Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+Host regression tests	Checkout	2026-09-24T11:40:51.7751259Z hint: to use in all of your new repositories, which will suppress this warning,
+Host regression tests	Checkout	2026-09-24T11:40:51.7752609Z hint: call:
+Host regression tests	Checkout	2026-09-24T11:40:51.7753716Z hint:
+Host regression tests	Checkout	2026-09-24T11:40:51.7754594Z hint: 	git config --global init.defaultBranch <name>
+Host regression tests	Checkout	2026-09-24T11:40:51.7755650Z hint:
+Host regression tests	Checkout	2026-09-24T11:40:51.7756645Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+Host regression tests	Checkout	2026-09-24T11:40:51.7758241Z hint: 'development'. The just-created branch can be renamed via this command:
+Host regression tests	Checkout	2026-09-24T11:40:51.7759518Z hint:
+Host regression tests	Checkout	2026-09-24T11:40:51.7760225Z hint: 	git branch -m <name>
+Host regression tests	Checkout	2026-09-24T11:40:51.7761214Z hint:
+Host regression tests	Checkout	2026-09-24T11:40:51.7762264Z hint: Disable this message with "git config set advice.defaultBranchName false"
+Host regression tests	Checkout	2026-09-24T11:40:51.7764397Z Initialized empty Git repository in /home/runner/work/esp32c6-Pwnagotchi/esp32c6-Pwnagotchi/.git/
+Host regression tests	Checkout	2026-09-24T11:40:51.7767924Z [command]/usr/bin/git remote add origin https://github.com/yuanwil1y/esp32c6-Pwnagotchi
+Host regression tests	Checkout	2026-09-24T11:40:51.7812941Z ##[endgroup]
+Host regression tests	Checkout	2026-09-24T11:40:51.7814337Z ##[group]Disabling automatic garbage collection
+Host regression tests	Checkout	2026-09-24T11:40:51.7816208Z [command]/usr/bin/git config --local gc.auto 0
+Host regression tests	Checkout	2026-09-24T11:40:51.7851617Z ##[endgroup]
+Host regression tests	Checkout	2026-09-24T11:40:51.7852890Z ##[group]Setting up auth
+Host regression tests	Checkout	2026-09-24T11:40:51.7862389Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+Host regression tests	Checkout	2026-09-24T11:40:51.7895086Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Host regression tests	Checkout	2026-09-24T11:40:51.8287499Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Host regression tests	Checkout	2026-09-24T11:40:51.8323851Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Host regression tests	Checkout	2026-09-24T11:40:51.8648442Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+Host regression tests	Checkout	2026-09-24T11:40:51.8690480Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+Host regression tests	Checkout	2026-09-24T11:40:51.8917803Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+Host regression tests	Checkout	2026-09-24T11:40:51.8958504Z ##[endgroup]
+Host regression tests	Checkout	2026-09-24T11:40:51.8969360Z ##[group]Fetching the repository
+Host regression tests	Checkout	2026-09-24T11:40:51.8972500Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +c56dca3ff54f9de50caa55eb92457eeb2a327df0:refs/remotes/origin/phase3c-sd-logger
+Host regression tests	Checkout	2026-09-24T11:40:52.5225910Z From https://github.com/yuanwil1y/esp32c6-Pwnagotchi
+Host regression tests	Checkout	2026-09-24T11:40:52.5228209Z  * [new ref]         c56dca3ff54f9de50caa55eb92457eeb2a327df0 -> origin/phase3c-sd-logger
+Host regression tests	Checkout	2026-09-24T11:40:52.5232969Z ##[endgroup]
+Host regression tests	Checkout	2026-09-24T11:40:52.5236291Z ##[group]Determining the checkout info
+Host regression tests	Checkout	2026-09-24T11:40:52.5238479Z ##[endgroup]
+Host regression tests	Checkout	2026-09-24T11:40:52.5253959Z [command]/usr/bin/git sparse-checkout disable
+Host regression tests	Checkout	2026-09-24T11:40:52.5309775Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+Host regression tests	Checkout	2026-09-24T11:40:52.5345794Z ##[group]Checking out the ref
+Host regression tests	Checkout	2026-09-24T11:40:52.5362631Z [command]/usr/bin/git checkout --progress --force -B phase3c-sd-logger refs/remotes/origin/phase3c-sd-logger
+Host regression tests	Checkout	2026-09-24T11:40:52.5568782Z Switched to a new branch 'phase3c-sd-logger'
+Host regression tests	Checkout	2026-09-24T11:40:52.5573396Z branch 'phase3c-sd-logger' set up to track 'origin/phase3c-sd-logger'.
+Host regression tests	Checkout	2026-09-24T11:40:52.5581620Z ##[endgroup]
+Host regression tests	Checkout	2026-09-24T11:40:52.5625044Z [command]/usr/bin/git log -1 --format=%H
+Host regression tests	Checkout	2026-09-24T11:40:52.5652365Z c56dca3ff54f9de50caa55eb92457eeb2a327df0
+Host regression tests	Run host tests (plain + ASan/UBSan)	﻿2026-09-24T11:40:52.5919045Z ##[group]Run bash tests/host/run.sh
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:52.5920581Z ^[[36;1mbash tests/host/run.sh^[[0m
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:52.6189879Z shell: /usr/bin/bash -e {0}
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:52.6191754Z ##[endgroup]
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:52.6349720Z == host tests (plain) ==
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:53.6735118Z RUN  parse_fc_basic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:53.6736020Z PASS parse_fc_basic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:53.6736567Z RUN  parse_short_rejected
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:53.6737314Z PASS parse_short_rejected
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:53.6738580Z RUN  beacon_minimal_complete
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:53.6739111Z PASS beacon_minimal_complete
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:53.6739481Z RUN  beacon_typical_fields
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:53.6739811Z PASS beacon_typical_fields
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:53.6740165Z RUN  ssid_lengths
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:53.6740436Z PASS ssid_lengths
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:53.6741004Z RUN  ssid_all_zero_is_hidden
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:53.6741372Z PASS ssid_all_zero_is_hidden
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:53.6741696Z RUN  duplicate_ssid_first_wins
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:53.6742012Z PASS duplicate_ssid_first_wins
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:53.6742463Z RUN  ds_param_validation
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:53.6742786Z PASS ds_param_validation
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:53.6743084Z RUN  trailing_byte_in_complete_body
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:53.6743455Z PASS trailing_byte_in_complete_body
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:53.6743795Z RUN  ie_body_overrun_complete_frame
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:53.6744127Z PASS ie_body_overrun_complete_frame
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:53.6744456Z RUN  capture_cut_inside_ie_body
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:53.6744826Z PASS capture_cut_inside_ie_body
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:53.6745132Z RUN  capture_cut_at_ie_boundary
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:53.6745438Z PASS capture_cut_at_ie_boundary
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:53.6745748Z RUN  fcs_never_walked_as_ie_513
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:53.6746053Z PASS fcs_never_walked_as_ie_513
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:53.6746357Z RUN  fcs_never_walked_as_ie_514
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:53.6746651Z PASS fcs_never_walked_as_ie_514
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:53.6746951Z RUN  capture_cut_inside_mac_body
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:53.6747261Z PASS capture_cut_inside_mac_body
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:53.6747599Z RUN  deep_parse_rejects_protocol_version_1
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:53.6747969Z PASS deep_parse_rejects_protocol_version_1
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:53.6748330Z RUN  deep_parse_rejects_order_bit
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:53.6748662Z PASS deep_parse_rejects_order_bit
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:53.6748984Z RUN  deep_parse_rejects_more_fragments
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:53.6749321Z PASS deep_parse_rejects_more_fragments
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:53.6749659Z RUN  deep_parse_rejects_short_fixed_body
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:53.6750004Z PASS deep_parse_rejects_short_fixed_body
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:53.6750355Z RUN  probe_req_parse_and_truncation
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:53.6750971Z PASS probe_req_parse_and_truncation
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:53.6751385Z 20/20 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:54.4289947Z RUN  rx_good_frame_flow
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:54.4290349Z PASS rx_good_frame_flow
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:54.4290629Z RUN  rx_timestamp_copy_delay_and_slot_reuse
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:54.4291366Z PASS rx_timestamp_copy_delay_and_slot_reuse
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:54.4291697Z RUN  rx_packet_pool_memory_budget
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:54.4292203Z PASS rx_packet_pool_memory_budget
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:54.4292926Z RUN  rx_drop_accounting
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:54.4293340Z PASS rx_drop_accounting
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:54.4293703Z RUN  rx_state_errors_never_leak_slots
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:54.4294194Z PASS rx_state_errors_never_leak_slots
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:54.4294677Z RUN  rx_misc_whitelist_no_payload_access
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:54.4295188Z PASS rx_misc_whitelist_no_payload_access
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:54.4295766Z RUN  rx_misc_defensive_even_with_bogus_payload_len
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:54.4296547Z PASS rx_misc_defensive_even_with_bogus_payload_len
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:54.4297133Z RUN  rx_zero_payload_mgmt_queued_and_counted
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:54.4297751Z PASS rx_zero_payload_mgmt_queued_and_counted
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:54.4298275Z RUN  rx_oversized_truncated_at_bound
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:54.4298749Z PASS rx_oversized_truncated_at_bound
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:54.4299203Z RUN  rx_parse_length_contract
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:54.4299626Z PASS rx_parse_length_contract
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:54.4300094Z RUN  rx_capture_view_fcs_and_body_truncation
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:54.4301418Z PASS rx_capture_view_fcs_and_body_truncation
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:54.4301899Z 11/11 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:55.1172912Z RUN  hostile_misc_null_payload_never_read
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:55.1173876Z PASS hostile_misc_null_payload_never_read
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:55.1174434Z RUN  hostile_unknown_type_never_read
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:55.1174983Z PASS hostile_unknown_type_never_read
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:55.1175521Z 2/2 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:55.8441604Z RUN  ap_insert_change_unchanged
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:55.8442366Z PASS ap_insert_change_unchanged
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:55.8442959Z RUN  ap_eviction_and_reappear
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:55.8443651Z PASS ap_eviction_and_reappear
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:55.8444417Z RUN  ap_incomplete_observation_skipped
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:55.8445117Z PASS ap_incomplete_observation_skipped
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:55.8445599Z RUN  ap_hidden_ssid_keeps_known_name
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:55.8445950Z PASS ap_hidden_ssid_keeps_known_name
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:55.8446298Z RUN  ap_absent_ds_keeps_cached_channel
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:55.8446682Z PASS ap_absent_ds_keeps_cached_channel
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:55.8447520Z RUN  ap_complete_observation_negative_evidence
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:55.8448247Z PASS ap_complete_observation_negative_evidence
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:55.8448886Z 6/6 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:56.5523666Z RUN  hopper_build_from_country
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:56.5524209Z PASS hopper_build_from_country
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:56.5524697Z RUN  hopper_err_classify
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:56.5525088Z PASS hopper_err_classify
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:56.5525524Z RUN  hopper_bounded_failure_policy
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:56.5525992Z PASS hopper_bounded_failure_policy
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:56.5526448Z RUN  hopper_log_throttle
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:56.5526794Z PASS hopper_log_throttle
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:56.5527019Z 4/4 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:57.3474959Z RUN  world_create_and_merge
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:57.3475498Z PASS world_create_and_merge
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:57.3476815Z RUN  world_hidden_never_clears_name
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:57.3477807Z PASS world_hidden_never_clears_name
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:57.3478402Z RUN  world_embedded_nul_and_raw_bytes
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:57.3478919Z PASS world_embedded_nul_and_raw_bytes
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:57.3479440Z RUN  world_truncated_observation_partial_update
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:57.3480039Z PASS world_truncated_observation_partial_update
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:57.3480658Z RUN  world_truncated_ds_ie_still_applies
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:57.3547062Z PASS world_truncated_ds_ie_still_applies
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:57.3547696Z RUN  world_complete_observation_is_authoritative
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:57.3548271Z PASS world_complete_observation_is_authoritative
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:57.3548776Z RUN  world_invalid_bssid_rejected
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:57.3549214Z PASS world_invalid_bssid_rejected
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:57.3549649Z RUN  world_stale_timestamp_ignored
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:57.3550084Z PASS world_stale_timestamp_ignored
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:57.3550631Z RUN  world_ttl_expiry_edges
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:57.3551547Z PASS world_ttl_expiry_edges
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:57.3551872Z RUN  world_maintenance_without_traffic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:57.3552239Z PASS world_maintenance_without_traffic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:57.3552584Z RUN  world_capacity_evicts_oldest
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:57.3552863Z PASS world_capacity_evicts_oldest
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:57.3553175Z RUN  world_eviction_tie_breaks_to_lowest_slot
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:57.3553508Z PASS world_eviction_tie_breaks_to_lowest_slot
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:57.3553884Z RUN  world_full_table_sweeps_expired_before_evicting
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:57.3554312Z PASS world_full_table_sweeps_expired_before_evicting
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:57.3554839Z RUN  world_loop_churn_bounded
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:57.3555353Z PASS world_loop_churn_bounded
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:57.3555864Z RUN  world_page_export_bounds
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:57.3556263Z PASS world_page_export_bounds
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:57.3556677Z RUN  world_parser_to_world_end_to_end
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:57.3557116Z PASS world_parser_to_world_end_to_end
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:57.3557536Z 16/16 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.0803766Z RUN  data_addrs_four_ds_combinations
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.0804431Z PASS data_addrs_four_ds_combinations
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.0805387Z RUN  data_addrs_header_length_math
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.0806148Z PASS data_addrs_header_length_math
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.0806768Z RUN  data_addrs_short_headers_rejected
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.0807401Z PASS data_addrs_short_headers_rejected
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.0807855Z RUN  data_addrs_protocol_guards
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.0808390Z PASS data_addrs_protocol_guards
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.0808947Z RUN  data_addrs_protected_frame_header_visible
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.0809615Z PASS data_addrs_protected_frame_header_visible
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.0810360Z RUN  data_addrs_broadcast_multicast_parsed_but_unfiltered
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.0811454Z PASS data_addrs_broadcast_multicast_parsed_but_unfiltered
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.0812068Z 6/6 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.9142323Z RUN  sta_uplink_discovers_sta_and_provisional_ap
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.9142981Z PASS sta_uplink_discovers_sta_and_provisional_ap
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.9143514Z RUN  sta_downlink_rssi_belongs_to_ap
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.9143977Z PASS sta_downlink_rssi_belongs_to_ap
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.9144499Z RUN  sta_up_and_down_same_sta_single_record
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.9145020Z PASS sta_up_and_down_same_sta_single_record
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.9145543Z RUN  sta_beacon_confirms_provisional_ap
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.9145895Z PASS sta_beacon_confirms_provisional_ap
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.9146206Z RUN  sta_broadcast_and_invalid_destinations
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.9146507Z PASS sta_broadcast_and_invalid_destinations
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.9146810Z RUN  sta_probe_discovers_sta_only
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.9147084Z PASS sta_probe_discovers_sta_only
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.9147346Z RUN  sta_mgmt_tx_records_sta
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.9147588Z PASS sta_mgmt_tx_records_sta
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.9147843Z RUN  sta_uplink_switches_to_newer_ap
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.9148393Z PASS sta_uplink_switches_to_newer_ap
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.9149087Z RUN  sta_weaker_downlink_never_steals_binding
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.9149637Z PASS sta_weaker_downlink_never_steals_binding
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.9150104Z RUN  sta_equal_strength_freshness_wins
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.9150550Z PASS sta_equal_strength_freshness_wins
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.9151272Z RUN  sta_uplink_upgrades_downlink_evidence
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.9151805Z PASS sta_uplink_upgrades_downlink_evidence
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.9152335Z RUN  sta_relation_ttl_before_sta_ttl
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.9152833Z PASS sta_relation_ttl_before_sta_ttl
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.9153339Z RUN  sta_sta_ttl_removes_record
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.9153781Z PASS sta_sta_ttl_removes_record
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.9154240Z RUN  sta_ap_expiry_unbinds_but_keeps_sta
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.9154734Z PASS sta_ap_expiry_unbinds_but_keeps_sta
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.9155209Z RUN  sta_stale_data_ignored
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.9155611Z PASS sta_stale_data_ignored
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.9156011Z RUN  sta_ap_slot_reuse_never_dangles
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.9156436Z PASS sta_ap_slot_reuse_never_dangles
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.9156890Z RUN  sta_weak_creators_never_evict
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.9157392Z PASS sta_weak_creators_never_evict
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.9157844Z RUN  sta_data_ambiguous_and_wds_counted
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.9158325Z PASS sta_data_ambiguous_and_wds_counted
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.9158799Z RUN  sta_parser_to_world_data_end_to_end
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.9159276Z PASS sta_parser_to_world_data_end_to_end
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.9159738Z RUN  sta_relation_churn_invariants
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.9160171Z PASS sta_relation_churn_invariants
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:58.9160571Z 20/20 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:59.7592079Z RUN  sec_rsn_psk
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:59.7592484Z PASS sec_rsn_psk
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:59.7592904Z RUN  sec_rsn_enterprise_sae_owe_transition
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:59.7593524Z PASS sec_rsn_enterprise_sae_owe_transition
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:59.7594083Z RUN  sec_wpa_vendor_psk
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:59.7594628Z PASS sec_wpa_vendor_psk
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:59.7595268Z RUN  sec_wpa_and_rsn_distinction
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:59.7595814Z PASS sec_wpa_and_rsn_distinction
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:59.7596203Z RUN  sec_unknown_suites_kept_unknown
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:59.7596541Z PASS sec_unknown_suites_kept_unknown
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:59.7597089Z RUN  sec_count_overflow_malformed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:59.7597396Z PASS sec_count_overflow_malformed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:59.7597704Z RUN  sec_bad_version_and_short_bodies
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:59.7598158Z PASS sec_bad_version_and_short_bodies
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:59.7598464Z RUN  sec_optional_tails
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:59.7598736Z PASS sec_optional_tails
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:59.7599008Z RUN  sec_long_beacon_cut_positions
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:59.7599320Z PASS sec_long_beacon_cut_positions
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:59.7599630Z RUN  sec_world_open_and_privacy
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:59.7599928Z PASS sec_world_open_and_privacy
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:59.7600259Z RUN  sec_world_valid_then_malformed_no_downgrade
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:59.7600656Z PASS sec_world_valid_then_malformed_no_downgrade
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:59.7601398Z RUN  sec_world_truncated_rsn_positive_evidence
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:59.7601797Z PASS sec_world_truncated_rsn_positive_evidence
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:59.7602153Z RUN  sec_world_security_names
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:59.7602451Z PASS sec_world_security_names
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:59.7602785Z RUN  sec_ie_commit_is_atomic_and_order_independent
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:59.7603191Z PASS sec_ie_commit_is_atomic_and_order_independent
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:59.7603642Z RUN  sec_world_partial_protocol_merge_preserves_other_protocol
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:59.7604139Z PASS sec_world_partial_protocol_merge_preserves_other_protocol
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:40:59.7604533Z 15/15 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:00.4692394Z RUN  mgmt_auth_request_vs_ap_response
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:00.4693118Z PASS mgmt_auth_request_vs_ap_response
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:00.4693734Z RUN  mgmt_auth_fixed_body_and_status
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:00.4694427Z PASS mgmt_auth_fixed_body_and_status
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:00.4695235Z RUN  mgmt_assoc_request_and_response
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:00.4695699Z PASS mgmt_assoc_request_and_response
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:00.4696097Z RUN  mgmt_invalid_or_ambiguous_rejected
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:00.4696516Z PASS mgmt_invalid_or_ambiguous_rejected
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:00.4696860Z 4/4 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:01.2616501Z RUN  eapol_plain_qos_order_direction
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:01.2616962Z PASS eapol_plain_qos_order_direction
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:01.2617252Z RUN  eapol_strict_llc_snap
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:01.2617501Z PASS eapol_strict_llc_snap
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:01.2617757Z RUN  eapol_null_protected
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:01.2618043Z PASS eapol_null_protected
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:01.2618379Z RUN  eapol_unsupported_layouts_fragments
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:01.2618814Z PASS eapol_unsupported_layouts_fragments
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:01.2619576Z RUN  eapol_versions_lengths_padding_short
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:01.2623024Z PASS eapol_versions_lengths_padding_short
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:01.2623529Z RUN  eapol_key_bounds_classification
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:01.2623928Z PASS eapol_key_bounds_classification
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:01.2624215Z RUN  eapol_capture_truncation
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:01.2624466Z PASS eapol_capture_truncation
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:01.2624717Z RUN  eapol_stats_semantics
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:01.2624947Z PASS eapol_stats_semantics
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:01.2625163Z 8/8 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.0773620Z RUN  pcap_global_header_golden
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.0774245Z PASS pcap_global_header_golden
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.0774614Z RUN  pcap_global_header_short_atomic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.0774993Z PASS pcap_global_header_short_atomic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.0775352Z RUN  pcap_channel_radiotap_golden
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.0775704Z PASS pcap_channel_radiotap_golden
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.0776108Z RUN  pcap_unknown_channel_omitted
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.0776881Z PASS pcap_unknown_channel_omitted
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.0777590Z RUN  pcap_timestamp_boundary_payload
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.0778168Z PASS pcap_timestamp_boundary_payload
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.0778624Z RUN  pcap_large_monotonic_and_range
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.0778984Z PASS pcap_large_monotonic_and_range
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.0779343Z RUN  pcap_timestamp_before_anchor_atomic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.0779735Z PASS pcap_timestamp_before_anchor_atomic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.0780096Z RUN  pcap_empty_short_mac
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.0780406Z PASS pcap_empty_short_mac
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.0781090Z RUN  pcap_invalid_and_contradictory_lengths
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.0781807Z PASS pcap_invalid_and_contradictory_lengths
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.0782192Z RUN  pcap_capacity_failure_atomic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.0782673Z PASS pcap_capacity_failure_atomic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.0783013Z RUN  pcap_fcs_and_capture_truncation
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.0783376Z PASS pcap_fcs_and_capture_truncation
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.0783717Z RUN  pcap_512_bound_max_record
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.0783979Z PASS pcap_512_bound_max_record
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.0784245Z RUN  pcap_reference_generate_synthetic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.0784579Z PASS pcap_reference_generate_synthetic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.0784830Z 13/13 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.9228891Z RUN  submit_copy_and_stop_sync
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.9229571Z PASS submit_copy_and_stop_sync
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.9230072Z RUN  queue_full_fifo_and_drain
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.9230585Z PASS queue_full_fifo_and_drain
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.9231327Z RUN  valid_mgmt_control_data
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.9231857Z PASS valid_mgmt_control_data
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.9232415Z RUN  slow_writer_not_producer_lock
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.9233038Z PASS slow_writer_not_producer_lock
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.9233566Z RUN  partial_write_offset
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.9234025Z PASS partial_write_offset
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.9234330Z RUN  partial_write_error_cleanup
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.9234713Z PASS partial_write_error_cleanup
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.9235174Z RUN  enospc_and_header_flush
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.9235487Z PASS enospc_and_header_flush
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.9235784Z RUN  filename_conflict_restart
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.9236082Z PASS filename_conflict_restart
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.9236371Z RUN  rotation_session_limit
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.9236687Z PASS rotation_session_limit
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.9237296Z RUN  age_rotation_filtering
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.9237910Z PASS age_rotation_filtering
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.9238406Z RUN  pre_session_rx_timestamp
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.9238862Z PASS pre_session_rx_timestamp
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.9239258Z RUN  open_close_error_recovery
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.9239789Z PASS open_close_error_recovery
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.9240213Z 12/12 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:02.9240588Z == host tests (ASan+UBSan) ==
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:05.3319444Z RUN  parse_fc_basic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:05.3320412Z PASS parse_fc_basic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:05.3324082Z RUN  parse_short_rejected
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:05.3324486Z PASS parse_short_rejected
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:05.3324876Z RUN  beacon_minimal_complete
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:05.3325266Z PASS beacon_minimal_complete
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:05.3325653Z RUN  beacon_typical_fields
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:05.3445994Z PASS beacon_typical_fields
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:05.3446533Z RUN  ssid_lengths
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:05.3447670Z PASS ssid_lengths
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:05.3448022Z RUN  ssid_all_zero_is_hidden
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:05.3454786Z PASS ssid_all_zero_is_hidden
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:05.3455440Z RUN  duplicate_ssid_first_wins
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:05.3469451Z PASS duplicate_ssid_first_wins
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:05.3469941Z RUN  ds_param_validation
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:05.3470365Z PASS ds_param_validation
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:05.3471063Z RUN  trailing_byte_in_complete_body
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:05.3471555Z PASS trailing_byte_in_complete_body
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:05.3472027Z RUN  ie_body_overrun_complete_frame
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:05.3472514Z PASS ie_body_overrun_complete_frame
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:05.3472929Z RUN  capture_cut_inside_ie_body
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:05.3473195Z PASS capture_cut_inside_ie_body
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:05.3473441Z RUN  capture_cut_at_ie_boundary
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:05.3473682Z PASS capture_cut_at_ie_boundary
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:05.3473920Z RUN  fcs_never_walked_as_ie_513
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:05.3474156Z PASS fcs_never_walked_as_ie_513
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:05.3474394Z RUN  fcs_never_walked_as_ie_514
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:05.3474623Z PASS fcs_never_walked_as_ie_514
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:05.3474868Z RUN  capture_cut_inside_mac_body
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:05.3475114Z PASS capture_cut_inside_mac_body
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:05.3475371Z RUN  deep_parse_rejects_protocol_version_1
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:05.3475661Z PASS deep_parse_rejects_protocol_version_1
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:05.3475936Z RUN  deep_parse_rejects_order_bit
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:05.3476508Z PASS deep_parse_rejects_order_bit
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:05.3476764Z RUN  deep_parse_rejects_more_fragments
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:05.3477167Z PASS deep_parse_rejects_more_fragments
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:05.3477458Z RUN  deep_parse_rejects_short_fixed_body
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:05.3477739Z PASS deep_parse_rejects_short_fixed_body
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:05.3478008Z RUN  probe_req_parse_and_truncation
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:05.3478267Z PASS probe_req_parse_and_truncation
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:05.3478504Z 20/20 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:07.5334078Z RUN  rx_good_frame_flow
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:07.5335147Z PASS rx_good_frame_flow
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:07.5336437Z RUN  rx_timestamp_copy_delay_and_slot_reuse
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:07.5337211Z PASS rx_timestamp_copy_delay_and_slot_reuse
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:07.5340518Z RUN  rx_packet_pool_memory_budget
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:07.5341199Z PASS rx_packet_pool_memory_budget
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:07.5341644Z RUN  rx_drop_accounting
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:07.5342011Z PASS rx_drop_accounting
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:07.5342299Z RUN  rx_state_errors_never_leak_slots
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:07.5342580Z PASS rx_state_errors_never_leak_slots
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:07.5342869Z RUN  rx_misc_whitelist_no_payload_access
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:07.5343170Z PASS rx_misc_whitelist_no_payload_access
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:07.5343473Z RUN  rx_misc_defensive_even_with_bogus_payload_len
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:07.5343823Z PASS rx_misc_defensive_even_with_bogus_payload_len
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:07.5344163Z RUN  rx_zero_payload_mgmt_queued_and_counted
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:07.5344472Z PASS rx_zero_payload_mgmt_queued_and_counted
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:07.5344763Z RUN  rx_oversized_truncated_at_bound
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:07.5345046Z PASS rx_oversized_truncated_at_bound
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:07.5345310Z RUN  rx_parse_length_contract
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:07.5345565Z PASS rx_parse_length_contract
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:07.5345825Z RUN  rx_capture_view_fcs_and_body_truncation
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:07.5346128Z PASS rx_capture_view_fcs_and_body_truncation
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:07.5346398Z 11/11 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:09.1056086Z RUN  hostile_misc_null_payload_never_read
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:09.1059389Z PASS hostile_misc_null_payload_never_read
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:09.1059936Z RUN  hostile_unknown_type_never_read
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:09.1060360Z PASS hostile_unknown_type_never_read
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:09.1060628Z 2/2 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:10.7395795Z RUN  ap_insert_change_unchanged
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:10.7400840Z PASS ap_insert_change_unchanged
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:10.7401572Z RUN  ap_eviction_and_reappear
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:10.7402031Z PASS ap_eviction_and_reappear
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:10.7402319Z RUN  ap_incomplete_observation_skipped
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:10.7402628Z PASS ap_incomplete_observation_skipped
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:10.7402995Z RUN  ap_hidden_ssid_keeps_known_name
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:10.7403331Z PASS ap_hidden_ssid_keeps_known_name
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:10.7403603Z RUN  ap_absent_ds_keeps_cached_channel
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:10.7403883Z PASS ap_absent_ds_keeps_cached_channel
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:10.7404316Z RUN  ap_complete_observation_negative_evidence
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:10.7404715Z PASS ap_complete_observation_negative_evidence
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:10.7404996Z 6/6 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:12.3151849Z RUN  hopper_build_from_country
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:12.3152560Z PASS hopper_build_from_country
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:12.3153124Z RUN  hopper_err_classify
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:12.3153555Z PASS hopper_err_classify
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:12.3154066Z RUN  hopper_bounded_failure_policy
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:12.3154584Z PASS hopper_bounded_failure_policy
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:12.3155046Z RUN  hopper_log_throttle
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:12.3155463Z PASS hopper_log_throttle
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:12.3155910Z 4/4 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:14.1028350Z RUN  world_create_and_merge
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:14.1030355Z PASS world_create_and_merge
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:14.1031082Z RUN  world_hidden_never_clears_name
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:14.1031429Z PASS world_hidden_never_clears_name
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:14.1032024Z RUN  world_embedded_nul_and_raw_bytes
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:14.1032569Z PASS world_embedded_nul_and_raw_bytes
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:14.1033661Z RUN  world_truncated_observation_partial_update
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:14.1034356Z PASS world_truncated_observation_partial_update
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:14.1035445Z RUN  world_truncated_ds_ie_still_applies
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:14.1036093Z PASS world_truncated_ds_ie_still_applies
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:14.1036771Z RUN  world_complete_observation_is_authoritative
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:14.1037429Z PASS world_complete_observation_is_authoritative
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:14.1038140Z RUN  world_invalid_bssid_rejected
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:14.1038725Z PASS world_invalid_bssid_rejected
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:14.1039244Z RUN  world_stale_timestamp_ignored
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:14.1039802Z PASS world_stale_timestamp_ignored
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:14.1040289Z RUN  world_ttl_expiry_edges
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:14.1040970Z PASS world_ttl_expiry_edges
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:14.1041490Z RUN  world_maintenance_without_traffic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:14.1042125Z PASS world_maintenance_without_traffic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:14.1042675Z RUN  world_capacity_evicts_oldest
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:14.1043157Z PASS world_capacity_evicts_oldest
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:14.1043712Z RUN  world_eviction_tie_breaks_to_lowest_slot
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:14.1044390Z PASS world_eviction_tie_breaks_to_lowest_slot
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:14.1045097Z RUN  world_full_table_sweeps_expired_before_evicting
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:14.1045685Z PASS world_full_table_sweeps_expired_before_evicting
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:14.1071836Z RUN  world_loop_churn_bounded
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:14.1175557Z PASS world_loop_churn_bounded
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:14.1176442Z RUN  world_page_export_bounds
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:14.1188512Z PASS world_page_export_bounds
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:14.1189577Z RUN  world_parser_to_world_end_to_end
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:14.1190428Z PASS world_parser_to_world_end_to_end
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:14.1191641Z 16/16 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:15.7486814Z RUN  data_addrs_four_ds_combinations
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:15.7489606Z PASS data_addrs_four_ds_combinations
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:15.7511612Z RUN  data_addrs_header_length_math
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:15.7533708Z PASS data_addrs_header_length_math
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:15.7537966Z RUN  data_addrs_short_headers_rejected
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:15.7538449Z PASS data_addrs_short_headers_rejected
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:15.7538918Z RUN  data_addrs_protocol_guards
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:15.7539320Z PASS data_addrs_protocol_guards
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:15.7539762Z RUN  data_addrs_protected_frame_header_visible
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:15.7540276Z PASS data_addrs_protected_frame_header_visible
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:15.7541060Z RUN  data_addrs_broadcast_multicast_parsed_but_unfiltered
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:15.7541684Z PASS data_addrs_broadcast_multicast_parsed_but_unfiltered
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:15.7542189Z 6/6 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:17.6537608Z RUN  sta_uplink_discovers_sta_and_provisional_ap
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:17.6539199Z PASS sta_uplink_discovers_sta_and_provisional_ap
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:17.6557297Z RUN  sta_downlink_rssi_belongs_to_ap
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:17.6557823Z PASS sta_downlink_rssi_belongs_to_ap
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:17.6558274Z RUN  sta_up_and_down_same_sta_single_record
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:17.6558803Z PASS sta_up_and_down_same_sta_single_record
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:17.6559329Z RUN  sta_beacon_confirms_provisional_ap
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:17.6559808Z PASS sta_beacon_confirms_provisional_ap
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:17.6560297Z RUN  sta_broadcast_and_invalid_destinations
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:17.6561323Z PASS sta_broadcast_and_invalid_destinations
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:17.6561843Z RUN  sta_probe_discovers_sta_only
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:17.6562301Z PASS sta_probe_discovers_sta_only
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:17.6562755Z RUN  sta_mgmt_tx_records_sta
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:17.6563175Z PASS sta_mgmt_tx_records_sta
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:17.6563600Z RUN  sta_uplink_switches_to_newer_ap
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:17.6564065Z PASS sta_uplink_switches_to_newer_ap
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:17.6566435Z RUN  sta_weaker_downlink_never_steals_binding
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:17.6567036Z PASS sta_weaker_downlink_never_steals_binding
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:17.6567575Z RUN  sta_equal_strength_freshness_wins
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:17.6568056Z PASS sta_equal_strength_freshness_wins
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:17.6568533Z RUN  sta_uplink_upgrades_downlink_evidence
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:17.6569381Z PASS sta_uplink_upgrades_downlink_evidence
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:17.6569866Z RUN  sta_relation_ttl_before_sta_ttl
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:17.6570516Z PASS sta_relation_ttl_before_sta_ttl
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:17.6571217Z RUN  sta_sta_ttl_removes_record
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:17.6571656Z PASS sta_sta_ttl_removes_record
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:17.6572090Z RUN  sta_ap_expiry_unbinds_but_keeps_sta
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:17.6572593Z PASS sta_ap_expiry_unbinds_but_keeps_sta
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:17.6573051Z RUN  sta_stale_data_ignored
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:17.6573446Z PASS sta_stale_data_ignored
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:17.6573841Z RUN  sta_ap_slot_reuse_never_dangles
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:17.6574280Z PASS sta_ap_slot_reuse_never_dangles
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:17.6574717Z RUN  sta_weak_creators_never_evict
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:17.6575150Z PASS sta_weak_creators_never_evict
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:17.6575589Z RUN  sta_data_ambiguous_and_wds_counted
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:17.6576052Z PASS sta_data_ambiguous_and_wds_counted
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:17.6576523Z RUN  sta_parser_to_world_data_end_to_end
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:17.6576993Z PASS sta_parser_to_world_data_end_to_end
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:17.6577445Z RUN  sta_relation_churn_invariants
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:17.6577887Z PASS sta_relation_churn_invariants
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:17.6578252Z 20/20 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:19.6674646Z RUN  sec_rsn_psk
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:19.6679166Z PASS sec_rsn_psk
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:19.6679583Z RUN  sec_rsn_enterprise_sae_owe_transition
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:19.6680132Z PASS sec_rsn_enterprise_sae_owe_transition
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:19.6680446Z RUN  sec_wpa_vendor_psk
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:19.6680683Z PASS sec_wpa_vendor_psk
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:19.6681252Z RUN  sec_wpa_and_rsn_distinction
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:19.6681520Z PASS sec_wpa_and_rsn_distinction
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:19.6681786Z RUN  sec_unknown_suites_kept_unknown
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:19.6682076Z PASS sec_unknown_suites_kept_unknown
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:19.6682354Z RUN  sec_count_overflow_malformed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:19.6682628Z PASS sec_count_overflow_malformed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:19.6682924Z RUN  sec_bad_version_and_short_bodies
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:19.6683209Z PASS sec_bad_version_and_short_bodies
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:19.6683491Z RUN  sec_optional_tails
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:19.6683742Z PASS sec_optional_tails
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:19.6683979Z RUN  sec_long_beacon_cut_positions
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:19.6684257Z PASS sec_long_beacon_cut_positions
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:19.6684528Z RUN  sec_world_open_and_privacy
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:19.6744116Z PASS sec_world_open_and_privacy
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:19.6744733Z RUN  sec_world_valid_then_malformed_no_downgrade
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:19.6745384Z PASS sec_world_valid_then_malformed_no_downgrade
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:19.6745799Z RUN  sec_world_truncated_rsn_positive_evidence
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:19.6746265Z PASS sec_world_truncated_rsn_positive_evidence
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:19.6746816Z RUN  sec_world_security_names
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:19.6747290Z PASS sec_world_security_names
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:19.6747850Z RUN  sec_ie_commit_is_atomic_and_order_independent
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:19.6748527Z PASS sec_ie_commit_is_atomic_and_order_independent
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:19.6749409Z RUN  sec_world_partial_protocol_merge_preserves_other_protocol
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:19.6750443Z PASS sec_world_partial_protocol_merge_preserves_other_protocol
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:19.6751491Z 15/15 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:21.2690770Z RUN  mgmt_auth_request_vs_ap_response
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:21.2692109Z PASS mgmt_auth_request_vs_ap_response
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:21.2693552Z RUN  mgmt_auth_fixed_body_and_status
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:21.2694032Z PASS mgmt_auth_fixed_body_and_status
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:21.2694488Z RUN  mgmt_assoc_request_and_response
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:21.2694951Z PASS mgmt_assoc_request_and_response
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:21.2695491Z RUN  mgmt_invalid_or_ambiguous_rejected
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:21.2696013Z PASS mgmt_invalid_or_ambiguous_rejected
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:21.2696470Z 4/4 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:23.0609277Z RUN  eapol_plain_qos_order_direction
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:23.0611218Z PASS eapol_plain_qos_order_direction
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:23.0611706Z RUN  eapol_strict_llc_snap
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:23.0612560Z PASS eapol_strict_llc_snap
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:23.0612971Z RUN  eapol_null_protected
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:23.0613379Z PASS eapol_null_protected
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:23.0614077Z RUN  eapol_unsupported_layouts_fragments
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:23.0614919Z PASS eapol_unsupported_layouts_fragments
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:23.0615835Z RUN  eapol_versions_lengths_padding_short
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:23.0627559Z PASS eapol_versions_lengths_padding_short
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:23.0628193Z RUN  eapol_key_bounds_classification
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:23.0628758Z PASS eapol_key_bounds_classification
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:23.0629475Z RUN  eapol_capture_truncation
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:23.0630261Z PASS eapol_capture_truncation
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:23.0631213Z RUN  eapol_stats_semantics
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:23.0631808Z PASS eapol_stats_semantics
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:23.0632522Z 8/8 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:24.9221677Z RUN  pcap_global_header_golden
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:24.9222267Z PASS pcap_global_header_golden
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:24.9222717Z RUN  pcap_global_header_short_atomic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:24.9223208Z PASS pcap_global_header_short_atomic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:24.9223666Z RUN  pcap_channel_radiotap_golden
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:24.9224122Z PASS pcap_channel_radiotap_golden
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:24.9224552Z RUN  pcap_unknown_channel_omitted
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:24.9224979Z PASS pcap_unknown_channel_omitted
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:24.9225415Z RUN  pcap_timestamp_boundary_payload
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:24.9225714Z PASS pcap_timestamp_boundary_payload
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:24.9225996Z RUN  pcap_large_monotonic_and_range
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:24.9226256Z PASS pcap_large_monotonic_and_range
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:24.9226530Z RUN  pcap_timestamp_before_anchor_atomic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:24.9226815Z PASS pcap_timestamp_before_anchor_atomic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:24.9227083Z RUN  pcap_empty_short_mac
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:24.9227323Z PASS pcap_empty_short_mac
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:24.9227586Z RUN  pcap_invalid_and_contradictory_lengths
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:24.9227911Z PASS pcap_invalid_and_contradictory_lengths
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:24.9228211Z RUN  pcap_capacity_failure_atomic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:24.9228468Z PASS pcap_capacity_failure_atomic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:24.9228724Z RUN  pcap_fcs_and_capture_truncation
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:24.9228990Z PASS pcap_fcs_and_capture_truncation
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:24.9229246Z RUN  pcap_512_bound_max_record
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:24.9229493Z PASS pcap_512_bound_max_record
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:24.9229740Z RUN  pcap_reference_generate_synthetic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:24.9236452Z PASS pcap_reference_generate_synthetic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:24.9236990Z 13/13 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:26.7613974Z RUN  submit_copy_and_stop_sync
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:26.7626554Z PASS submit_copy_and_stop_sync
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:26.7627329Z RUN  queue_full_fifo_and_drain
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:26.7627833Z PASS queue_full_fifo_and_drain
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:26.7628253Z RUN  valid_mgmt_control_data
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:26.7628674Z PASS valid_mgmt_control_data
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:26.7629114Z RUN  slow_writer_not_producer_lock
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:26.7635718Z PASS slow_writer_not_producer_lock
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:26.7636417Z RUN  partial_write_offset
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:26.7636844Z PASS partial_write_offset
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:26.7637255Z RUN  partial_write_error_cleanup
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:26.7637690Z PASS partial_write_error_cleanup
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:26.7638100Z RUN  enospc_and_header_flush
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:26.7638496Z PASS enospc_and_header_flush
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:26.7638987Z RUN  filename_conflict_restart
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:26.7639601Z PASS filename_conflict_restart
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:26.7640020Z RUN  rotation_session_limit
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:26.7640379Z PASS rotation_session_limit
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:26.7640942Z RUN  age_rotation_filtering
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:26.7641328Z PASS age_rotation_filtering
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:26.7641722Z RUN  pre_session_rx_timestamp
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:26.7642176Z PASS pre_session_rx_timestamp
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:26.7642613Z RUN  open_close_error_recovery
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:26.7643076Z PASS open_close_error_recovery
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:26.7643472Z 12/12 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:41:26.7688308Z ALL HOST TESTS PASSED
+Host regression tests	Install independent pcap reader	﻿2026-09-24T11:41:26.7741132Z ##[group]Run sudo apt-get update
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:26.7741672Z ^[[36;1msudo apt-get update^[[0m
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:26.7742309Z ^[[36;1msudo DEBIAN_FRONTEND=noninteractive apt-get install -y tshark^[[0m
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:26.7812095Z shell: /usr/bin/bash -e {0}
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:26.7812388Z ##[endgroup]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:26.8697130Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:26.9011052Z Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:26.9012131Z Get:6 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:26.9039415Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:26.9081616Z Get:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:26.9098488Z Get:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:27.0374478Z Get:7 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [439 kB]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:27.0583605Z Get:8 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [489 kB]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:27.0963777Z Get:9 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1308 kB]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:27.1026514Z Get:10 http://azure.archive.ubuntu.com/ubuntu noble-updates/main Translation-en [298 kB]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:27.1044762Z Get:11 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Components [181 kB]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:27.1058979Z Get:12 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1698 kB]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:27.1141506Z Get:13 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe Translation-en [340 kB]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:27.1162948Z Get:14 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Components [388 kB]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:27.1187080Z Get:15 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [1635 kB]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:27.1271504Z Get:16 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en [372 kB]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:27.1301757Z Get:17 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Components [940 B]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:27.1570326Z Get:18 http://azure.archive.ubuntu.com/ubuntu noble-backports/main amd64 Packages [40.6 kB]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:27.2087299Z Get:19 http://azure.archive.ubuntu.com/ubuntu noble-backports/main amd64 Components [5740 B]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:27.2088483Z Get:20 http://azure.archive.ubuntu.com/ubuntu noble-backports/universe amd64 Packages [31.0 kB]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:27.2089477Z Get:21 http://azure.archive.ubuntu.com/ubuntu noble-backports/universe Translation-en [18.6 kB]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:27.2090531Z Get:22 http://azure.archive.ubuntu.com/ubuntu noble-backports/universe amd64 Components [12.6 kB]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:27.2099459Z Get:23 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Packages [1053 kB]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:27.2155529Z Get:24 http://azure.archive.ubuntu.com/ubuntu noble-security/main Translation-en [219 kB]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:27.2169713Z Get:25 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Components [46.4 kB]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:27.2177526Z Get:26 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1218 kB]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:27.2239466Z Get:27 http://azure.archive.ubuntu.com/ubuntu noble-security/universe Translation-en [244 kB]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:27.2253872Z Get:28 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Components [76.4 kB]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:27.2263525Z Get:29 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [1535 kB]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:27.2349182Z Get:30 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted Translation-en [353 kB]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:31.6071827Z Fetched 12.4 MB in 1s (9086 kB/s)
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:32.4431526Z Reading package lists...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:32.4743737Z Reading package lists...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:32.6703577Z Building dependency tree...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:32.6710862Z Reading state information...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:32.8160132Z The following additional packages will be installed:
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:32.8162444Z   libbcg729-0 liblua5.2-0 libnghttp3-3 libopencore-amrnb0 libopus0 libsbc1
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:32.8163660Z   libsmi2t64 libspandsp2t64 libspeexdsp1 libssh-gcrypt-4 libwireshark-data
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:32.8164934Z   libwireshark17t64 libwiretap14t64 libwsutil15t64 wireshark-common
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:32.8172265Z Suggested packages:
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:32.8172991Z   opus-tools snmp-mibs-downloader geoipupdate geoip-database
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:32.8173890Z   geoip-database-extra libjs-leaflet libjs-leaflet.markercluster wireshark-doc
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:32.8361559Z The following NEW packages will be installed:
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:32.8364222Z   libbcg729-0 liblua5.2-0 libnghttp3-3 libopencore-amrnb0 libopus0 libsbc1
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:32.8365206Z   libsmi2t64 libspandsp2t64 libspeexdsp1 libssh-gcrypt-4 libwireshark-data
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:32.8367310Z   libwireshark17t64 libwiretap14t64 libwsutil15t64 tshark wireshark-common
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:32.8539001Z 0 upgraded, 16 newly installed, 0 to remove and 28 not upgraded.
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:32.8539717Z Need to get 26.5 MB of archives.
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:32.8540312Z After this operation, 138 MB of additional disk space will be used.
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:32.8541292Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:32.9902294Z Get:2 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libbcg729-0 amd64 1.1.1-2build1 [35.3 kB]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:33.1371159Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 liblua5.2-0 amd64 5.2.4-3build2 [123 kB]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:33.3289514Z Get:4 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libnghttp3-3 amd64 0.8.0-2 [59.0 kB]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:33.4082064Z Get:5 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libopencore-amrnb0 amd64 0.1.6-1build1 [98.2 kB]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:33.5009013Z Get:6 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libopus0 amd64 1.4-1build1 [208 kB]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:33.7024733Z Get:7 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libsmi2t64 amd64 0.4.8+dfsg2-16.1build1 [112 kB]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:33.7915882Z Get:8 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libspandsp2t64 amd64 0.0.6+dfsg-2.1build1 [311 kB]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:34.0592476Z Get:9 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libspeexdsp1 amd64 1.2.1-1ubuntu3 [43.1 kB]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:34.1204761Z Get:10 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libssh-gcrypt-4 amd64 0.10.6-2ubuntu0.5 [226 kB]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:34.1836973Z Get:11 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libwireshark-data all 4.2.2-1.1build3 [454 kB]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:34.2474988Z Get:12 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libsbc1 amd64 2.0-1build1 [33.9 kB]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:34.3083735Z Get:13 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libwsutil15t64 amd64 4.2.2-1.1build3 [121 kB]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:34.3696960Z Get:14 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libwiretap14t64 amd64 4.2.2-1.1build3 [259 kB]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:34.4318924Z Get:15 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libwireshark17t64 amd64 4.2.2-1.1build3 [23.7 MB]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:34.9934819Z Get:16 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 wireshark-common amd64 4.2.2-1.1build3 [587 kB]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:35.0580139Z Get:17 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 tshark amd64 4.2.2-1.1build3 [158 kB]
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:35.2883260Z Preconfiguring packages ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:35.3514015Z Fetched 26.5 MB in 2s (12.0 MB/s)
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:35.3729817Z Selecting previously unselected package libbcg729-0:amd64.
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:35.3979497Z (Reading database ... 
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:35.3980069Z (Reading database ... 5%
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:35.3980402Z (Reading database ... 10%
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:35.3981861Z (Reading database ... 15%
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:35.3982309Z (Reading database ... 20%
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:35.3983025Z (Reading database ... 25%
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:35.3983370Z (Reading database ... 30%
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:35.3983808Z (Reading database ... 35%
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:35.3984046Z (Reading database ... 40%
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:35.3984272Z (Reading database ... 45%
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:35.3984569Z (Reading database ... 50%
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:35.4023191Z (Reading database ... 55%
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:35.5300386Z (Reading database ... 60%
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:35.6844013Z (Reading database ... 65%
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:35.9242528Z (Reading database ... 70%
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:36.0735498Z (Reading database ... 75%
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:36.2326075Z (Reading database ... 80%
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:36.4804147Z (Reading database ... 85%
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:36.6824016Z (Reading database ... 90%
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:36.8856298Z (Reading database ... 95%
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:36.8862052Z (Reading database ... 100%
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:36.8862706Z (Reading database ... 202190 files and directories currently installed.)
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:36.8901732Z Preparing to unpack .../00-libbcg729-0_1.1.1-2build1_amd64.deb ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:36.8950484Z Unpacking libbcg729-0:amd64 (1.1.1-2build1) ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:36.9155244Z Selecting previously unselected package liblua5.2-0:amd64.
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:36.9284002Z Preparing to unpack .../01-liblua5.2-0_5.2.4-3build2_amd64.deb ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:36.9294674Z Unpacking liblua5.2-0:amd64 (5.2.4-3build2) ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:36.9533355Z Selecting previously unselected package libnghttp3-3:amd64.
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:36.9660149Z Preparing to unpack .../02-libnghttp3-3_0.8.0-2_amd64.deb ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:36.9675620Z Unpacking libnghttp3-3:amd64 (0.8.0-2) ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:36.9879407Z Selecting previously unselected package libopencore-amrnb0:amd64.
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:37.0008748Z Preparing to unpack .../03-libopencore-amrnb0_0.1.6-1build1_amd64.deb ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:37.0022098Z Unpacking libopencore-amrnb0:amd64 (0.1.6-1build1) ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:37.0251801Z Selecting previously unselected package libopus0:amd64.
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:37.0379282Z Preparing to unpack .../04-libopus0_1.4-1build1_amd64.deb ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:37.0388599Z Unpacking libopus0:amd64 (1.4-1build1) ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:37.0642989Z Selecting previously unselected package libsmi2t64:amd64.
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:37.0774186Z Preparing to unpack .../05-libsmi2t64_0.4.8+dfsg2-16.1build1_amd64.deb ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:37.0784185Z Unpacking libsmi2t64:amd64 (0.4.8+dfsg2-16.1build1) ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:37.1046266Z Selecting previously unselected package libspandsp2t64:amd64.
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:37.1175990Z Preparing to unpack .../06-libspandsp2t64_0.0.6+dfsg-2.1build1_amd64.deb ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:37.1186587Z Unpacking libspandsp2t64:amd64 (0.0.6+dfsg-2.1build1) ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:37.1430856Z Selecting previously unselected package libspeexdsp1:amd64.
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:37.1559240Z Preparing to unpack .../07-libspeexdsp1_1.2.1-1ubuntu3_amd64.deb ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:37.1568937Z Unpacking libspeexdsp1:amd64 (1.2.1-1ubuntu3) ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:37.1773933Z Selecting previously unselected package libssh-gcrypt-4:amd64.
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:37.1901557Z Preparing to unpack .../08-libssh-gcrypt-4_0.10.6-2ubuntu0.5_amd64.deb ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:37.1911146Z Unpacking libssh-gcrypt-4:amd64 (0.10.6-2ubuntu0.5) ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:37.2138000Z Selecting previously unselected package libwireshark-data.
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:37.2266400Z Preparing to unpack .../09-libwireshark-data_4.2.2-1.1build3_all.deb ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:37.2333527Z Unpacking libwireshark-data (4.2.2-1.1build3) ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:37.3095888Z Selecting previously unselected package libsbc1:amd64.
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:37.3225240Z Preparing to unpack .../10-libsbc1_2.0-1build1_amd64.deb ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:37.3233043Z Unpacking libsbc1:amd64 (2.0-1build1) ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:37.3468639Z Selecting previously unselected package libwsutil15t64:amd64.
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:37.3595599Z Preparing to unpack .../11-libwsutil15t64_4.2.2-1.1build3_amd64.deb ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:37.3605126Z Unpacking libwsutil15t64:amd64 (4.2.2-1.1build3) ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:37.3832791Z Selecting previously unselected package libwiretap14t64:amd64.
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:37.3976732Z Preparing to unpack .../12-libwiretap14t64_4.2.2-1.1build3_amd64.deb ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:37.3985370Z Unpacking libwiretap14t64:amd64 (4.2.2-1.1build3) ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:37.4232840Z Selecting previously unselected package libwireshark17t64:amd64.
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:37.4360592Z Preparing to unpack .../13-libwireshark17t64_4.2.2-1.1build3_amd64.deb ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:37.4371203Z Unpacking libwireshark17t64:amd64 (4.2.2-1.1build3) ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:37.8467227Z Selecting previously unselected package wireshark-common.
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:37.8594876Z Preparing to unpack .../14-wireshark-common_4.2.2-1.1build3_amd64.deb ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:37.8603548Z Unpacking wireshark-common (4.2.2-1.1build3) ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:37.9388150Z Selecting previously unselected package tshark.
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:37.9515499Z Preparing to unpack .../15-tshark_4.2.2-1.1build3_amd64.deb ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:37.9524865Z Unpacking tshark (4.2.2-1.1build3) ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:37.9934652Z Setting up libssh-gcrypt-4:amd64 (0.10.6-2ubuntu0.5) ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:37.9957558Z Setting up libnghttp3-3:amd64 (0.8.0-2) ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:37.9976718Z Setting up libsbc1:amd64 (2.0-1build1) ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:38.0054741Z Setting up libsmi2t64:amd64 (0.4.8+dfsg2-16.1build1) ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:38.0086596Z Setting up libbcg729-0:amd64 (1.1.1-2build1) ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:38.0108615Z Setting up libopus0:amd64 (1.4-1build1) ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:38.0132686Z Setting up libspandsp2t64:amd64 (0.0.6+dfsg-2.1build1) ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:38.0157694Z Setting up libwireshark-data (4.2.2-1.1build3) ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:38.0223604Z Setting up liblua5.2-0:amd64 (5.2.4-3build2) ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:38.0247884Z Setting up libspeexdsp1:amd64 (1.2.1-1ubuntu3) ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:38.0273320Z Setting up libopencore-amrnb0:amd64 (0.1.6-1build1) ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:38.0295121Z Setting up libwsutil15t64:amd64 (4.2.2-1.1build3) ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:38.0320713Z Setting up libwiretap14t64:amd64 (4.2.2-1.1build3) ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:38.0344474Z Setting up libwireshark17t64:amd64 (4.2.2-1.1build3) ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:38.0363894Z Setting up wireshark-common (4.2.2-1.1build3) ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:38.1684105Z Setting up tshark (4.2.2-1.1build3) ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:38.1708042Z Processing triggers for hicolor-icon-theme (0.17-2) ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:38.4161271Z Processing triggers for libc-bin (2.39-0ubuntu8.9) ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:38.4493261Z Processing triggers for man-db (2.12.0-4build2) ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:38.4517351Z Not building database; man-db/auto-update is not 'true'.
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:38.4531607Z Processing triggers for shared-mime-info (2.4-4) ...
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:39.8838602Z 
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:39.8839277Z Running kernel seems to be up-to-date.
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:39.8839752Z 
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:39.8839961Z No services need to be restarted.
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:39.8840268Z 
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:39.8840398Z No containers need to be restarted.
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:39.8840662Z 
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:39.8841045Z No user sessions are running outdated binaries.
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:39.8841318Z 
+Host regression tests	Install independent pcap reader	2026-09-24T11:41:39.8841583Z No VM guests are running outdated hypervisor (qemu) binaries on this host.
+Host regression tests	Validate reference capture with TShark	﻿2026-09-24T11:41:40.8762530Z ##[group]Run python3 tests/host/validate_reference_pcap.py tests/host/build/reference.pcap
+Host regression tests	Validate reference capture with TShark	2026-09-24T11:41:40.8763237Z ^[[36;1mpython3 tests/host/validate_reference_pcap.py tests/host/build/reference.pcap^[[0m
+Host regression tests	Validate reference capture with TShark	2026-09-24T11:41:40.8827164Z shell: /usr/bin/bash -e {0}
+Host regression tests	Validate reference capture with TShark	2026-09-24T11:41:40.8827425Z ##[endgroup]
+Host regression tests	Validate reference capture with TShark	2026-09-24T11:41:41.3268048Z TShark (Wireshark) 4.2.2 (Git v4.2.2 packaged as 4.2.2-1.1build3).
+Host regression tests	Validate reference capture with TShark	2026-09-24T11:41:41.3268526Z == capinfos ==
+Host regression tests	Validate reference capture with TShark	2026-09-24T11:41:41.3268789Z File name:           tests/host/build/reference.pcap
+Host regression tests	Validate reference capture with TShark	2026-09-24T11:41:41.3269123Z Packet size limit:   file hdr: 527 bytes
+Host regression tests	Validate reference capture with TShark	2026-09-24T11:41:41.3269419Z Packet size limit:   inferred: 63 bytes
+Host regression tests	Validate reference capture with TShark	2026-09-24T11:41:41.3269699Z Number of packets:   11
+Host regression tests	Validate reference capture with TShark	2026-09-24T11:41:41.3269933Z File size:           810 bytes
+Host regression tests	Validate reference capture with TShark	2026-09-24T11:41:41.3270182Z == TShark fields (tab-separated) ==
+Host regression tests	Validate reference capture with TShark	2026-09-24T11:41:41.3271100Z frame.number	frame.cap_len	frame.len	frame.time_epoch	radiotap.channel.freq	radiotap.dbm_antsignal	wlan.sa	wlan.da	eapol.type
+Host regression tests	Validate reference capture with TShark	2026-09-24T11:41:41.3272283Z 1	60	60	1700000000.999900000	2412	-42	02:11:22:33:44:55	ff:ff:ff:ff:ff:ff	
+Host regression tests	Validate reference capture with TShark	2026-09-24T11:41:41.3273028Z 2	41	41	1700000000.999950000	2437	-65	02:aa:bb:cc:dd:01	ff:ff:ff:ff:ff:ff	
+Host regression tests	Validate reference capture with TShark	2026-09-24T11:41:41.3273670Z 3	47	47	1700000001.000100000	2462	-47	02:aa:bb:cc:dd:01	02:11:22:33:44:55	
+Host regression tests	Validate reference capture with TShark	2026-09-24T11:41:41.3274333Z 4	44	44	1700000001.001000000		-55	02:aa:bb:cc:dd:01	02:11:22:33:44:55	
+Host regression tests	Validate reference capture with TShark	2026-09-24T11:41:41.3275048Z 5	39	39	1700000001.002000000	2484	-78	02:aa:bb:cc:dd:01	02:11:22:33:44:55	
+Host regression tests	Validate reference capture with TShark	2026-09-24T11:41:41.3275744Z 6	41	41	1700000001.003000000	2412	-83	02:aa:bb:cc:dd:01	02:11:22:33:44:55	
+Host regression tests	Validate reference capture with TShark	2026-09-24T11:41:41.3276344Z 7	25	25	1700000001.999900000	2437	-90			
+Host regression tests	Validate reference capture with TShark	2026-09-24T11:41:41.3276891Z 8	56	56	1700000002.000000000	2437	-42	02:aa:bb:cc:dd:01	02:11:22:33:44:55	0
+Host regression tests	Validate reference capture with TShark	2026-09-24T11:41:41.3277638Z 9	146	146	1700000002.099900000	2462	-37	02:11:22:33:44:55	02:aa:bb:cc:dd:01	3
+Host regression tests	Validate reference capture with TShark	2026-09-24T11:41:41.3278389Z 10	63	146	1700000002.199900000	2484	-60	02:11:22:33:44:55	02:aa:bb:cc:dd:01	3
+Host regression tests	Validate reference capture with TShark	2026-09-24T11:41:41.3279120Z 11	48	48	1700000002.234467000		-80	ff:ff:ff:ff:ff:ff	02:11:22:33:44:55
+Host regression tests	Validate reference capture with TShark	2026-09-24T11:41:41.3279852Z PASS: generated PCAP matches committed reference.pcap (810 bytes)
+Host regression tests	Validate reference capture with TShark	2026-09-24T11:41:41.3280441Z PASS: 11 frame rows match expected.tsv
+Host regression tests	Validate reference capture with TShark	2026-09-24T11:41:41.3281232Z == malformed diagnostic frame numbers ==
+Host regression tests	Validate reference capture with TShark	2026-09-24T11:41:41.3281682Z (none)
+Host regression tests	Validate reference capture with TShark	2026-09-24T11:41:41.3282176Z PASS: only the intentionally capture-truncated frame may be malformed
+Host regression tests	Validate SD logger state-machine capture with TShark	﻿2026-09-24T11:41:41.3364811Z ##[group]Run python3 tests/host/validate_phase3c_capture.py tests/host/build/phase3c_logger_sample.pcap
+Host regression tests	Validate SD logger state-machine capture with TShark	2026-09-24T11:41:41.3365622Z ^[[36;1mpython3 tests/host/validate_phase3c_capture.py tests/host/build/phase3c_logger_sample.pcap^[[0m
+Host regression tests	Validate SD logger state-machine capture with TShark	2026-09-24T11:41:41.3428998Z shell: /usr/bin/bash -e {0}
+Host regression tests	Validate SD logger state-machine capture with TShark	2026-09-24T11:41:41.3429281Z ##[endgroup]
+Host regression tests	Validate SD logger state-machine capture with TShark	2026-09-24T11:41:41.7496655Z TShark (Wireshark) 4.2.2 (Git v4.2.2 packaged as 4.2.2-1.1build3).
+Host regression tests	Validate SD logger state-machine capture with TShark	2026-09-24T11:41:41.7497363Z == capinfos ==
+Host regression tests	Validate SD logger state-machine capture with TShark	2026-09-24T11:41:41.7497663Z File name:           tests/host/build/phase3c_logger_sample.pcap
+Host regression tests	Validate SD logger state-machine capture with TShark	2026-09-24T11:41:41.7498043Z Packet size limit:   file hdr: 527 bytes
+Host regression tests	Validate SD logger state-machine capture with TShark	2026-09-24T11:41:41.7498347Z Packet size limit:   inferred: 527 bytes
+Host regression tests	Validate SD logger state-machine capture with TShark	2026-09-24T11:41:41.7498619Z Number of packets:   1
+Host regression tests	Validate SD logger state-machine capture with TShark	2026-09-24T11:41:41.7498845Z File size:           567 bytes
+Host regression tests	Validate SD logger state-machine capture with TShark	2026-09-24T11:41:41.7499074Z == TShark fields ==
+Host regression tests	Validate SD logger state-machine capture with TShark	2026-09-24T11:41:41.7499598Z frame.number	frame.cap_len	frame.len	frame.time_epoch	radiotap.channel.freq	radiotap.dbm_antsignal	wlan.sa	wlan.da	eapol.type
+Host regression tests	Validate SD logger state-machine capture with TShark	2026-09-24T11:41:41.7500326Z 1	527	1035	0.000100000	2437	-47	02:aa:bb:cc:dd:ee	00:11:22:33:44:55	1
+Host regression tests	Validate SD logger state-machine capture with TShark	2026-09-24T11:41:41.7500974Z PASS: frame lengths, timestamp, channel, RSSI, addresses and EAPOL type match
+Host regression tests	Validate SD logger state-machine capture with TShark	2026-09-24T11:41:41.7501376Z == malformed diagnostics ==
+Host regression tests	Validate SD logger state-machine capture with TShark	2026-09-24T11:41:41.7501597Z (none)
+Host regression tests	Validate SD logger state-machine capture with TShark	2026-09-24T11:41:41.7501843Z PASS: sidecar reports accepted=serialized=written=flushed=1
+Host regression tests	Upload synthetic reference capture	﻿2026-09-24T11:41:41.7641432Z ##[group]Run actions/upload-artifact@v4
+Host regression tests	Upload synthetic reference capture	2026-09-24T11:41:41.7641797Z with:
+Host regression tests	Upload synthetic reference capture	2026-09-24T11:41:41.7642106Z   name: reference-pcap-c56dca3ff54f9de50caa55eb92457eeb2a327df0
+Host regression tests	Upload synthetic reference capture	2026-09-24T11:41:41.7642825Z   path: tests/host/build/reference.pcap
+Host regression tests	Upload synthetic reference capture	tests/host/build/phase3c_logger_sample.pcap
+Host regression tests	Upload synthetic reference capture	tests/host/build/phase3c_logger_sample.summary.txt
+Host regression tests	Upload synthetic reference capture	
+Host regression tests	Upload synthetic reference capture	2026-09-24T11:41:41.7643450Z   if-no-files-found: error
+Host regression tests	Upload synthetic reference capture	2026-09-24T11:41:41.7643685Z   compression-level: 6
+Host regression tests	Upload synthetic reference capture	2026-09-24T11:41:41.7643901Z   overwrite: false
+Host regression tests	Upload synthetic reference capture	2026-09-24T11:41:41.7644108Z   include-hidden-files: false
+Host regression tests	Upload synthetic reference capture	2026-09-24T11:41:41.7644343Z ##[endgroup]
+Host regression tests	Upload synthetic reference capture	2026-09-24T11:41:41.9326065Z (node:3565) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+Host regression tests	Upload synthetic reference capture	2026-09-24T11:41:41.9327028Z (Use `node --trace-deprecation ...` to show where the warning was created)
+Host regression tests	Upload synthetic reference capture	2026-09-24T11:41:41.9384644Z Multiple search paths detected. Calculating the least common ancestor of all paths
+Host regression tests	Upload synthetic reference capture	2026-09-24T11:41:41.9388690Z The least common ancestor is /home/runner/work/esp32c6-Pwnagotchi/esp32c6-Pwnagotchi/tests/host/build. This will be the root directory of the artifact
+Host regression tests	Upload synthetic reference capture	2026-09-24T11:41:41.9391155Z With the provided path, there will be 3 files uploaded
+Host regression tests	Upload synthetic reference capture	2026-09-24T11:41:41.9395965Z Artifact name is valid!
+Host regression tests	Upload synthetic reference capture	2026-09-24T11:41:41.9397190Z Root directory input is valid!
+Host regression tests	Upload synthetic reference capture	2026-09-24T11:41:42.3350046Z Beginning upload of artifact content to blob storage
+Host regression tests	Upload synthetic reference capture	2026-09-24T11:41:42.3568080Z (node:3565) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+Host regression tests	Upload synthetic reference capture	2026-09-24T11:41:42.6324194Z Uploaded bytes 1241
+Host regression tests	Upload synthetic reference capture	2026-09-24T11:41:42.7129531Z Finished uploading artifact content to blob storage!
+Host regression tests	Upload synthetic reference capture	2026-09-24T11:41:42.7130626Z SHA256 digest of uploaded artifact zip is 665dc70a91afcf8c76d9ae3679f47685f6443317ad06f9581519a4ad3f9ee695
+Host regression tests	Upload synthetic reference capture	2026-09-24T11:41:42.7132799Z Finalizing artifact upload
+Host regression tests	Upload synthetic reference capture	2026-09-24T11:41:42.9805374Z Artifact reference-pcap-c56dca3ff54f9de50caa55eb92457eeb2a327df0.zip successfully finalized. Artifact ID 10804973677
+Host regression tests	Upload synthetic reference capture	2026-09-24T11:41:42.9807126Z Artifact reference-pcap-c56dca3ff54f9de50caa55eb92457eeb2a327df0 has been successfully uploaded! Final size is 1241 bytes. Artifact ID is 10804973677
+Host regression tests	Upload synthetic reference capture	2026-09-24T11:41:42.9812104Z Artifact download URL: https://github.com/yuanwil1y/esp32c6-Pwnagotchi/actions/runs/35994419351/artifacts/10804973677
+Host regression tests	Post Checkout	﻿2026-09-24T11:41:43.0019044Z Post job cleanup.
+Host regression tests	Post Checkout	2026-09-24T11:41:43.0911810Z [command]/usr/bin/git version
+Host regression tests	Post Checkout	2026-09-24T11:41:43.0956026Z git version 2.55.0
+Host regression tests	Post Checkout	2026-09-24T11:41:43.0997032Z Temporarily overriding HOME='/home/runner/work/_temp/b3ddb243-0a2f-4998-b390-e9acaee755f7' before making global git config changes
+Host regression tests	Post Checkout	2026-09-24T11:41:43.0998321Z Adding repository directory to the temporary git global config as a safe directory
+Host regression tests	Post Checkout	2026-09-24T11:41:43.1002478Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/esp32c6-Pwnagotchi/esp32c6-Pwnagotchi
+Host regression tests	Post Checkout	2026-09-24T11:41:43.1042647Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+Host regression tests	Post Checkout	2026-09-24T11:41:43.1079081Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Host regression tests	Post Checkout	2026-09-24T11:41:43.1338452Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Host regression tests	Post Checkout	2026-09-24T11:41:43.1368211Z http.https://github.com/.extraheader
+Host regression tests	Post Checkout	2026-09-24T11:41:43.1381304Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+Host regression tests	Post Checkout	2026-09-24T11:41:43.1416198Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Host regression tests	Post Checkout	2026-09-24T11:41:43.1683724Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+Host regression tests	Post Checkout	2026-09-24T11:41:43.1727670Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+Host regression tests	Complete job	﻿2026-09-24T11:41:43.2205499Z Cleaning up orphan processes
+Host regression tests	Complete job	2026-09-24T11:41:43.2525023Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
