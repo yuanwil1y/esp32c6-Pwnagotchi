@@ -410,8 +410,12 @@ min_heap、stk_rx/stk_stat 最小值、世界计数终值、崩溃标记 0。
 1 分钟**，检查启动、RX/queue/drop、heap、任务栈余量及无 reboot/panic/
 watchdog；不要求延长 soak。
 
-本轮 CI 结果会随合并提交补记；1 分钟实机 smoke test 待测试 agent
-使用下方 CI 固件执行后回填结果。
+Phase 2.5 修复提交 `b8b862a820db847ac8159bd1862a0ecf9fd344f7` 已合并
+到 `main`。GitHub Actions [run 35965566695](https://github.com/yuanwil1y/esp32c6-Pwnagotchi/actions/runs/35965566695)
+的 host 回归（plain + ASan/UBSan，101 项）和 ESP-IDF v5.4 / ESP32-C6
+固件构建均为 PASS。实机测试可从该 run 下载 `flash-files-b8b862a...zip`
+或 `firmware-b8b862a...zip`；产物中的 `git_commit.txt` 为完整固件 SHA。
+本轮 1 分钟实机 smoke test 待测试 agent 执行后回填结果。
 
 ## Phase 2 验收状态
 
