@@ -11,6 +11,7 @@
 #include "board_sd.h"
 #include "esp_console.h"
 #include "esp_heap_caps.h"
+#include "esp_random.h"
 #include "esp_log.h"
 #include "esp_system.h"
 #include "esp_timer.h"
@@ -235,7 +236,7 @@ static void logger_task(void *arg)
                      stats.max_open_us, stats.max_write_us,
                      stats.max_flush_us, stats.max_close_us,
                      stats.io_slow_count,
-                     stats.logger_stack_hwm,
+                     (unsigned)stats.logger_stack_hwm,
                      stats.current_path[0] ? stats.current_path : "-");
             next_report_us = now;
         }
@@ -259,7 +260,7 @@ esp_err_t sd_logger_init(const char *firmware_sha, bool media_mounted)
         return ESP_ERR_NO_MEM;
     }
     const uint32_t heap_before =
-        (uint32_t)esp_heap_caps_get_free_size(MALLOC_CAP_8BIT);
+        (uint32_t)heap_caps_get_free_size(MALLOC_CAP_8BIT);
     const sd_logger_io_t io = {
         .open_new = io_open_new,
         .write = io_write,
@@ -287,8 +288,8 @@ esp_err_t sd_logger_init(const char *firmware_sha, bool media_mounted)
              (unsigned)sizeof(s_core), SD_LOGGER_POOL_SIZE,
              (unsigned)sizeof(radio_packet_t), SD_LOGGER_BATCH_SIZE,
              SD_LOGGER_TASK_STACK, (unsigned)heap_before,
-             (unsigned)esp_heap_caps_get_free_size(MALLOC_CAP_8BIT),
-             (unsigned)esp_heap_caps_get_minimum_free_size(MALLOC_CAP_8BIT));
+             (unsigned)heap_caps_get_free_size(MALLOC_CAP_8BIT),
+             (unsigned)heap_caps_get_minimum_free_size(MALLOC_CAP_8BIT));
     return ESP_OK;
 }
 
@@ -466,7 +467,7 @@ esp_err_t sd_logger_console_start(void)
         return ESP_ERR_INVALID_STATE;
     }
     const uint32_t heap_before =
-        (uint32_t)esp_heap_caps_get_free_size(MALLOC_CAP_8BIT);
+        (uint32_t)heap_caps_get_free_size(MALLOC_CAP_8BIT);
     const esp_console_config_t console_config = ESP_CONSOLE_CONFIG_DEFAULT();
     esp_err_t err = esp_console_init(&console_config);
     if (err != ESP_OK) {
@@ -505,8 +506,8 @@ esp_err_t sd_logger_console_start(void)
     if (err == ESP_OK) {
         ESP_LOGI(TAG, "capture console ready heap_before=%u heap_after=%u min_heap=%u",
                  (unsigned)heap_before,
-                 (unsigned)esp_heap_caps_get_free_size(MALLOC_CAP_8BIT),
-                 (unsigned)esp_heap_caps_get_minimum_free_size(MALLOC_CAP_8BIT));
+                 (unsigned)heap_caps_get_free_size(MALLOC_CAP_8BIT),
+                 (unsigned)heap_caps_get_minimum_free_size(MALLOC_CAP_8BIT));
     }
     return err;
 }

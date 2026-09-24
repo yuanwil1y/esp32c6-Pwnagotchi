@@ -32,6 +32,7 @@ typedef struct {
     uint32_t close_calls;
     uint32_t short_limit;
     size_t fail_at_length;
+    bool block_write;
     bool fail_write;
     bool full_card;
     bool fail_flush;

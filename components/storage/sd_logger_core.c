@@ -102,17 +102,6 @@ static bool close_timed(sd_logger_core_t *core, void *handle)
     return result;
 }
 
-static void set_state(sd_logger_core_t *core, sd_logger_state_t state,
-                      bool accepting)
-{
-    lock_core(core);
-    core->state = state;
-    core->accepting = accepting;
-    core->stats.state = state;
-    core->stats.accepting = accepting;
-    unlock_core(core);
-}
-
 const char *sd_logger_state_name(sd_logger_state_t state)
 {
     switch (state) {
