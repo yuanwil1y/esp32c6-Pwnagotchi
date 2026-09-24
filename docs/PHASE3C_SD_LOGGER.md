@@ -112,7 +112,11 @@ existing path. The FAT VFS in the selected IDF v5.4 source maps `O_CREAT|O_EXCL`
 to FatFs `FA_CREATE_NEW` and maps `FR_EXIST` to `EEXIST`. Bounded collision
 retries select a different session ID or segment number. No old file is
 deleted, and no automatic “free space” cleanup occurs. The existing board
-mount has `format_if_mount_failed=false`.
+mount has `format_if_mount_failed=false`. The boot SD self-test also creates a
+randomly named `phase0-selftest-<id>-<attempt>.txt` using `O_EXCL`, syncs and
+reads it back. This prevents the prior fixed-path probe from overwriting an
+existing `/sd_card/phase0_test.txt` and leaves only its new uniquely named
+small probe file on the card.
 
 The state machine is `DISABLED → STARTING → RECORDING → STOPPING → STOPPED`;
 mount/open/write/sync/close failures go to `ERROR`. `DISABLED` accurately means

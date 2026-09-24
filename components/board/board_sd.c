@@ -1,11 +1,15 @@
 #include "board_sd.h"
 
 #include <errno.h>
+#include <fcntl.h>
+#include <inttypes.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "driver/sdspi_host.h"
 #include "esp_log.h"
+#include "esp_random.h"
 #include "esp_vfs_fat.h"
 #include "sdmmc_cmd.h"
 
@@ -14,6 +18,48 @@
 
 static const char *TAG = "board_sd";
 static sdmmc_card_t *s_card;
+
+static bool open_unique_self_test_file(char *path, size_t path_capacity,
+                                       FILE **out_file)
+{
+    if (path == NULL || path_capacity == 0u || out_file == NULL) {
+        errno = EINVAL;
+        return false;
+    }
+    *out_file = NULL;
+
+    for (unsigned attempt = 0; attempt < 32u; ++attempt) {
+        const uint32_t nonce = esp_random();
+        const int length = snprintf(path, path_capacity,
+                                    BOARD_SD_TEST_FILE_PREFIX
+                                    "%08" PRIX32 "-%02u.txt",
+                                    nonce, attempt);
+        if (length < 0 || (size_t)length >= path_capacity) {
+            errno = ENAMETOOLONG;
+            return false;
+        }
+
+        /* The startup probe must never truncate a file left by the user. */
+        const int fd = open(path, O_WRONLY | O_CREAT | O_EXCL, 0666);
+        if (fd >= 0) {
+            FILE *file = fdopen(fd, "w");
+            if (file == NULL) {
+                const int saved_errno = errno;
+                (void)close(fd);
+                errno = saved_errno;
+                return false;
+            }
+            *out_file = file;
+            return true;
+        }
+        if (errno != EEXIST) {
+            return false;
+        }
+    }
+
+    errno = EEXIST;
+    return false;
+}
 
 esp_err_t board_sd_init(void)
 {
@@ -66,33 +112,37 @@ esp_err_t board_sd_self_test(void)
 
     static const char expected[] = "esp32c6-Pwnagotchi phase0";
 
-    FILE *file = fopen(BOARD_SD_TEST_FILE, "w");
-    if (file == NULL) {
-        ESP_LOGE(TAG, "SD write: FAIL (open %s, errno=%d '%s')",
-                 BOARD_SD_TEST_FILE, errno, strerror(errno));
+    char test_path[64];
+    FILE *file = NULL;
+    if (!open_unique_self_test_file(test_path, sizeof(test_path), &file)) {
+        ESP_LOGE(TAG, "SD write: FAIL (exclusive create, errno=%d '%s')",
+                 errno, strerror(errno));
         return ESP_FAIL;
     }
 
     const int written = fputs(expected, file);
+    const int flush_result = fflush(file);
+    const int sync_result = (fileno(file) >= 0) ? fsync(fileno(file)) : -1;
     const int close_write_result = fclose(file);
-    if (written == EOF || close_write_result != 0) {
-        ESP_LOGE(TAG, "SD write: FAIL (%s)", BOARD_SD_TEST_FILE);
+    if (written == EOF || flush_result != 0 || sync_result != 0 ||
+        close_write_result != 0) {
+        ESP_LOGE(TAG, "SD write: FAIL (%s)", test_path);
         return ESP_FAIL;
     }
-    ESP_LOGI(TAG, "SD write: OK (%s)", BOARD_SD_TEST_FILE);
+    ESP_LOGI(TAG, "SD write: OK (%s)", test_path);
 
     char actual[sizeof(expected) + 8] = {0};
-    file = fopen(BOARD_SD_TEST_FILE, "r");
+    file = fopen(test_path, "r");
     if (file == NULL) {
         ESP_LOGE(TAG, "SD read: FAIL (open %s, errno=%d '%s')",
-                 BOARD_SD_TEST_FILE, errno, strerror(errno));
+                 test_path, errno, strerror(errno));
         return ESP_FAIL;
     }
 
     const char *read_result = fgets(actual, sizeof(actual), file);
     fclose(file);
     if (read_result == NULL) {
-        ESP_LOGE(TAG, "SD read: FAIL (%s)", BOARD_SD_TEST_FILE);
+        ESP_LOGE(TAG, "SD read: FAIL (%s)", test_path);
         return ESP_FAIL;
     }
     ESP_LOGI(TAG, "SD read: OK -> '%s'", actual);
@@ -102,6 +152,7 @@ esp_err_t board_sd_self_test(void)
         return ESP_ERR_INVALID_RESPONSE;
     }
 
-    ESP_LOGI(TAG, "SD verify: OK");
+    ESP_LOGI(TAG, "SD verify: OK (%s retained; never overwrote prior files)",
+             test_path);
     return ESP_OK;
 }

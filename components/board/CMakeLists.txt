@@ -15,6 +15,7 @@ idf_component_register(
         esp_driver_sdspi
         esp_lcd
         esp_timer
+        esp_system
         fatfs
         sdmmc
 )
