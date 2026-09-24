@@ -144,6 +144,7 @@ static void ap_remove(world_t *w, world_ap_t *ap)
         }
     }
     ap->used = false;
+    ap->station_count = 0; /* unused slots must satisfy the invariant */
     w->ap_used--;
 }
 

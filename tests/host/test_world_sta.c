@@ -486,18 +486,20 @@ static void t_sta_ttl_removes_record(void)
 
     ieee80211_data_addrs_t u = uplink(STA_S1, AP_B1);
     world_on_data_frame(&w, &u, 1000, 6, -45);
-    /* Keep the AP alive well past the STA TTL. */
+    /* Refresh AP_B1 and STA_S2 (bound via downlink) just before the
+     * maintenance pass so both stay inside every TTL. */
     ieee80211_data_addrs_t d = downlink(AP_B1, STA_S2);
-    world_on_data_frame(&w, &d, 60000, 6, -50);
+    world_on_data_frame(&w, &d, 1000 + WORLD_STA_TTL_MS - 1000, 6, -50);
 
     world_maintenance(&w, 1000 + WORLD_STA_TTL_MS + 1);
     check_invariants();
 
     world_snapshot_t snap;
     world_snapshot(&w, &snap);
-    CHECK(snap.sta_current == 1); /* only STA_S2 (refreshed at 60 s) */
+    CHECK(snap.sta_current == 1); /* only STA_S2 (freshly observed) */
     CHECK(snap.ap_current == 1);
     CHECK(snap.stats.sta_expired == 1);
+    CHECK(snap.rel_current == 1);
 
     world_sta_view_t sv;
     CHECK(!sta_view(STA_S1, &sv));
@@ -505,7 +507,7 @@ static void t_sta_ttl_removes_record(void)
 
     world_ap_view_t av;
     CHECK(ap_view(AP_B1, &av));
-    CHECK(av.ap.station_count == 1); /* STA_S2 bound via downlink */
+    CHECK(av.ap.station_count == 1); /* STA_S2 still bound via downlink */
 }
 
 static void t_ap_expiry_unbinds_but_keeps_sta(void)
@@ -642,10 +644,11 @@ static void t_weak_creators_never_evict(void)
     CHECK(snap.sta_current == WORLD_STA_MAX);
     CHECK(snap.stats.sta_created == WORLD_STA_MAX);
 
-    /* Weak creator (downlink destination) with a full table: refused. */
+    /* Weak creator (downlink destination) with a full table: refused.
+     * Timed close to the fill so nothing has aged out yet. */
     const uint8_t weak[6] = {0x50, 0x60, 0x70, 0x80, 0x92, 0x77};
     ieee80211_data_addrs_t d = downlink(AP_B1, weak);
-    world_on_data_frame(&w, &d, 500000, 6, -50);
+    world_on_data_frame(&w, &d, 2000, 6, -50);
     world_snapshot(&w, &snap);
     CHECK(snap.sta_current == WORLD_STA_MAX);
     CHECK(snap.stats.sta_rejected == 1);
@@ -661,7 +664,7 @@ static void t_weak_creators_never_evict(void)
     obs.rssi = -50;
     obs.rx_channel = 6;
     obs.complete = true;
-    world_on_probe_request(&w, &obs, 500100);
+    world_on_probe_request(&w, &obs, 2100);
     world_snapshot(&w, &snap);
     CHECK(snap.stats.sta_evicted == 1);
     CHECK(snap.sta_current == WORLD_STA_MAX);
@@ -675,13 +678,13 @@ static void t_weak_creators_never_evict(void)
     for (uint8_t k = 1; k < WORLD_AP_MAX; k++) {
         uint8_t b[6] = {0x00, 0x11, 0x22, 0x33, 0x55, (uint8_t)(0x10 + k)};
         ieee80211_data_addrs_t dd = downlink(b, weak);
-        world_on_data_frame(&w, &dd, 500200 + k, 6, -60);
+        world_on_data_frame(&w, &dd, 2200 + k, 6, -60);
     }
     world_snapshot(&w, &snap);
     CHECK(snap.ap_current == WORLD_AP_MAX); /* AP_B1 + 63 downlink APs */
     const uint8_t late_ap[6] = {0x00, 0x11, 0x22, 0x33, 0x55, 0xEE};
     ieee80211_data_addrs_t dd = downlink(late_ap, weak);
-    world_on_data_frame(&w, &dd, 600000, 6, -60);
+    world_on_data_frame(&w, &dd, 3000, 6, -60);
     world_snapshot(&w, &snap);
     CHECK(snap.stats.ap_rejected == 1);
     world_ap_view_t av;
