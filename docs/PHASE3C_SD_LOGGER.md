@@ -506,3 +506,43 @@ transport for the existing SD bytes: until it successfully transfers the
 session and an independent reader checks it, the SD recording acceptance stays
 **PENDING**. The implementation and its CI result are recorded in the final
 follow-up entry below.
+
+### Follow-up implementation and validation
+
+- Starting revision: `5379a5e9c3321173642c2c2ac7f04b8e58161d3f`, after the
+  Phase 3C hardware attempt and documentation; the already recorded failed
+  session `9D808161AA2EF8C5` remains on the SD card. No Phase 2/3A/3B fixes or
+  existing Phase 3C capture ownership were rewritten.
+- Implementation commits: `3d76f7fed611bf15916d8a9130b9fe360aa0cf50`
+  (serial readback, status detail, protocol, host receiver) and
+  `7ddaf86fe1ff3ed2f227542a4c2e7568e32d96f3` (wire file-kind correction).
+- GitHub Actions run
+  [36008775587](https://github.com/yuanwil1y/esp32c6-Pwnagotchi/actions/runs/36008775587)
+  passed both jobs. Host plain and ASan/UBSan regression suites passed,
+  including seven serial receiver tests for CRC/base64 validation, files over
+  16 chunks, resuming, gap retry, and refusing output overwrite. The existing
+  reference PCAP and synthetic logger PCAP were independently read by
+  TShark/capinfos 4.2.2. The ESP-IDF v5.4 ESP32-C6 build passed.
+- Firmware app image: 1,199,088 B (`0x124bf0`); linker `.bss` is 65,936 B.
+  Linker `.bss` increased 1,360 B from the recorded 3f23 image.
+  `sd_logger_idf.c.obj` contributes 11,600 B `.bss`, up 1,362 B. The delta is
+  consistent with the 512-byte binary and
+  800-byte encoded static buffers plus export state. There is no new task,
+  queue, packet-sized allocation, FAT workspace, or stack request; the logger
+  and USB console stack requests remain 6,144 B and 4,096 B. The app artifact
+  SHA-256 is
+  `BB56AD4C071D9E46A9388769F8B908BD3A8FB74D8A17B61E962B84946B6715AE`.
+- The first CI attempt (run `36008368470`) passed the IDF build but failed two
+  host receiver tests because the receiver compared device `P`/`S` frame tags
+  against the CLI words `pcap`/`summary`. The correction is covered by the
+  fully passing run above. Logs retained in `docs/logs/` are the actual GitHub
+  job logs; no local compile or test was used.
+- Hardware readback is **PENDING**. The new app has not yet been flashed, and
+  the old PCAP has not yet been transferred or checked with TShark. The last
+  recorded on-device logger state was `ERROR` after 1,594 records; its
+  `capture-status` I/O-stage detail cannot be retroactively recovered from
+  that firmware. New firmware reports the I/O stage and the serial export
+  command can retrieve the old PCAP and sidecar without a reader. The hardware
+  attempt must still confirm no reboot loop, a complete transfer, and
+  independent `capinfos`/TShark packet and length results. This is not a Phase
+  3C acceptance PASS.

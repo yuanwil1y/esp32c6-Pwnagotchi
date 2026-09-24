@@ -1,0 +1,739 @@
+﻿2026-09-24T13:49:47.1862268Z Current runner version: '2.337.0'
+2026-09-24T13:49:47.1889058Z ##[group]Runner Image Provisioner
+2026-09-24T13:49:47.1890039Z Hosted Compute Agent
+2026-09-24T13:49:47.1890733Z Version: 20260828.587
+2026-09-24T13:49:47.1891448Z Commit: abac92662cab4cc7352de4f9f9d2e2419aad9c29
+2026-09-24T13:49:47.1892236Z Build Date: 2026-08-28T16:44:25Z
+2026-09-24T13:49:47.1893002Z Worker ID: {e3944383-1640-42be-b5a2-db1f3dcc3407}
+2026-09-24T13:49:47.1893823Z Azure Region: northcentralus
+2026-09-24T13:49:47.1894477Z ##[endgroup]
+2026-09-24T13:49:47.1895800Z ##[group]Operating System
+2026-09-24T13:49:47.1896779Z Ubuntu
+2026-09-24T13:49:47.1897384Z 24.04.5
+2026-09-24T13:49:47.1897972Z LTS
+2026-09-24T13:49:47.1898590Z ##[endgroup]
+2026-09-24T13:49:47.1899158Z ##[group]Runner Image
+2026-09-24T13:49:47.1899870Z Image: ubuntu-24.04
+2026-09-24T13:49:47.1900517Z Version: 20260920.314.1
+2026-09-24T13:49:47.1901930Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260920.314/images/ubuntu/Ubuntu2404-Readme.md
+2026-09-24T13:49:47.1903484Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260920.314
+2026-09-24T13:49:47.1904590Z ##[endgroup]
+2026-09-24T13:49:47.1905874Z ##[group]GITHUB_TOKEN Permissions
+2026-09-24T13:49:47.1908556Z Contents: read
+2026-09-24T13:49:47.1909243Z Metadata: read
+2026-09-24T13:49:47.1909918Z Packages: read
+2026-09-24T13:49:47.1910568Z ##[endgroup]
+2026-09-24T13:49:47.1913146Z Secret source: Actions
+2026-09-24T13:49:47.1914250Z Cache mode: write
+2026-09-24T13:49:47.1915163Z Prepare workflow directory
+2026-09-24T13:49:47.2343008Z Prepare all required actions
+2026-09-24T13:49:47.2409777Z Getting action download info
+2026-09-24T13:49:47.5007510Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-09-24T13:49:47.6000958Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-09-24T13:49:47.8122441Z Complete job name: Host regression tests
+2026-09-24T13:49:47.8884344Z ##[group]Run actions/checkout@v4
+2026-09-24T13:49:47.8885178Z with:
+2026-09-24T13:49:47.8885656Z   repository: yuanwil1y/esp32c6-Pwnagotchi
+2026-09-24T13:49:47.8889650Z   token: ***
+2026-09-24T13:49:47.8890095Z   ssh-strict: true
+2026-09-24T13:49:47.8890544Z   ssh-user: git
+2026-09-24T13:49:47.8890998Z   persist-credentials: true
+2026-09-24T13:49:47.8891494Z   clean: true
+2026-09-24T13:49:47.8891944Z   sparse-checkout-cone-mode: true
+2026-09-24T13:49:47.8892467Z   fetch-depth: 1
+2026-09-24T13:49:47.8892913Z   fetch-tags: false
+2026-09-24T13:49:47.8893370Z   show-progress: true
+2026-09-24T13:49:47.8893825Z   lfs: false
+2026-09-24T13:49:47.8894244Z   submodules: false
+2026-09-24T13:49:47.8894696Z   set-safe-directory: true
+2026-09-24T13:49:47.8895209Z   allow-unsafe-pr-checkout: false
+2026-09-24T13:49:47.8895911Z ##[endgroup]
+2026-09-24T13:49:47.9919090Z Syncing repository: yuanwil1y/esp32c6-Pwnagotchi
+2026-09-24T13:49:47.9921834Z ##[group]Getting Git version info
+2026-09-24T13:49:47.9923210Z Working directory is '/home/runner/work/esp32c6-Pwnagotchi/esp32c6-Pwnagotchi'
+2026-09-24T13:49:47.9925058Z [command]/usr/bin/git version
+2026-09-24T13:49:47.9970955Z git version 2.55.0
+2026-09-24T13:49:47.9991414Z ##[endgroup]
+2026-09-24T13:49:48.0006815Z Temporarily overriding HOME='/home/runner/work/_temp/158139ab-32ca-47d2-a2b7-3c501b993030' before making global git config changes
+2026-09-24T13:49:48.0009052Z Adding repository directory to the temporary git global config as a safe directory
+2026-09-24T13:49:48.0011759Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/esp32c6-Pwnagotchi/esp32c6-Pwnagotchi
+2026-09-24T13:49:48.0075882Z Deleting the contents of '/home/runner/work/esp32c6-Pwnagotchi/esp32c6-Pwnagotchi'
+2026-09-24T13:49:48.0077784Z ##[group]Initializing the repository
+2026-09-24T13:49:48.0078646Z [command]/usr/bin/git init /home/runner/work/esp32c6-Pwnagotchi/esp32c6-Pwnagotchi
+2026-09-24T13:49:48.0182676Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-09-24T13:49:48.0184436Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-09-24T13:49:48.0185407Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-09-24T13:49:48.0186358Z hint: call:
+2026-09-24T13:49:48.0186778Z hint:
+2026-09-24T13:49:48.0187321Z hint: 	git config --global init.defaultBranch <name>
+2026-09-24T13:49:48.0187955Z hint:
+2026-09-24T13:49:48.0188640Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-09-24T13:49:48.0190103Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-09-24T13:49:48.0190990Z hint:
+2026-09-24T13:49:48.0191585Z hint: 	git branch -m <name>
+2026-09-24T13:49:48.0192322Z hint:
+2026-09-24T13:49:48.0192982Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-09-24T13:49:48.0194775Z Initialized empty Git repository in /home/runner/work/esp32c6-Pwnagotchi/esp32c6-Pwnagotchi/.git/
+2026-09-24T13:49:48.0203160Z [command]/usr/bin/git remote add origin https://github.com/yuanwil1y/esp32c6-Pwnagotchi
+2026-09-24T13:49:48.0253060Z ##[endgroup]
+2026-09-24T13:49:48.0253881Z ##[group]Disabling automatic garbage collection
+2026-09-24T13:49:48.0258240Z [command]/usr/bin/git config --local gc.auto 0
+2026-09-24T13:49:48.0292505Z ##[endgroup]
+2026-09-24T13:49:48.0293368Z ##[group]Setting up auth
+2026-09-24T13:49:48.0300866Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-09-24T13:49:48.0336019Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-09-24T13:49:48.0724457Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-24T13:49:48.0767409Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-09-24T13:49:48.1024999Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-24T13:49:48.1066656Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-09-24T13:49:48.1342898Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-09-24T13:49:48.1385828Z ##[endgroup]
+2026-09-24T13:49:48.1387279Z ##[group]Fetching the repository
+2026-09-24T13:49:48.1405004Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +3d76f7fed611bf15916d8a9130b9fe360aa0cf50:refs/remotes/origin/phase3c-sd-logger
+2026-09-24T13:49:48.6953809Z From https://github.com/yuanwil1y/esp32c6-Pwnagotchi
+2026-09-24T13:49:48.6956660Z  * [new ref]         3d76f7fed611bf15916d8a9130b9fe360aa0cf50 -> origin/phase3c-sd-logger
+2026-09-24T13:49:48.6962662Z ##[endgroup]
+2026-09-24T13:49:48.6964435Z ##[group]Determining the checkout info
+2026-09-24T13:49:48.6966798Z ##[endgroup]
+2026-09-24T13:49:48.6968418Z [command]/usr/bin/git sparse-checkout disable
+2026-09-24T13:49:48.7021115Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-09-24T13:49:48.7058340Z ##[group]Checking out the ref
+2026-09-24T13:49:48.7065372Z [command]/usr/bin/git checkout --progress --force -B phase3c-sd-logger refs/remotes/origin/phase3c-sd-logger
+2026-09-24T13:49:48.7345390Z Switched to a new branch 'phase3c-sd-logger'
+2026-09-24T13:49:48.7356817Z branch 'phase3c-sd-logger' set up to track 'origin/phase3c-sd-logger'.
+2026-09-24T13:49:48.7361610Z ##[endgroup]
+2026-09-24T13:49:48.7410248Z [command]/usr/bin/git log -1 --format=%H
+2026-09-24T13:49:48.7440467Z 3d76f7fed611bf15916d8a9130b9fe360aa0cf50
+2026-09-24T13:49:48.7708568Z ##[group]Run bash tests/host/run.sh
+2026-09-24T13:49:48.7710082Z [36;1mbash tests/host/run.sh[0m
+2026-09-24T13:49:48.7976851Z shell: /usr/bin/bash -e {0}
+2026-09-24T13:49:48.7978456Z ##[endgroup]
+2026-09-24T13:49:48.8149786Z == host tests (plain) ==
+2026-09-24T13:49:49.7887350Z RUN  parse_fc_basic
+2026-09-24T13:49:49.7887924Z PASS parse_fc_basic
+2026-09-24T13:49:49.7888326Z RUN  parse_short_rejected
+2026-09-24T13:49:49.7888759Z PASS parse_short_rejected
+2026-09-24T13:49:49.7889184Z RUN  beacon_minimal_complete
+2026-09-24T13:49:49.7890628Z PASS beacon_minimal_complete
+2026-09-24T13:49:49.7891290Z RUN  beacon_typical_fields
+2026-09-24T13:49:49.7891766Z PASS beacon_typical_fields
+2026-09-24T13:49:49.7892173Z RUN  ssid_lengths
+2026-09-24T13:49:49.7892581Z PASS ssid_lengths
+2026-09-24T13:49:49.7893097Z RUN  ssid_all_zero_is_hidden
+2026-09-24T13:49:49.7893636Z PASS ssid_all_zero_is_hidden
+2026-09-24T13:49:49.7894094Z RUN  duplicate_ssid_first_wins
+2026-09-24T13:49:49.7894712Z PASS duplicate_ssid_first_wins
+2026-09-24T13:49:49.7895249Z RUN  ds_param_validation
+2026-09-24T13:49:49.7895696Z PASS ds_param_validation
+2026-09-24T13:49:49.7896397Z RUN  trailing_byte_in_complete_body
+2026-09-24T13:49:49.7896939Z PASS trailing_byte_in_complete_body
+2026-09-24T13:49:49.7897447Z RUN  ie_body_overrun_complete_frame
+2026-09-24T13:49:49.7897954Z PASS ie_body_overrun_complete_frame
+2026-09-24T13:49:49.7898487Z RUN  capture_cut_inside_ie_body
+2026-09-24T13:49:49.7898995Z PASS capture_cut_inside_ie_body
+2026-09-24T13:49:49.7899518Z RUN  capture_cut_at_ie_boundary
+2026-09-24T13:49:49.7899985Z PASS capture_cut_at_ie_boundary
+2026-09-24T13:49:49.7900479Z RUN  fcs_never_walked_as_ie_513
+2026-09-24T13:49:49.7900946Z PASS fcs_never_walked_as_ie_513
+2026-09-24T13:49:49.7901420Z RUN  fcs_never_walked_as_ie_514
+2026-09-24T13:49:49.7901895Z PASS fcs_never_walked_as_ie_514
+2026-09-24T13:49:49.7902371Z RUN  capture_cut_inside_mac_body
+2026-09-24T13:49:49.7902877Z PASS capture_cut_inside_mac_body
+2026-09-24T13:49:49.7903449Z RUN  deep_parse_rejects_protocol_version_1
+2026-09-24T13:49:49.7904033Z PASS deep_parse_rejects_protocol_version_1
+2026-09-24T13:49:49.7904583Z RUN  deep_parse_rejects_order_bit
+2026-09-24T13:49:49.7905118Z PASS deep_parse_rejects_order_bit
+2026-09-24T13:49:49.7905636Z RUN  deep_parse_rejects_more_fragments
+2026-09-24T13:49:49.7906436Z PASS deep_parse_rejects_more_fragments
+2026-09-24T13:49:49.7906984Z RUN  deep_parse_rejects_short_fixed_body
+2026-09-24T13:49:49.7907545Z PASS deep_parse_rejects_short_fixed_body
+2026-09-24T13:49:49.7908093Z RUN  probe_req_parse_and_truncation
+2026-09-24T13:49:49.7908587Z PASS probe_req_parse_and_truncation
+2026-09-24T13:49:49.7909065Z 20/20 passed
+2026-09-24T13:49:50.6146838Z RUN  rx_good_frame_flow
+2026-09-24T13:49:50.6147336Z PASS rx_good_frame_flow
+2026-09-24T13:49:50.6147747Z RUN  rx_timestamp_copy_delay_and_slot_reuse
+2026-09-24T13:49:50.6148350Z PASS rx_timestamp_copy_delay_and_slot_reuse
+2026-09-24T13:49:51.6328944Z RUN  rx_packet_pool_memory_budget
+2026-09-24T13:49:51.6329575Z PASS rx_packet_pool_memory_budget
+2026-09-24T13:49:51.6330092Z RUN  rx_drop_accounting
+2026-09-24T13:49:51.6330632Z PASS rx_drop_accounting
+2026-09-24T13:49:51.6331148Z RUN  rx_state_errors_never_leak_slots
+2026-09-24T13:49:51.6331526Z PASS rx_state_errors_never_leak_slots
+2026-09-24T13:49:51.6331823Z RUN  rx_misc_whitelist_no_payload_access
+2026-09-24T13:49:51.6332226Z PASS rx_misc_whitelist_no_payload_access
+2026-09-24T13:49:51.6332694Z RUN  rx_misc_defensive_even_with_bogus_payload_len
+2026-09-24T13:49:51.6333245Z PASS rx_misc_defensive_even_with_bogus_payload_len
+2026-09-24T13:49:51.6333777Z RUN  rx_zero_payload_mgmt_queued_and_counted
+2026-09-24T13:49:51.6334261Z PASS rx_zero_payload_mgmt_queued_and_counted
+2026-09-24T13:49:51.6334722Z RUN  rx_oversized_truncated_at_bound
+2026-09-24T13:49:51.6335279Z PASS rx_oversized_truncated_at_bound
+2026-09-24T13:49:51.6335701Z RUN  rx_parse_length_contract
+2026-09-24T13:49:51.6336270Z PASS rx_parse_length_contract
+2026-09-24T13:49:51.6337127Z RUN  rx_capture_view_fcs_and_body_truncation
+2026-09-24T13:49:51.6337610Z PASS rx_capture_view_fcs_and_body_truncation
+2026-09-24T13:49:51.6338063Z 11/11 passed
+2026-09-24T13:49:51.6338531Z RUN  hostile_misc_null_payload_never_read
+2026-09-24T13:49:51.6339266Z PASS hostile_misc_null_payload_never_read
+2026-09-24T13:49:51.6339707Z RUN  hostile_unknown_type_never_read
+2026-09-24T13:49:51.6340116Z PASS hostile_unknown_type_never_read
+2026-09-24T13:49:51.6340503Z 2/2 passed
+2026-09-24T13:49:52.4303112Z RUN  ap_insert_change_unchanged
+2026-09-24T13:49:52.4303735Z PASS ap_insert_change_unchanged
+2026-09-24T13:49:52.4304245Z RUN  ap_eviction_and_reappear
+2026-09-24T13:49:52.4304745Z PASS ap_eviction_and_reappear
+2026-09-24T13:49:52.4305097Z RUN  ap_incomplete_observation_skipped
+2026-09-24T13:49:52.4305488Z PASS ap_incomplete_observation_skipped
+2026-09-24T13:49:52.4305789Z RUN  ap_hidden_ssid_keeps_known_name
+2026-09-24T13:49:52.4306322Z PASS ap_hidden_ssid_keeps_known_name
+2026-09-24T13:49:52.4306748Z RUN  ap_absent_ds_keeps_cached_channel
+2026-09-24T13:49:52.4307132Z PASS ap_absent_ds_keeps_cached_channel
+2026-09-24T13:49:52.4307618Z RUN  ap_complete_observation_negative_evidence
+2026-09-24T13:49:52.4308138Z PASS ap_complete_observation_negative_evidence
+2026-09-24T13:49:52.4308611Z 6/6 passed
+2026-09-24T13:49:53.2053606Z RUN  hopper_build_from_country
+2026-09-24T13:49:53.2054117Z PASS hopper_build_from_country
+2026-09-24T13:49:53.2054536Z RUN  hopper_err_classify
+2026-09-24T13:49:53.2055058Z PASS hopper_err_classify
+2026-09-24T13:49:53.2055610Z RUN  hopper_bounded_failure_policy
+2026-09-24T13:49:53.2056248Z PASS hopper_bounded_failure_policy
+2026-09-24T13:49:53.2056669Z RUN  hopper_log_throttle
+2026-09-24T13:49:53.2057020Z PASS hopper_log_throttle
+2026-09-24T13:49:53.2057323Z 4/4 passed
+2026-09-24T13:49:54.0725714Z RUN  world_create_and_merge
+2026-09-24T13:49:54.0726243Z PASS world_create_and_merge
+2026-09-24T13:49:54.0726612Z RUN  world_hidden_never_clears_name
+2026-09-24T13:49:54.0727064Z PASS world_hidden_never_clears_name
+2026-09-24T13:49:54.0727526Z RUN  world_embedded_nul_and_raw_bytes
+2026-09-24T13:49:54.0727955Z PASS world_embedded_nul_and_raw_bytes
+2026-09-24T13:49:54.0728427Z RUN  world_truncated_observation_partial_update
+2026-09-24T13:49:54.0729160Z PASS world_truncated_observation_partial_update
+2026-09-24T13:49:54.0729653Z RUN  world_truncated_ds_ie_still_applies
+2026-09-24T13:49:54.0730102Z PASS world_truncated_ds_ie_still_applies
+2026-09-24T13:49:54.0730570Z RUN  world_complete_observation_is_authoritative
+2026-09-24T13:49:54.0731080Z PASS world_complete_observation_is_authoritative
+2026-09-24T13:49:54.0810501Z RUN  world_invalid_bssid_rejected
+2026-09-24T13:49:54.0827684Z PASS world_invalid_bssid_rejected
+2026-09-24T13:49:54.0828005Z RUN  world_stale_timestamp_ignored
+2026-09-24T13:49:54.0828289Z PASS world_stale_timestamp_ignored
+2026-09-24T13:49:54.0828572Z RUN  world_ttl_expiry_edges
+2026-09-24T13:49:54.0828827Z PASS world_ttl_expiry_edges
+2026-09-24T13:49:54.0829102Z RUN  world_maintenance_without_traffic
+2026-09-24T13:49:54.0829396Z PASS world_maintenance_without_traffic
+2026-09-24T13:49:54.0829680Z RUN  world_capacity_evicts_oldest
+2026-09-24T13:49:54.0829956Z PASS world_capacity_evicts_oldest
+2026-09-24T13:49:54.0830244Z RUN  world_eviction_tie_breaks_to_lowest_slot
+2026-09-24T13:49:54.0830557Z PASS world_eviction_tie_breaks_to_lowest_slot
+2026-09-24T13:49:54.0830893Z RUN  world_full_table_sweeps_expired_before_evicting
+2026-09-24T13:49:54.0831233Z PASS world_full_table_sweeps_expired_before_evicting
+2026-09-24T13:49:54.0831532Z RUN  world_loop_churn_bounded
+2026-09-24T13:49:54.0831846Z PASS world_loop_churn_bounded
+2026-09-24T13:49:54.0832087Z RUN  world_page_export_bounds
+2026-09-24T13:49:54.0832322Z PASS world_page_export_bounds
+2026-09-24T13:49:54.0832570Z RUN  world_parser_to_world_end_to_end
+2026-09-24T13:49:54.0832840Z PASS world_parser_to_world_end_to_end
+2026-09-24T13:49:54.0833090Z 16/16 passed
+2026-09-24T13:49:54.8679886Z RUN  data_addrs_four_ds_combinations
+2026-09-24T13:49:54.8680696Z PASS data_addrs_four_ds_combinations
+2026-09-24T13:49:54.8681126Z RUN  data_addrs_header_length_math
+2026-09-24T13:49:54.8681673Z PASS data_addrs_header_length_math
+2026-09-24T13:49:54.8682234Z RUN  data_addrs_short_headers_rejected
+2026-09-24T13:49:54.8682912Z PASS data_addrs_short_headers_rejected
+2026-09-24T13:49:54.8683320Z RUN  data_addrs_protocol_guards
+2026-09-24T13:49:54.8683682Z PASS data_addrs_protocol_guards
+2026-09-24T13:49:54.8684076Z RUN  data_addrs_protected_frame_header_visible
+2026-09-24T13:49:54.8684546Z PASS data_addrs_protected_frame_header_visible
+2026-09-24T13:49:54.8685036Z RUN  data_addrs_broadcast_multicast_parsed_but_unfiltered
+2026-09-24T13:49:54.8685613Z PASS data_addrs_broadcast_multicast_parsed_but_unfiltered
+2026-09-24T13:49:54.8686298Z 6/6 passed
+2026-09-24T13:49:55.7592625Z RUN  sta_uplink_discovers_sta_and_provisional_ap
+2026-09-24T13:49:55.7593068Z PASS sta_uplink_discovers_sta_and_provisional_ap
+2026-09-24T13:49:55.7593429Z RUN  sta_downlink_rssi_belongs_to_ap
+2026-09-24T13:49:55.7593843Z PASS sta_downlink_rssi_belongs_to_ap
+2026-09-24T13:49:55.7594241Z RUN  sta_up_and_down_same_sta_single_record
+2026-09-24T13:49:55.7594577Z PASS sta_up_and_down_same_sta_single_record
+2026-09-24T13:49:55.7594903Z RUN  sta_beacon_confirms_provisional_ap
+2026-09-24T13:49:55.7595189Z PASS sta_beacon_confirms_provisional_ap
+2026-09-24T13:49:55.7595486Z RUN  sta_broadcast_and_invalid_destinations
+2026-09-24T13:49:55.7595826Z PASS sta_broadcast_and_invalid_destinations
+2026-09-24T13:49:55.7596415Z RUN  sta_probe_discovers_sta_only
+2026-09-24T13:49:55.7596810Z PASS sta_probe_discovers_sta_only
+2026-09-24T13:49:55.7597205Z RUN  sta_mgmt_tx_records_sta
+2026-09-24T13:49:55.7597601Z PASS sta_mgmt_tx_records_sta
+2026-09-24T13:49:55.7598046Z RUN  sta_uplink_switches_to_newer_ap
+2026-09-24T13:49:55.7598623Z PASS sta_uplink_switches_to_newer_ap
+2026-09-24T13:49:55.7599248Z RUN  sta_weaker_downlink_never_steals_binding
+2026-09-24T13:49:55.7599673Z PASS sta_weaker_downlink_never_steals_binding
+2026-09-24T13:49:55.7599983Z RUN  sta_equal_strength_freshness_wins
+2026-09-24T13:49:55.7600275Z PASS sta_equal_strength_freshness_wins
+2026-09-24T13:49:55.7600551Z RUN  sta_uplink_upgrades_downlink_evidence
+2026-09-24T13:49:55.7600842Z PASS sta_uplink_upgrades_downlink_evidence
+2026-09-24T13:49:55.7601113Z RUN  sta_relation_ttl_before_sta_ttl
+2026-09-24T13:49:55.7601373Z PASS sta_relation_ttl_before_sta_ttl
+2026-09-24T13:49:55.7601627Z RUN  sta_sta_ttl_removes_record
+2026-09-24T13:49:55.7601880Z PASS sta_sta_ttl_removes_record
+2026-09-24T13:49:55.7602143Z RUN  sta_ap_expiry_unbinds_but_keeps_sta
+2026-09-24T13:49:55.7602435Z PASS sta_ap_expiry_unbinds_but_keeps_sta
+2026-09-24T13:49:55.7602713Z RUN  sta_stale_data_ignored
+2026-09-24T13:49:55.7602964Z PASS sta_stale_data_ignored
+2026-09-24T13:49:55.7603207Z RUN  sta_ap_slot_reuse_never_dangles
+2026-09-24T13:49:55.7603471Z PASS sta_ap_slot_reuse_never_dangles
+2026-09-24T13:49:55.7603753Z RUN  sta_weak_creators_never_evict
+2026-09-24T13:49:55.7604456Z PASS sta_weak_creators_never_evict
+2026-09-24T13:49:55.7604993Z RUN  sta_data_ambiguous_and_wds_counted
+2026-09-24T13:49:55.7605506Z PASS sta_data_ambiguous_and_wds_counted
+2026-09-24T13:49:55.7606015Z RUN  sta_parser_to_world_data_end_to_end
+2026-09-24T13:49:55.7606720Z PASS sta_parser_to_world_data_end_to_end
+2026-09-24T13:49:55.7607223Z RUN  sta_relation_churn_invariants
+2026-09-24T13:49:55.7607625Z PASS sta_relation_churn_invariants
+2026-09-24T13:49:55.7607871Z 20/20 passed
+2026-09-24T13:49:56.8772921Z RUN  sec_rsn_psk
+2026-09-24T13:49:56.8773322Z PASS sec_rsn_psk
+2026-09-24T13:49:56.8773690Z RUN  sec_rsn_enterprise_sae_owe_transition
+2026-09-24T13:49:56.8774187Z PASS sec_rsn_enterprise_sae_owe_transition
+2026-09-24T13:49:56.8774630Z RUN  sec_wpa_vendor_psk
+2026-09-24T13:49:56.8775050Z PASS sec_wpa_vendor_psk
+2026-09-24T13:49:56.8775554Z RUN  sec_wpa_and_rsn_distinction
+2026-09-24T13:49:56.8776326Z PASS sec_wpa_and_rsn_distinction
+2026-09-24T13:49:56.8776726Z RUN  sec_unknown_suites_kept_unknown
+2026-09-24T13:49:56.8777435Z PASS sec_unknown_suites_kept_unknown
+2026-09-24T13:49:56.8777839Z RUN  sec_count_overflow_malformed
+2026-09-24T13:49:56.8778249Z PASS sec_count_overflow_malformed
+2026-09-24T13:49:56.8778645Z RUN  sec_bad_version_and_short_bodies
+2026-09-24T13:49:56.8779245Z PASS sec_bad_version_and_short_bodies
+2026-09-24T13:49:56.8779648Z RUN  sec_optional_tails
+2026-09-24T13:49:56.8779998Z PASS sec_optional_tails
+2026-09-24T13:49:56.8780341Z RUN  sec_long_beacon_cut_positions
+2026-09-24T13:49:56.8780749Z PASS sec_long_beacon_cut_positions
+2026-09-24T13:49:56.8781139Z RUN  sec_world_open_and_privacy
+2026-09-24T13:49:56.8781521Z PASS sec_world_open_and_privacy
+2026-09-24T13:49:56.8781962Z RUN  sec_world_valid_then_malformed_no_downgrade
+2026-09-24T13:49:56.8782473Z PASS sec_world_valid_then_malformed_no_downgrade
+2026-09-24T13:49:56.8782990Z RUN  sec_world_truncated_rsn_positive_evidence
+2026-09-24T13:49:56.8783437Z PASS sec_world_truncated_rsn_positive_evidence
+2026-09-24T13:49:56.8783820Z RUN  sec_world_security_names
+2026-09-24T13:49:56.8784183Z PASS sec_world_security_names
+2026-09-24T13:49:56.8784576Z RUN  sec_ie_commit_is_atomic_and_order_independent
+2026-09-24T13:49:56.8785035Z PASS sec_ie_commit_is_atomic_and_order_independent
+2026-09-24T13:49:56.8785550Z RUN  sec_world_partial_protocol_merge_preserves_other_protocol
+2026-09-24T13:49:56.8786313Z PASS sec_world_partial_protocol_merge_preserves_other_protocol
+2026-09-24T13:49:56.8786768Z 15/15 passed
+2026-09-24T13:49:58.2344232Z RUN  mgmt_auth_request_vs_ap_response
+2026-09-24T13:49:58.2344766Z PASS mgmt_auth_request_vs_ap_response
+2026-09-24T13:49:58.2345166Z RUN  mgmt_auth_fixed_body_and_status
+2026-09-24T13:49:58.2345479Z PASS mgmt_auth_fixed_body_and_status
+2026-09-24T13:49:58.2345816Z RUN  mgmt_assoc_request_and_response
+2026-09-24T13:49:58.2346398Z PASS mgmt_assoc_request_and_response
+2026-09-24T13:49:58.2346898Z RUN  mgmt_invalid_or_ambiguous_rejected
+2026-09-24T13:49:58.2347321Z PASS mgmt_invalid_or_ambiguous_rejected
+2026-09-24T13:49:58.2347655Z 4/4 passed
+2026-09-24T13:49:59.0801589Z RUN  eapol_plain_qos_order_direction
+2026-09-24T13:49:59.0802114Z PASS eapol_plain_qos_order_direction
+2026-09-24T13:49:59.0802551Z RUN  eapol_strict_llc_snap
+2026-09-24T13:49:59.0802968Z PASS eapol_strict_llc_snap
+2026-09-24T13:49:59.0803391Z RUN  eapol_null_protected
+2026-09-24T13:49:59.0803888Z PASS eapol_null_protected
+2026-09-24T13:49:59.0804440Z RUN  eapol_unsupported_layouts_fragments
+2026-09-24T13:49:59.0804843Z PASS eapol_unsupported_layouts_fragments
+2026-09-24T13:49:59.0805137Z RUN  eapol_versions_lengths_padding_short
+2026-09-24T13:49:59.0805425Z PASS eapol_versions_lengths_padding_short
+2026-09-24T13:49:59.0805704Z RUN  eapol_key_bounds_classification
+2026-09-24T13:49:59.0805985Z PASS eapol_key_bounds_classification
+2026-09-24T13:49:59.0806519Z RUN  eapol_capture_truncation
+2026-09-24T13:49:59.0806768Z PASS eapol_capture_truncation
+2026-09-24T13:49:59.0807006Z RUN  eapol_stats_semantics
+2026-09-24T13:49:59.0807246Z PASS eapol_stats_semantics
+2026-09-24T13:49:59.0807479Z 8/8 passed
+2026-09-24T13:49:59.9485610Z RUN  pcap_global_header_golden
+2026-09-24T13:49:59.9486324Z PASS pcap_global_header_golden
+2026-09-24T13:49:59.9486730Z RUN  pcap_global_header_short_atomic
+2026-09-24T13:49:59.9487167Z PASS pcap_global_header_short_atomic
+2026-09-24T13:49:59.9487600Z RUN  pcap_channel_radiotap_golden
+2026-09-24T13:49:59.9488013Z PASS pcap_channel_radiotap_golden
+2026-09-24T13:49:59.9488473Z RUN  pcap_unknown_channel_omitted
+2026-09-24T13:49:59.9489056Z PASS pcap_unknown_channel_omitted
+2026-09-24T13:49:59.9489631Z RUN  pcap_timestamp_boundary_payload
+2026-09-24T13:49:59.9490187Z PASS pcap_timestamp_boundary_payload
+2026-09-24T13:49:59.9490619Z RUN  pcap_large_monotonic_and_range
+2026-09-24T13:49:59.9491031Z PASS pcap_large_monotonic_and_range
+2026-09-24T13:49:59.9491455Z RUN  pcap_timestamp_before_anchor_atomic
+2026-09-24T13:49:59.9491906Z PASS pcap_timestamp_before_anchor_atomic
+2026-09-24T13:49:59.9492331Z RUN  pcap_empty_short_mac
+2026-09-24T13:49:59.9492689Z PASS pcap_empty_short_mac
+2026-09-24T13:49:59.9493348Z RUN  pcap_invalid_and_contradictory_lengths
+2026-09-24T13:49:59.9493708Z PASS pcap_invalid_and_contradictory_lengths
+2026-09-24T13:49:59.9494001Z RUN  pcap_capacity_failure_atomic
+2026-09-24T13:49:59.9494403Z PASS pcap_capacity_failure_atomic
+2026-09-24T13:49:59.9494666Z RUN  pcap_fcs_and_capture_truncation
+2026-09-24T13:49:59.9494940Z PASS pcap_fcs_and_capture_truncation
+2026-09-24T13:49:59.9495202Z RUN  pcap_512_bound_max_record
+2026-09-24T13:49:59.9495474Z PASS pcap_512_bound_max_record
+2026-09-24T13:49:59.9495742Z RUN  pcap_reference_generate_synthetic
+2026-09-24T13:49:59.9496026Z PASS pcap_reference_generate_synthetic
+2026-09-24T13:49:59.9496593Z 13/13 passed
+2026-09-24T13:50:00.8500162Z RUN  submit_copy_and_stop_sync
+2026-09-24T13:50:00.8500958Z PASS submit_copy_and_stop_sync
+2026-09-24T13:50:00.8501315Z RUN  queue_full_fifo_and_drain
+2026-09-24T13:50:00.8501800Z PASS queue_full_fifo_and_drain
+2026-09-24T13:50:00.8502646Z RUN  valid_mgmt_control_data
+2026-09-24T13:50:00.8503156Z PASS valid_mgmt_control_data
+2026-09-24T13:50:00.8503576Z RUN  slow_writer_not_producer_lock
+2026-09-24T13:50:00.8503999Z PASS slow_writer_not_producer_lock
+2026-09-24T13:50:00.8504397Z RUN  partial_write_offset
+2026-09-24T13:50:00.8504780Z PASS partial_write_offset
+2026-09-24T13:50:00.8505183Z RUN  partial_write_error_cleanup
+2026-09-24T13:50:00.8505604Z PASS partial_write_error_cleanup
+2026-09-24T13:50:00.8505988Z RUN  enospc_and_header_flush
+2026-09-24T13:50:00.8506526Z PASS enospc_and_header_flush
+2026-09-24T13:50:00.8506907Z RUN  filename_conflict_restart
+2026-09-24T13:50:00.8507290Z PASS filename_conflict_restart
+2026-09-24T13:50:00.8507643Z RUN  rotation_session_limit
+2026-09-24T13:50:00.8507915Z PASS rotation_session_limit
+2026-09-24T13:50:00.8508167Z RUN  age_rotation_filtering
+2026-09-24T13:50:00.8508399Z PASS age_rotation_filtering
+2026-09-24T13:50:00.8508636Z RUN  pre_session_rx_timestamp
+2026-09-24T13:50:00.8508889Z PASS pre_session_rx_timestamp
+2026-09-24T13:50:00.8509137Z RUN  open_close_error_recovery
+2026-09-24T13:50:00.8509400Z PASS open_close_error_recovery
+2026-09-24T13:50:00.8509644Z 12/12 passed
+2026-09-24T13:50:01.6231314Z capture serial protocol: all tests passed
+2026-09-24T13:50:01.6231990Z == host tests (ASan+UBSan) ==
+2026-09-24T13:50:03.7299358Z RUN  parse_fc_basic
+2026-09-24T13:50:03.7299862Z PASS parse_fc_basic
+2026-09-24T13:50:03.7300217Z RUN  parse_short_rejected
+2026-09-24T13:50:03.7300616Z PASS parse_short_rejected
+2026-09-24T13:50:03.7300983Z RUN  beacon_minimal_complete
+2026-09-24T13:50:03.7301401Z PASS beacon_minimal_complete
+2026-09-24T13:50:03.7301732Z RUN  beacon_typical_fields
+2026-09-24T13:50:03.7403414Z PASS beacon_typical_fields
+2026-09-24T13:50:03.7403848Z RUN  ssid_lengths
+2026-09-24T13:50:03.7404269Z PASS ssid_lengths
+2026-09-24T13:50:03.7404589Z RUN  ssid_all_zero_is_hidden
+2026-09-24T13:50:03.7404951Z PASS ssid_all_zero_is_hidden
+2026-09-24T13:50:03.7405315Z RUN  duplicate_ssid_first_wins
+2026-09-24T13:50:03.7405731Z PASS duplicate_ssid_first_wins
+2026-09-24T13:50:03.7406387Z RUN  ds_param_validation
+2026-09-24T13:50:03.7406716Z PASS ds_param_validation
+2026-09-24T13:50:03.7407102Z RUN  trailing_byte_in_complete_body
+2026-09-24T13:50:03.7407406Z PASS trailing_byte_in_complete_body
+2026-09-24T13:50:03.7407692Z RUN  ie_body_overrun_complete_frame
+2026-09-24T13:50:03.7407954Z PASS ie_body_overrun_complete_frame
+2026-09-24T13:50:03.7408224Z RUN  capture_cut_inside_ie_body
+2026-09-24T13:50:03.7408484Z PASS capture_cut_inside_ie_body
+2026-09-24T13:50:03.7408728Z RUN  capture_cut_at_ie_boundary
+2026-09-24T13:50:03.7408969Z PASS capture_cut_at_ie_boundary
+2026-09-24T13:50:03.7409203Z RUN  fcs_never_walked_as_ie_513
+2026-09-24T13:50:03.7409441Z PASS fcs_never_walked_as_ie_513
+2026-09-24T13:50:03.7409674Z RUN  fcs_never_walked_as_ie_514
+2026-09-24T13:50:03.7410090Z PASS fcs_never_walked_as_ie_514
+2026-09-24T13:50:03.7410469Z RUN  capture_cut_inside_mac_body
+2026-09-24T13:50:03.7410860Z PASS capture_cut_inside_mac_body
+2026-09-24T13:50:03.7411275Z RUN  deep_parse_rejects_protocol_version_1
+2026-09-24T13:50:03.7412082Z PASS deep_parse_rejects_protocol_version_1
+2026-09-24T13:50:03.7412376Z RUN  deep_parse_rejects_order_bit
+2026-09-24T13:50:03.7412637Z PASS deep_parse_rejects_order_bit
+2026-09-24T13:50:03.7413057Z RUN  deep_parse_rejects_more_fragments
+2026-09-24T13:50:03.7413334Z PASS deep_parse_rejects_more_fragments
+2026-09-24T13:50:03.7413611Z RUN  deep_parse_rejects_short_fixed_body
+2026-09-24T13:50:03.7413894Z PASS deep_parse_rejects_short_fixed_body
+2026-09-24T13:50:03.7414180Z RUN  probe_req_parse_and_truncation
+2026-09-24T13:50:03.7414449Z PASS probe_req_parse_and_truncation
+2026-09-24T13:50:03.7414695Z 20/20 passed
+2026-09-24T13:50:05.5699134Z RUN  rx_good_frame_flow
+2026-09-24T13:50:05.5699806Z PASS rx_good_frame_flow
+2026-09-24T13:50:05.5706920Z RUN  rx_timestamp_copy_delay_and_slot_reuse
+2026-09-24T13:50:05.5727216Z PASS rx_timestamp_copy_delay_and_slot_reuse
+2026-09-24T13:50:05.5746907Z RUN  rx_packet_pool_memory_budget
+2026-09-24T13:50:05.5747557Z PASS rx_packet_pool_memory_budget
+2026-09-24T13:50:05.5748012Z RUN  rx_drop_accounting
+2026-09-24T13:50:05.5748366Z PASS rx_drop_accounting
+2026-09-24T13:50:05.5748720Z RUN  rx_state_errors_never_leak_slots
+2026-09-24T13:50:05.5749199Z PASS rx_state_errors_never_leak_slots
+2026-09-24T13:50:05.5749622Z RUN  rx_misc_whitelist_no_payload_access
+2026-09-24T13:50:05.5750084Z PASS rx_misc_whitelist_no_payload_access
+2026-09-24T13:50:05.5750563Z RUN  rx_misc_defensive_even_with_bogus_payload_len
+2026-09-24T13:50:05.5751105Z PASS rx_misc_defensive_even_with_bogus_payload_len
+2026-09-24T13:50:05.5751630Z RUN  rx_zero_payload_mgmt_queued_and_counted
+2026-09-24T13:50:05.5752288Z PASS rx_zero_payload_mgmt_queued_and_counted
+2026-09-24T13:50:05.5752933Z RUN  rx_oversized_truncated_at_bound
+2026-09-24T13:50:05.5753489Z PASS rx_oversized_truncated_at_bound
+2026-09-24T13:50:05.5753885Z RUN  rx_parse_length_contract
+2026-09-24T13:50:05.5754279Z PASS rx_parse_length_contract
+2026-09-24T13:50:05.5754626Z RUN  rx_capture_view_fcs_and_body_truncation
+2026-09-24T13:50:05.5755019Z PASS rx_capture_view_fcs_and_body_truncation
+2026-09-24T13:50:05.5755373Z 11/11 passed
+2026-09-24T13:50:07.2386883Z RUN  hostile_misc_null_payload_never_read
+2026-09-24T13:50:07.2388320Z PASS hostile_misc_null_payload_never_read
+2026-09-24T13:50:07.2388975Z RUN  hostile_unknown_type_never_read
+2026-09-24T13:50:07.2389420Z PASS hostile_unknown_type_never_read
+2026-09-24T13:50:07.2389903Z 2/2 passed
+2026-09-24T13:50:08.9860021Z RUN  ap_insert_change_unchanged
+2026-09-24T13:50:08.9875988Z PASS ap_insert_change_unchanged
+2026-09-24T13:50:08.9876697Z RUN  ap_eviction_and_reappear
+2026-09-24T13:50:08.9908638Z PASS ap_eviction_and_reappear
+2026-09-24T13:50:08.9926874Z RUN  ap_incomplete_observation_skipped
+2026-09-24T13:50:08.9927415Z PASS ap_incomplete_observation_skipped
+2026-09-24T13:50:08.9927875Z RUN  ap_hidden_ssid_keeps_known_name
+2026-09-24T13:50:08.9928307Z PASS ap_hidden_ssid_keeps_known_name
+2026-09-24T13:50:08.9928757Z RUN  ap_absent_ds_keeps_cached_channel
+2026-09-24T13:50:08.9929230Z PASS ap_absent_ds_keeps_cached_channel
+2026-09-24T13:50:08.9929700Z RUN  ap_complete_observation_negative_evidence
+2026-09-24T13:50:08.9930220Z PASS ap_complete_observation_negative_evidence
+2026-09-24T13:50:08.9930689Z 6/6 passed
+2026-09-24T13:50:10.6855311Z RUN  hopper_build_from_country
+2026-09-24T13:50:10.6855866Z PASS hopper_build_from_country
+2026-09-24T13:50:10.6856449Z RUN  hopper_err_classify
+2026-09-24T13:50:10.6856811Z PASS hopper_err_classify
+2026-09-24T13:50:10.6857175Z RUN  hopper_bounded_failure_policy
+2026-09-24T13:50:10.6857591Z PASS hopper_bounded_failure_policy
+2026-09-24T13:50:10.6858003Z RUN  hopper_log_throttle
+2026-09-24T13:50:10.6858282Z PASS hopper_log_throttle
+2026-09-24T13:50:10.6858512Z 4/4 passed
+2026-09-24T13:50:12.6079730Z RUN  world_create_and_merge
+2026-09-24T13:50:12.6080310Z PASS world_create_and_merge
+2026-09-24T13:50:12.6080721Z RUN  world_hidden_never_clears_name
+2026-09-24T13:50:12.6081323Z PASS world_hidden_never_clears_name
+2026-09-24T13:50:12.6088292Z RUN  world_embedded_nul_and_raw_bytes
+2026-09-24T13:50:12.6089166Z PASS world_embedded_nul_and_raw_bytes
+2026-09-24T13:50:12.6106417Z RUN  world_truncated_observation_partial_update
+2026-09-24T13:50:12.6107959Z PASS world_truncated_observation_partial_update
+2026-09-24T13:50:12.6108501Z RUN  world_truncated_ds_ie_still_applies
+2026-09-24T13:50:12.6109057Z PASS world_truncated_ds_ie_still_applies
+2026-09-24T13:50:12.6109549Z RUN  world_complete_observation_is_authoritative
+2026-09-24T13:50:12.6110082Z PASS world_complete_observation_is_authoritative
+2026-09-24T13:50:12.6110574Z RUN  world_invalid_bssid_rejected
+2026-09-24T13:50:12.6110993Z PASS world_invalid_bssid_rejected
+2026-09-24T13:50:12.6111406Z RUN  world_stale_timestamp_ignored
+2026-09-24T13:50:12.6111830Z PASS world_stale_timestamp_ignored
+2026-09-24T13:50:12.6112246Z RUN  world_ttl_expiry_edges
+2026-09-24T13:50:12.6112638Z PASS world_ttl_expiry_edges
+2026-09-24T13:50:12.6113036Z RUN  world_maintenance_without_traffic
+2026-09-24T13:50:12.6113515Z PASS world_maintenance_without_traffic
+2026-09-24T13:50:12.6113960Z RUN  world_capacity_evicts_oldest
+2026-09-24T13:50:12.6114378Z PASS world_capacity_evicts_oldest
+2026-09-24T13:50:12.6114818Z RUN  world_eviction_tie_breaks_to_lowest_slot
+2026-09-24T13:50:12.6115328Z PASS world_eviction_tie_breaks_to_lowest_slot
+2026-09-24T13:50:12.6115856Z RUN  world_full_table_sweeps_expired_before_evicting
+2026-09-24T13:50:12.6116551Z PASS world_full_table_sweeps_expired_before_evicting
+2026-09-24T13:50:12.6117054Z RUN  world_loop_churn_bounded
+2026-09-24T13:50:12.6167348Z PASS world_loop_churn_bounded
+2026-09-24T13:50:12.6167749Z RUN  world_page_export_bounds
+2026-09-24T13:50:12.6168147Z PASS world_page_export_bounds
+2026-09-24T13:50:12.6168601Z RUN  world_parser_to_world_end_to_end
+2026-09-24T13:50:12.6168993Z PASS world_parser_to_world_end_to_end
+2026-09-24T13:50:12.6169377Z 16/16 passed
+2026-09-24T13:50:14.3805458Z RUN  data_addrs_four_ds_combinations
+2026-09-24T13:50:14.3806013Z PASS data_addrs_four_ds_combinations
+2026-09-24T13:50:14.3806658Z RUN  data_addrs_header_length_math
+2026-09-24T13:50:14.3807078Z PASS data_addrs_header_length_math
+2026-09-24T13:50:14.3807495Z RUN  data_addrs_short_headers_rejected
+2026-09-24T13:50:14.3807938Z PASS data_addrs_short_headers_rejected
+2026-09-24T13:50:14.3808350Z RUN  data_addrs_protocol_guards
+2026-09-24T13:50:14.3808740Z PASS data_addrs_protocol_guards
+2026-09-24T13:50:14.3809163Z RUN  data_addrs_protected_frame_header_visible
+2026-09-24T13:50:14.3809653Z PASS data_addrs_protected_frame_header_visible
+2026-09-24T13:50:14.3810111Z RUN  data_addrs_broadcast_multicast_parsed_but_unfiltered
+2026-09-24T13:50:14.3810487Z PASS data_addrs_broadcast_multicast_parsed_but_unfiltered
+2026-09-24T13:50:14.3810804Z 6/6 passed
+2026-09-24T13:50:16.3891274Z RUN  sta_uplink_discovers_sta_and_provisional_ap
+2026-09-24T13:50:16.3892536Z PASS sta_uplink_discovers_sta_and_provisional_ap
+2026-09-24T13:50:16.3893056Z RUN  sta_downlink_rssi_belongs_to_ap
+2026-09-24T13:50:16.3893646Z PASS sta_downlink_rssi_belongs_to_ap
+2026-09-24T13:50:16.3894285Z RUN  sta_up_and_down_same_sta_single_record
+2026-09-24T13:50:16.3894792Z PASS sta_up_and_down_same_sta_single_record
+2026-09-24T13:50:16.3895256Z RUN  sta_beacon_confirms_provisional_ap
+2026-09-24T13:50:16.3895808Z PASS sta_beacon_confirms_provisional_ap
+2026-09-24T13:50:16.3896420Z RUN  sta_broadcast_and_invalid_destinations
+2026-09-24T13:50:16.3896962Z PASS sta_broadcast_and_invalid_destinations
+2026-09-24T13:50:16.3897496Z RUN  sta_probe_discovers_sta_only
+2026-09-24T13:50:16.3897971Z PASS sta_probe_discovers_sta_only
+2026-09-24T13:50:16.3898395Z RUN  sta_mgmt_tx_records_sta
+2026-09-24T13:50:16.3898852Z PASS sta_mgmt_tx_records_sta
+2026-09-24T13:50:16.3899259Z RUN  sta_uplink_switches_to_newer_ap
+2026-09-24T13:50:16.3899679Z PASS sta_uplink_switches_to_newer_ap
+2026-09-24T13:50:16.3900192Z RUN  sta_weaker_downlink_never_steals_binding
+2026-09-24T13:50:16.3900758Z PASS sta_weaker_downlink_never_steals_binding
+2026-09-24T13:50:16.3901287Z RUN  sta_equal_strength_freshness_wins
+2026-09-24T13:50:16.3902139Z PASS sta_equal_strength_freshness_wins
+2026-09-24T13:50:16.3902680Z RUN  sta_uplink_upgrades_downlink_evidence
+2026-09-24T13:50:16.3903221Z PASS sta_uplink_upgrades_downlink_evidence
+2026-09-24T13:50:16.3903944Z RUN  sta_relation_ttl_before_sta_ttl
+2026-09-24T13:50:16.3904708Z PASS sta_relation_ttl_before_sta_ttl
+2026-09-24T13:50:16.3912940Z RUN  sta_sta_ttl_removes_record
+2026-09-24T13:50:16.3913732Z PASS sta_sta_ttl_removes_record
+2026-09-24T13:50:16.3914489Z RUN  sta_ap_expiry_unbinds_but_keeps_sta
+2026-09-24T13:50:16.3915144Z PASS sta_ap_expiry_unbinds_but_keeps_sta
+2026-09-24T13:50:16.3915760Z RUN  sta_stale_data_ignored
+2026-09-24T13:50:16.3916506Z PASS sta_stale_data_ignored
+2026-09-24T13:50:16.3917068Z RUN  sta_ap_slot_reuse_never_dangles
+2026-09-24T13:50:16.3917679Z PASS sta_ap_slot_reuse_never_dangles
+2026-09-24T13:50:16.3918273Z RUN  sta_weak_creators_never_evict
+2026-09-24T13:50:16.3918914Z PASS sta_weak_creators_never_evict
+2026-09-24T13:50:16.3919541Z RUN  sta_data_ambiguous_and_wds_counted
+2026-09-24T13:50:16.3920166Z PASS sta_data_ambiguous_and_wds_counted
+2026-09-24T13:50:16.3920780Z RUN  sta_parser_to_world_data_end_to_end
+2026-09-24T13:50:16.3921408Z PASS sta_parser_to_world_data_end_to_end
+2026-09-24T13:50:16.3922030Z RUN  sta_relation_churn_invariants
+2026-09-24T13:50:16.3922619Z PASS sta_relation_churn_invariants
+2026-09-24T13:50:16.3923178Z 20/20 passed
+2026-09-24T13:50:18.5017328Z RUN  sec_rsn_psk
+2026-09-24T13:50:18.5017850Z PASS sec_rsn_psk
+2026-09-24T13:50:18.5018536Z RUN  sec_rsn_enterprise_sae_owe_transition
+2026-09-24T13:50:18.5019131Z PASS sec_rsn_enterprise_sae_owe_transition
+2026-09-24T13:50:18.5019682Z RUN  sec_wpa_vendor_psk
+2026-09-24T13:50:18.5019998Z PASS sec_wpa_vendor_psk
+2026-09-24T13:50:18.5020265Z RUN  sec_wpa_and_rsn_distinction
+2026-09-24T13:50:18.5020597Z PASS sec_wpa_and_rsn_distinction
+2026-09-24T13:50:18.5021083Z RUN  sec_unknown_suites_kept_unknown
+2026-09-24T13:50:18.5021506Z PASS sec_unknown_suites_kept_unknown
+2026-09-24T13:50:18.5021972Z RUN  sec_count_overflow_malformed
+2026-09-24T13:50:18.5022404Z PASS sec_count_overflow_malformed
+2026-09-24T13:50:18.5022831Z RUN  sec_bad_version_and_short_bodies
+2026-09-24T13:50:18.5023288Z PASS sec_bad_version_and_short_bodies
+2026-09-24T13:50:18.5023733Z RUN  sec_optional_tails
+2026-09-24T13:50:18.5024120Z PASS sec_optional_tails
+2026-09-24T13:50:18.5024499Z RUN  sec_long_beacon_cut_positions
+2026-09-24T13:50:18.5024949Z PASS sec_long_beacon_cut_positions
+2026-09-24T13:50:18.5025395Z RUN  sec_world_open_and_privacy
+2026-09-24T13:50:18.5074744Z PASS sec_world_open_and_privacy
+2026-09-24T13:50:18.5075296Z RUN  sec_world_valid_then_malformed_no_downgrade
+2026-09-24T13:50:18.5075812Z PASS sec_world_valid_then_malformed_no_downgrade
+2026-09-24T13:50:18.5076462Z RUN  sec_world_truncated_rsn_positive_evidence
+2026-09-24T13:50:18.5076970Z PASS sec_world_truncated_rsn_positive_evidence
+2026-09-24T13:50:18.5077410Z RUN  sec_world_security_names
+2026-09-24T13:50:18.5077674Z PASS sec_world_security_names
+2026-09-24T13:50:18.5078091Z RUN  sec_ie_commit_is_atomic_and_order_independent
+2026-09-24T13:50:18.5078445Z PASS sec_ie_commit_is_atomic_and_order_independent
+2026-09-24T13:50:18.5078830Z RUN  sec_world_partial_protocol_merge_preserves_other_protocol
+2026-09-24T13:50:18.5079269Z PASS sec_world_partial_protocol_merge_preserves_other_protocol
+2026-09-24T13:50:18.5079595Z 15/15 passed
+2026-09-24T13:50:20.1885470Z RUN  mgmt_auth_request_vs_ap_response
+2026-09-24T13:50:20.1886226Z PASS mgmt_auth_request_vs_ap_response
+2026-09-24T13:50:20.1886698Z RUN  mgmt_auth_fixed_body_and_status
+2026-09-24T13:50:20.1887130Z PASS mgmt_auth_fixed_body_and_status
+2026-09-24T13:50:20.1887567Z RUN  mgmt_assoc_request_and_response
+2026-09-24T13:50:20.1887996Z PASS mgmt_assoc_request_and_response
+2026-09-24T13:50:20.1888422Z RUN  mgmt_invalid_or_ambiguous_rejected
+2026-09-24T13:50:20.1888846Z PASS mgmt_invalid_or_ambiguous_rejected
+2026-09-24T13:50:20.1889258Z 4/4 passed
+2026-09-24T13:50:22.0974946Z RUN  eapol_plain_qos_order_direction
+2026-09-24T13:50:22.0976179Z PASS eapol_plain_qos_order_direction
+2026-09-24T13:50:22.0976803Z RUN  eapol_strict_llc_snap
+2026-09-24T13:50:22.0977331Z PASS eapol_strict_llc_snap
+2026-09-24T13:50:22.0978375Z RUN  eapol_null_protected
+2026-09-24T13:50:22.0979382Z PASS eapol_null_protected
+2026-09-24T13:50:22.0980324Z RUN  eapol_unsupported_layouts_fragments
+2026-09-24T13:50:22.0980985Z PASS eapol_unsupported_layouts_fragments
+2026-09-24T13:50:22.0981856Z RUN  eapol_versions_lengths_padding_short
+2026-09-24T13:50:22.0982418Z PASS eapol_versions_lengths_padding_short
+2026-09-24T13:50:22.0982907Z RUN  eapol_key_bounds_classification
+2026-09-24T13:50:22.0983362Z PASS eapol_key_bounds_classification
+2026-09-24T13:50:22.0983808Z RUN  eapol_capture_truncation
+2026-09-24T13:50:22.0984223Z PASS eapol_capture_truncation
+2026-09-24T13:50:22.0984632Z RUN  eapol_stats_semantics
+2026-09-24T13:50:22.0985015Z PASS eapol_stats_semantics
+2026-09-24T13:50:22.0985383Z 8/8 passed
+2026-09-24T13:50:24.0681658Z RUN  pcap_global_header_golden
+2026-09-24T13:50:24.0682195Z PASS pcap_global_header_golden
+2026-09-24T13:50:24.0682637Z RUN  pcap_global_header_short_atomic
+2026-09-24T13:50:24.0683118Z PASS pcap_global_header_short_atomic
+2026-09-24T13:50:24.0690078Z RUN  pcap_channel_radiotap_golden
+2026-09-24T13:50:24.0690576Z PASS pcap_channel_radiotap_golden
+2026-09-24T13:50:24.0691136Z RUN  pcap_unknown_channel_omitted
+2026-09-24T13:50:24.0691594Z PASS pcap_unknown_channel_omitted
+2026-09-24T13:50:24.0692153Z RUN  pcap_timestamp_boundary_payload
+2026-09-24T13:50:24.0692729Z PASS pcap_timestamp_boundary_payload
+2026-09-24T13:50:24.0693222Z RUN  pcap_large_monotonic_and_range
+2026-09-24T13:50:24.0693717Z PASS pcap_large_monotonic_and_range
+2026-09-24T13:50:24.0694223Z RUN  pcap_timestamp_before_anchor_atomic
+2026-09-24T13:50:24.0694844Z PASS pcap_timestamp_before_anchor_atomic
+2026-09-24T13:50:24.0695387Z RUN  pcap_empty_short_mac
+2026-09-24T13:50:24.0695829Z PASS pcap_empty_short_mac
+2026-09-24T13:50:24.0696509Z RUN  pcap_invalid_and_contradictory_lengths
+2026-09-24T13:50:24.0697091Z PASS pcap_invalid_and_contradictory_lengths
+2026-09-24T13:50:24.0697633Z RUN  pcap_capacity_failure_atomic
+2026-09-24T13:50:24.0698150Z PASS pcap_capacity_failure_atomic
+2026-09-24T13:50:24.0698720Z RUN  pcap_fcs_and_capture_truncation
+2026-09-24T13:50:24.0699265Z PASS pcap_fcs_and_capture_truncation
+2026-09-24T13:50:24.0699869Z RUN  pcap_512_bound_max_record
+2026-09-24T13:50:24.0701013Z PASS pcap_512_bound_max_record
+2026-09-24T13:50:24.0701726Z RUN  pcap_reference_generate_synthetic
+2026-09-24T13:50:24.0702476Z PASS pcap_reference_generate_synthetic
+2026-09-24T13:50:24.0703174Z 13/13 passed
+2026-09-24T13:50:26.0158812Z RUN  submit_copy_and_stop_sync
+2026-09-24T13:50:26.0169375Z PASS submit_copy_and_stop_sync
+2026-09-24T13:50:26.0169824Z RUN  queue_full_fifo_and_drain
+2026-09-24T13:50:26.0170263Z PASS queue_full_fifo_and_drain
+2026-09-24T13:50:26.0170712Z RUN  valid_mgmt_control_data
+2026-09-24T13:50:26.0171107Z PASS valid_mgmt_control_data
+2026-09-24T13:50:26.0171542Z RUN  slow_writer_not_producer_lock
+2026-09-24T13:50:26.0177795Z PASS slow_writer_not_producer_lock
+2026-09-24T13:50:26.0178291Z RUN  partial_write_offset
+2026-09-24T13:50:26.0178705Z PASS partial_write_offset
+2026-09-24T13:50:26.0179082Z RUN  partial_write_error_cleanup
+2026-09-24T13:50:26.0186894Z PASS partial_write_error_cleanup
+2026-09-24T13:50:26.0187574Z RUN  enospc_and_header_flush
+2026-09-24T13:50:26.0188143Z PASS enospc_and_header_flush
+2026-09-24T13:50:26.0188689Z RUN  filename_conflict_restart
+2026-09-24T13:50:26.0189299Z PASS filename_conflict_restart
+2026-09-24T13:50:26.0189849Z RUN  rotation_session_limit
+2026-09-24T13:50:26.0190386Z PASS rotation_session_limit
+2026-09-24T13:50:26.0190889Z RUN  age_rotation_filtering
+2026-09-24T13:50:26.0191254Z PASS age_rotation_filtering
+2026-09-24T13:50:26.0191795Z RUN  pre_session_rx_timestamp
+2026-09-24T13:50:26.0192230Z PASS pre_session_rx_timestamp
+2026-09-24T13:50:26.0192697Z RUN  open_close_error_recovery
+2026-09-24T13:50:26.0193427Z PASS open_close_error_recovery
+2026-09-24T13:50:26.0193807Z 12/12 passed
+2026-09-24T13:50:27.7184184Z capture serial protocol: all tests passed
+2026-09-24T13:50:27.7195337Z == capture export host protocol tests ==
+2026-09-24T13:50:27.8034970Z test_info_session_filter_and_files (__main__.CaptureSerialExportTests.test_info_session_filter_and_files) ... ok
+2026-09-24T13:50:27.9651002Z test_partial_file_resumes_and_existing_output_is_not_overwritten (__main__.CaptureSerialExportTests.test_partial_file_resumes_and_existing_output_is_not_overwritten) ... ERROR
+2026-09-24T13:50:27.9652789Z test_production_c_golden_frame (__main__.CaptureSerialExportTests.test_production_c_golden_frame) ... ok
+2026-09-24T13:50:27.9654011Z test_reject_bad_base64_or_length (__main__.CaptureSerialExportTests.test_reject_bad_base64_or_length) ... ok
+2026-09-24T13:50:27.9655180Z test_reject_crc_mismatch (__main__.CaptureSerialExportTests.test_reject_crc_mismatch) ... ok
+2026-09-24T13:50:28.1281004Z test_stream_more_than_sixteen_chunks_and_retry_a_gap (__main__.CaptureSerialExportTests.test_stream_more_than_sixteen_chunks_and_retry_a_gap) ... ERROR
+2026-09-24T13:50:28.1282531Z test_strip_terminal_control_sequences (__main__.CaptureSerialExportTests.test_strip_terminal_control_sequences) ... ok
+2026-09-24T13:50:28.1283274Z 
+2026-09-24T13:50:28.1283441Z ======================================================================
+2026-09-24T13:50:28.1284587Z ERROR: test_partial_file_resumes_and_existing_output_is_not_overwritten (__main__.CaptureSerialExportTests.test_partial_file_resumes_and_existing_output_is_not_overwritten)
+2026-09-24T13:50:28.1285777Z ----------------------------------------------------------------------
+2026-09-24T13:50:28.1286588Z Traceback (most recent call last):
+2026-09-24T13:50:28.1287715Z   File "/home/runner/work/esp32c6-Pwnagotchi/esp32c6-Pwnagotchi/tests/host/test_capture_serial_export.py", line 131, in test_partial_file_resumes_and_existing_output_is_not_overwritten
+2026-09-24T13:50:28.1288943Z     export._stream_file(FakeSerial(payload), "0123456789ABCDEF",
+2026-09-24T13:50:28.1289859Z   File "/home/runner/work/esp32c6-Pwnagotchi/esp32c6-Pwnagotchi/tools/capture_serial_export.py", line 139, in _stream_file
+2026-09-24T13:50:28.1290841Z     raise RuntimeError(f"too many retries at offset {expected} for {path.name}")
+2026-09-24T13:50:28.1291539Z RuntimeError: too many retries at offset 512 for capture-test.pcap
+2026-09-24T13:50:28.1292054Z 
+2026-09-24T13:50:28.1292216Z ======================================================================
+2026-09-24T13:50:28.1293182Z ERROR: test_stream_more_than_sixteen_chunks_and_retry_a_gap (__main__.CaptureSerialExportTests.test_stream_more_than_sixteen_chunks_and_retry_a_gap)
+2026-09-24T13:50:28.1294161Z ----------------------------------------------------------------------
+2026-09-24T13:50:28.1294632Z Traceback (most recent call last):
+2026-09-24T13:50:28.1295623Z   File "/home/runner/work/esp32c6-Pwnagotchi/esp32c6-Pwnagotchi/tests/host/test_capture_serial_export.py", line 89, in test_stream_more_than_sixteen_chunks_and_retry_a_gap
+2026-09-24T13:50:28.1296864Z     export._stream_file(serial, "0123456789ABCDEF", "pcap", 0,
+2026-09-24T13:50:28.1297725Z   File "/home/runner/work/esp32c6-Pwnagotchi/esp32c6-Pwnagotchi/tools/capture_serial_export.py", line 139, in _stream_file
+2026-09-24T13:50:28.1298742Z     raise RuntimeError(f"too many retries at offset {expected} for {path.name}")
+2026-09-24T13:50:28.1299452Z RuntimeError: too many retries at offset 0 for capture-test.pcap
+2026-09-24T13:50:28.1299836Z 
+2026-09-24T13:50:28.1300052Z ----------------------------------------------------------------------
+2026-09-24T13:50:28.1300572Z Ran 7 tests in 0.325s
+2026-09-24T13:50:28.1300785Z 
+2026-09-24T13:50:28.1300925Z FAILED (errors=2)
+2026-09-24T13:50:28.1378261Z HOST TESTS FAILED
+2026-09-24T13:50:28.1396762Z ##[error]Process completed with exit code 1.
+2026-09-24T13:50:28.1566992Z Post job cleanup.
+2026-09-24T13:50:28.2434025Z [command]/usr/bin/git version
+2026-09-24T13:50:28.2476570Z git version 2.55.0
+2026-09-24T13:50:28.2512764Z Temporarily overriding HOME='/home/runner/work/_temp/ea55dbd5-7943-450e-add1-549ed5587655' before making global git config changes
+2026-09-24T13:50:28.2514118Z Adding repository directory to the temporary git global config as a safe directory
+2026-09-24T13:50:28.2517880Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/esp32c6-Pwnagotchi/esp32c6-Pwnagotchi
+2026-09-24T13:50:28.2560004Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-09-24T13:50:28.2596204Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-09-24T13:50:28.2856832Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-24T13:50:28.2885719Z http.https://github.com/.extraheader
+2026-09-24T13:50:28.2898632Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-09-24T13:50:28.2935721Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-09-24T13:50:28.3209831Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-24T13:50:28.3252614Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-09-24T13:50:28.3672952Z Cleaning up orphan processes
+2026-09-24T13:50:28.3967612Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
