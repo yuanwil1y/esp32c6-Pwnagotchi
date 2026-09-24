@@ -64,11 +64,21 @@ capture was started. Automatic reboot created several newly named self-test
 probe files; the old fixed `/sd_card/phase0_test.txt` path was never opened for
 write, and no existing file was overwritten or deleted.
 
-The correction sets `CONFIG_ESP_MAIN_TASK_STACK_SIZE=8192` because the added
-SD/console initialization path exceeded the default main-task stack. This adds
-4,608 B to the temporary main-task stack allocation during startup; FreeRTOS
-releases it when `app_main` returns. Corrected firmware CI and hardware
-revalidation are still pending.
+An 8 KiB main-task stack retry still faulted at the same initialization point.
+Its 49,235-byte raw COM3 log is kept outside the repository at
+`D:\pwn\phase3c-evidence\35992620025\phase3c-com3-boot.raw.log`
+(SHA-256 `981E311CDD1BB5271339E96729DC86BEE1CDB3D4AFAC92C155A4CC93A01896A2`).
+That window contains five visible stack protection faults and six successful
+uniquely named self-test writes; the captured stack bounds were
+`0x40837b2c..0x40839d20` with SP `0x40837b20`. Wi-Fi remained uninitialized and
+no capture session had been started.
+
+The UART console/linenoise setup is now isolated in a temporary 12,288 B
+`sd_console_init` task, which records its high-water mark and self-deletes
+after starting the REPL. The IDF main-task stack remains at its default
+3,584 B; corrected firmware CI and hardware revalidation are pending. The
+console initialization stack is a transient allocation and the persistent REPL
+keeps its separate 4,096 B stack.
 
 ## Ownership and data flow
 
@@ -240,12 +250,16 @@ recorded with hardware results. Logger-specific atomics/counters/paths and
 other storage control BSS are also reflected in that value and linker size
 output.
 
-The task stack request is 6,144 B for `sd_logger`; UART REPL requests 4,096 B.
-Both are additional runtime task allocations, not static BSS; FreeRTOS task
-control objects and one event group are also runtime allocations. The existing
-UI (4,096 B), RX (3,072 B), and radio-stat (3,072 B) task stack sizes are not
-changed. `uxTaskGetStackHighWaterMark()` values for logger/UI and before/after
-logger/console heap plus minimum heap are emitted on device. The mount reuses
+The task stack request is 6,144 B for `sd_logger`, 12,288 B for the temporary
+`sd_console_init` task, and 4,096 B for the persistent UART REPL. Together these
+new task stacks request 22,528 B at their peak overlap; the temporary startup
+stack is released after the REPL starts. They are runtime allocations, not
+static BSS; FreeRTOS task control objects and one event group are also runtime
+allocations. The IDF main task remains at its default 3,584 B. Existing UI
+(4,096 B), RX (3,072 B), and radio-stat (3,072 B) task stack sizes are not
+changed. `uxTaskGetStackHighWaterMark()` values for logger, console startup,
+and UI, plus before/after logger/console heap and minimum heap, are emitted on
+device. The mount reuses
 the existing board FatFs configuration (`max_files=5`, `CONFIG_FATFS_LFN_HEAP`);
 PCAP and sidecar use two handles within that existing limit. No additional FAT
 workspace size is configured; mount/FatFs dynamic memory will be measured by

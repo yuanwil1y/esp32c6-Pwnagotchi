@@ -30,6 +30,24 @@ static const char *TAG = "phase3c";
 #define PHASE1_UI_TASK_PRIO     3
 #define PHASE1_UI_PERIOD_MS     500 /* 2 Hz, inside the 2-5 Hz budget */
 #define PHASE1_HOPPER_DWELL_MS  300
+#define PHASE3C_CONSOLE_STARTUP_STACK 12288u
+#define PHASE3C_CONSOLE_STARTUP_PRIO  1u
+
+/* esp_console/linenoise initialization has a deeper stack than app_main's
+ * normal board/Wi-Fi bring-up. Keep this temporary setup call off main's
+ * bounded startup stack, then release the task stack once the REPL is live. */
+static void phase3c_console_startup_task(void *arg)
+{
+    (void)arg;
+    const esp_err_t result = sd_logger_console_start();
+    if (result != ESP_OK) {
+        ESP_LOGW(TAG, "capture UART commands unavailable: %s",
+                 esp_err_to_name(result));
+    }
+    ESP_LOGI(TAG, "console_startup_stack_hwm=%u",
+             (unsigned)uxTaskGetStackHighWaterMark(NULL));
+    vTaskDelete(NULL);
+}
 
 /* Refreshes the status screen from value snapshots. Never touches the Wi-Fi
  * driver; the promiscuous callback stays free of LVGL and storage work. */
@@ -107,10 +125,10 @@ void app_main(void)
     if (logger_result == ESP_OK) {
         wifi_sniffer_set_capture_sink(sd_logger_try_submit,
                                       sd_logger_is_accepting);
-        const esp_err_t console_result = sd_logger_console_start();
-        if (console_result != ESP_OK) {
-            ESP_LOGW(TAG, "capture UART commands unavailable: %s",
-                     esp_err_to_name(console_result));
+        if (xTaskCreate(phase3c_console_startup_task, "sd_console_init",
+                        PHASE3C_CONSOLE_STARTUP_STACK, NULL,
+                        PHASE3C_CONSOLE_STARTUP_PRIO, NULL) != pdPASS) {
+            ESP_LOGW(TAG, "capture console startup task creation failed");
         }
     } else {
         ESP_LOGE(TAG, "SD logger task unavailable: %s",
