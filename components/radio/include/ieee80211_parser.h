@@ -153,6 +153,66 @@ typedef enum {
 } ieee80211_security_t;
 
 /*
+ * Phase 2 security description. The IE walk fills the presence flags and,
+ * for legally structured RSN / WPA vendor IEs, the decoded suites (Phase
+ * 2C; Phase 2A fills presence only). Bit masks keep the struct small and
+ * merge-friendly. `*_valid` means "this IE was fully parsed and its
+ * structure was legal"; presence without validity means the IE existed
+ * but was malformed or cut by the capture - never authoritative.
+ */
+
+/* Cipher suite type codes (RSN OUI 00:0F:AC; WPA uses 00:50:F2). */
+#define IEEE80211_CIPHER_USE_GROUP    (1u << 0)   /* type 0 */
+#define IEEE80211_CIPHER_WEP40        (1u << 1)   /* type 1 */
+#define IEEE80211_CIPHER_TKIP         (1u << 2)   /* type 2 */
+#define IEEE80211_CIPHER_CCMP128      (1u << 3)   /* type 4 */
+#define IEEE80211_CIPHER_WEP104       (1u << 4)   /* type 5 */
+#define IEEE80211_CIPHER_BIP_CMAC128  (1u << 5)   /* type 6 */
+#define IEEE80211_CIPHER_GCMP128      (1u << 6)   /* type 8 */
+#define IEEE80211_CIPHER_GCMP256      (1u << 7)   /* type 9 */
+#define IEEE80211_CIPHER_CCMP256      (1u << 8)   /* type 10 */
+#define IEEE80211_CIPHER_BIP_GMAC128  (1u << 9)   /* type 11 */
+#define IEEE80211_CIPHER_BIP_GMAC256  (1u << 10)  /* type 12 */
+#define IEEE80211_CIPHER_BIP_CMAC256  (1u << 11)  /* type 13 */
+#define IEEE80211_CIPHER_UNKNOWN      (1u << 15)
+
+/* AKM suite type codes. */
+#define IEEE80211_AKM_802_1X          (1u << 0)   /* type 1 */
+#define IEEE80211_AKM_PSK             (1u << 1)   /* type 2 */
+#define IEEE80211_AKM_FT_802_1X       (1u << 2)   /* type 3 */
+#define IEEE80211_AKM_FT_PSK          (1u << 3)   /* type 4 */
+#define IEEE80211_AKM_1X_SHA256       (1u << 4)   /* type 5 */
+#define IEEE80211_AKM_PSK_SHA256      (1u << 5)   /* type 6 */
+#define IEEE80211_AKM_SAE             (1u << 6)   /* type 8 */
+#define IEEE80211_AKM_FT_SAE          (1u << 7)   /* type 9 */
+#define IEEE80211_AKM_1X_SUITE_B      (1u << 8)   /* type 11 */
+#define IEEE80211_AKM_1X_SUITE_B_192  (1u << 9)   /* type 12 */
+#define IEEE80211_AKM_FT_1X_SHA384    (1u << 10)  /* type 13 */
+#define IEEE80211_AKM_FILS_SHA256     (1u << 11)  /* type 14 */
+#define IEEE80211_AKM_FILS_SHA384     (1u << 12)  /* type 15 */
+#define IEEE80211_AKM_OWE             (1u << 13)  /* type 18 */
+#define IEEE80211_AKM_FT_PSK_SHA384   (1u << 14)  /* type 19 */
+#define IEEE80211_AKM_UNKNOWN         (1u << 15)
+
+typedef struct {
+    bool rsn_present;   /* RSN IE (48) seen at all */
+    bool wpa_present;   /* WPA vendor IE (221, OUI 00:50:F2 type 01) seen */
+    bool rsn_valid;     /* RSN IE fully parsed with legal structure */
+    bool wpa_valid;     /* WPA vendor IE fully parsed with legal structure */
+    bool privacy;       /* capability PRIVACY bit (header-verified) */
+
+    uint16_t version;   /* version field of the last fully valid parse */
+
+    uint16_t group;     /* group cipher mask (exactly one bit when valid) */
+    uint16_t pairwise;  /* pairwise cipher mask */
+    uint16_t akm;       /* AKM suite mask */
+
+    bool mfp_capable;   /* RSN capabilities MFPC */
+    bool mfp_required;  /* RSN capabilities MFPR */
+    bool caps_present;  /* RSN capabilities field present AND complete */
+} ieee80211_security_desc_t;
+
+/*
  * Beacon / probe response observation. rx_channel and rssi come from the
  * ESP-IDF RX metadata and are filled in by the caller after parsing.
  * advertised_channel comes from the DS Parameter Set IE (0 when absent or
@@ -193,6 +253,11 @@ typedef struct {
     bool privacy;
     bool rsn_present;
     bool wpa_vendor_present;
+
+    /* Phase 2: structured security knowledge (presence level in 2A,
+     * full suite parsing in 2C). Mirrors the flags above; kept separate
+     * so the Phase 1.5 presence classification stays byte-compatible. */
+    ieee80211_security_desc_t sec;
 
     uint16_t ie_count;
     bool malformed_ie;

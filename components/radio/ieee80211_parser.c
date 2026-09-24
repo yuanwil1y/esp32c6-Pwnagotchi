@@ -199,6 +199,7 @@ static void walk_information_elements(const uint8_t *frame, uint16_t length,
         case IEEE80211_IE_RSN:
             if (ap_out != NULL) {
                 ap_out->rsn_present = true;
+                ap_out->sec.rsn_present = true; /* suite decode: Phase 2C */
             }
             break;
         case IEEE80211_IE_VENDOR:
@@ -207,6 +208,7 @@ static void walk_information_elements(const uint8_t *frame, uint16_t length,
                 data[0] == 0x00 && data[1] == 0x50 && data[2] == 0xF2 &&
                 data[3] == IEEE80211_WPA_OUI_TYPE) {
                 ap_out->wpa_vendor_present = true;
+                ap_out->sec.wpa_present = true; /* suite decode: Phase 2C */
             }
             break;
         default:
@@ -273,6 +275,7 @@ bool ieee80211_parse_beacon_or_probe_resp(const uint8_t *frame, uint16_t length,
     out->beacon_interval = read_le16(&frame[IEEE80211_BEACON_INTERVAL_OFF]);
     out->capability = read_le16(&frame[IEEE80211_BEACON_CAP_OFF]);
     out->privacy = (out->capability & IEEE80211_CAP_PRIVACY) != 0;
+    out->sec.privacy = out->privacy;
 
     const bool capture_truncated = opts != NULL && opts->capture_truncated;
     ie_walk_state_t st = {0};

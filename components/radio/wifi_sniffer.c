@@ -4,6 +4,7 @@
 #include "ieee80211_parser.h"
 #include "obs_cache.h"
 #include "rx_path.h"
+#include "world.h"
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -14,9 +15,11 @@
 #include "esp_log.h"
 #include "esp_netif.h"
 #include "esp_system.h"
+#include "esp_timer.h"
 #include "esp_wifi.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
+#include "freertos/semphr.h"
 #include "freertos/task.h"
 #include "nvs_flash.h"
 
@@ -29,6 +32,11 @@ static const char *TAG_OBS = "OBS";
 #define RADIO_STATS_TASK_STACK    3072
 #define RADIO_STATS_TASK_PRIO     2
 #define RADIO_STATS_PERIOD_MS     3000
+
+/* Queue wait bound: guarantees the world TTL maintenance also runs when
+ * traffic is zero, and that a busy queue cannot starve it either. */
+#define RADIO_RX_QUEUE_WAIT_MS    100
+#define WORLD_MAINT_INTERVAL_MS   500
 
 /* Debug aid: print the classification of the first N parsed frames.
  * Keep 0 in normal builds; never gates or touches the RX callback. */
@@ -44,6 +52,51 @@ static radio_stats_t s_stats;
 static rx_path_stats_t s_rx_stats;
 static uint8_t s_current_channel;
 static bool s_initialized;
+
+/*
+ * Phase 2 World Model. Single writer (radio_rx_task); readers copy a small
+ * snapshot under a task-level mutex. Never accessed from the promiscuous
+ * callback and never held across LVGL / logging / SD calls beyond the
+ * short world operation itself.
+ */
+static world_t s_world;
+static SemaphoreHandle_t s_world_mux;
+static uint64_t s_last_world_maint;
+
+static uint64_t radio_now_ms(void)
+{
+    /* Single monotonic clock for the whole RX path (uint64 ms). */
+    return (uint64_t)esp_timer_get_time() / 1000ull;
+}
+
+static void world_feed_ap(const ieee80211_ap_observation_t *obs,
+                          uint64_t now_ms, bool is_beacon)
+{
+    if (xSemaphoreTake(s_world_mux, pdMS_TO_TICKS(10)) != pdTRUE) {
+        /* Never block the RX task on the world; drop this update. The
+         * snapshot consumers keep working with the previous state. */
+        return;
+    }
+    world_on_ap_observation(&s_world, obs, now_ms, is_beacon);
+    xSemaphoreGive(s_world_mux);
+}
+
+/* TTL/eviction housekeeping; safe to call with or without traffic. The
+ * timestamp is only advanced after a completed maintenance run, so a
+ * failed mutex take retries on the next call. */
+static void world_tick(uint64_t now_ms)
+{
+    if ((now_ms - s_last_world_maint) < WORLD_MAINT_INTERVAL_MS) {
+        return;
+    }
+
+    if (xSemaphoreTake(s_world_mux, pdMS_TO_TICKS(10)) != pdTRUE) {
+        return;
+    }
+    world_maintenance(&s_world, now_ms);
+    s_last_world_maint = now_ms;
+    xSemaphoreGive(s_world_mux);
+}
 
 /*
  * Phase 1.5 observation log throttling: fixed-size dedup caches so the
@@ -408,6 +461,9 @@ static void handle_ap_observation(const radio_packet_t *pkt,
     }
     portEXIT_CRITICAL(&s_stats_mux);
 
+    /* World Model update happens regardless of the log throttle below. */
+    world_feed_ap(&obs, radio_now_ms(), is_beacon);
+
     if (!res.should_log || !obs_log_rate_ok()) {
         return;
     }
@@ -479,6 +535,10 @@ static void handle_probe_request(const radio_packet_t *pkt,
  * classification via the pure parser. All parsing happens here, never in
  * the Wi-Fi callback. The slot goes back to the free pool only after the
  * last read of its bytes.
+ *
+ * Phase 2: the queue wait is BOUNDED so the world TTL maintenance runs
+ * both when no packets arrive at all and under continuous traffic (checked
+ * per packet and per timeout).
  */
 static void radio_rx_task(void *arg)
 {
@@ -490,9 +550,13 @@ static void radio_rx_task(void *arg)
 
     while (true) {
         radio_packet_t *pkt = NULL;
-        if (xQueueReceive(s_rx_queue, &pkt, portMAX_DELAY) != pdTRUE) {
+        if (xQueueReceive(s_rx_queue, &pkt,
+                          pdMS_TO_TICKS(RADIO_RX_QUEUE_WAIT_MS)) != pdTRUE) {
+            world_tick(radio_now_ms());
             continue;
         }
+
+        world_tick(radio_now_ms());
 
         const uint16_t parse_len = packet_parse_length(pkt);
         const ieee80211_parse_opts_t opts = {
@@ -606,6 +670,13 @@ static void radio_stats_task(void *arg)
                  " dwell=%" PRIu32 "ms",
                  stats.current_channel, stats.hop_count, stats.hop_errors,
                  stats.dwell_ms);
+        ESP_LOGI(TAG,
+                 "WORLD ap=%u created=%" PRIu32 " expired=%" PRIu32
+                 " evicted=%" PRIu32 " rejected=%" PRIu32
+                 " stale=%" PRIu32 " invalid=%" PRIu32,
+                 stats.ap_db_current, stats.ap_db_created, stats.ap_db_expired,
+                 stats.ap_db_evicted, stats.ap_db_rejected,
+                 stats.world_obs_stale, stats.world_obs_invalid);
     }
 }
 
@@ -624,6 +695,23 @@ void wifi_sniffer_get_stats(radio_stats_t *out)
         out->rx.queue_current = uxQueueMessagesWaiting(s_rx_queue);
     }
     out->current_channel = s_current_channel;
+
+    /* World snapshot: short bounded copy under the task-level mutex,
+     * never inside an interrupt-disabled section. */
+    if (s_world_mux != NULL &&
+        xSemaphoreTake(s_world_mux, pdMS_TO_TICKS(20)) == pdTRUE) {
+        world_snapshot_t ws;
+        world_snapshot(&s_world, &ws);
+        xSemaphoreGive(s_world_mux);
+
+        out->ap_db_current = ws.ap_current;
+        out->ap_db_created = ws.stats.ap_created;
+        out->ap_db_expired = ws.stats.ap_expired;
+        out->ap_db_evicted = ws.stats.ap_evicted;
+        out->ap_db_rejected = ws.stats.ap_rejected;
+        out->world_obs_stale = ws.stats.obs_stale;
+        out->world_obs_invalid = ws.stats.obs_invalid;
+    }
 
     /* Merge hopper state so consumers need a single snapshot call.
      * current_channel semantics (Phase 1.5): the hopper's last known good
@@ -694,6 +782,16 @@ esp_err_t wifi_sniffer_init(void)
         ESP_LOGE(TAG, "queue creation failed");
         return ESP_ERR_NO_MEM;
     }
+
+    /* World Model must be live before the RX task exists and before the
+     * promiscuous RX is enabled in wifi_sniffer_start(). */
+    s_world_mux = xSemaphoreCreateMutex();
+    if (s_world_mux == NULL) {
+        ESP_LOGE(TAG, "world mutex creation failed");
+        return ESP_ERR_NO_MEM;
+    }
+    world_init(&s_world);
+    s_last_world_maint = 0;
 
     memset(&s_stats, 0, sizeof(s_stats));
     memset(&s_rx_stats, 0, sizeof(s_rx_stats));

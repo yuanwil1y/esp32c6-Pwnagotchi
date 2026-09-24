@@ -14,4 +14,5 @@ idf_component_register(
         esp_event
         esp_system
         esp_timer
+        world
 )

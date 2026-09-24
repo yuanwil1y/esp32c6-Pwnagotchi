@@ -94,6 +94,17 @@ typedef struct {
     uint8_t ap_cache_occupied;
     uint32_t ap_obs_skipped;
 
+    /* Phase 2 World Model (AP database). ap_db_current counts AP records
+     * with a non-expired observation (TTL-aged), unlike ap_cache_occupied
+     * above which is only the log-dedup cache occupancy. */
+    uint16_t ap_db_current;
+    uint32_t ap_db_created;
+    uint32_t ap_db_expired;
+    uint32_t ap_db_evicted;
+    uint32_t ap_db_rejected;
+    uint32_t world_obs_stale;
+    uint32_t world_obs_invalid;
+
     /* Last AP observation, for the UI. 33 = 32 SSID bytes + NUL. */
     char last_ssid[33];
     uint8_t last_ssid_len;
