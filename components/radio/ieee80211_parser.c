@@ -362,6 +362,66 @@ const char *ieee80211_security_name(ieee80211_security_t sec)
     }
 }
 
+bool ieee80211_parse_data_addresses(const uint8_t *frame, uint16_t length,
+                                    ieee80211_data_addrs_t *out)
+{
+    if (frame == NULL || out == NULL) {
+        return false;
+    }
+    memset(out, 0, sizeof(*out));
+
+    ieee80211_frame_info_t info = {0};
+    if (!ieee80211_parse(frame, length, &info)) {
+        out->status = IEEE80211_DATA_ADDRS_TOO_SHORT;
+        return false;
+    }
+    if (info.fc.protocol_version != 0 || info.type != IEEE80211_TYPE_DATA) {
+        out->status = IEEE80211_DATA_ADDRS_BAD_PROTOCOL;
+        return false;
+    }
+
+    out->to_ds = info.fc.to_ds;
+    out->from_ds = info.fc.from_ds;
+    out->qos = (info.fc.subtype & 0x08) != 0;
+    out->four_addr = info.fc.to_ds && info.fc.from_ds;
+    out->protected_frame = info.fc.protected_frame;
+
+    /* Minimum header length strictly derived from the Frame Control; the
+     * capture must hold every byte of it before any address is read. */
+    uint32_t hdr = IEEE80211_DATA_HDR_BASE_LEN;
+    if (out->four_addr) {
+        hdr += 6; /* addr4 */
+    }
+    if (out->qos) {
+        hdr += 2; /* QoS control */
+    }
+    if (info.fc.order) {
+        hdr += 4; /* HT control */
+    }
+    out->header_len = (uint16_t)hdr;
+
+    if (length < out->header_len) {
+        out->status = IEEE80211_DATA_ADDRS_TOO_SHORT;
+        return false;
+    }
+
+    memcpy(out->addr1, &frame[IEEE80211_DATA_ADDR1_OFF], sizeof(out->addr1));
+    memcpy(out->addr2, &frame[IEEE80211_DATA_ADDR2_OFF], sizeof(out->addr2));
+    memcpy(out->addr3, &frame[IEEE80211_DATA_ADDR3_OFF], sizeof(out->addr3));
+    if (out->four_addr) {
+        memcpy(out->addr4, &frame[IEEE80211_DATA_ADDR4_OFF], sizeof(out->addr4));
+    }
+
+    if (out->four_addr) {
+        out->status = IEEE80211_DATA_ADDRS_WDS;
+    } else if (!out->to_ds && !out->from_ds) {
+        out->status = IEEE80211_DATA_ADDRS_AMBIGUOUS;
+    } else {
+        out->status = IEEE80211_DATA_ADDRS_OK;
+    }
+    return true;
+}
+
 void ieee80211_format_mac(const uint8_t mac[6], char *out, size_t out_size)
 {
     static const char hex[] = "0123456789ABCDEF";

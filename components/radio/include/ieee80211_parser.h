@@ -348,3 +348,51 @@ void ieee80211_format_mac(const uint8_t mac[6], char *out, size_t out_size);
  */
 void ieee80211_ssid_to_printable(const char *ssid, uint8_t ssid_len,
                                  char *out, size_t out_size);
+
+/* --- Phase 2B: data frame address extraction ------------------------- */
+
+/* Offsets inside the data frame header. */
+#define IEEE80211_DATA_HDR_BASE_LEN  24  /* FC+dur+addr1..3+seq */
+#define IEEE80211_DATA_ADDR1_OFF     4
+#define IEEE80211_DATA_ADDR2_OFF     10
+#define IEEE80211_DATA_ADDR3_OFF     16
+#define IEEE80211_DATA_ADDR4_OFF     24
+
+typedef enum {
+    IEEE80211_DATA_ADDRS_OK = 0,        /* ToDS ^ FromDS: mappable      */
+    IEEE80211_DATA_ADDRS_TOO_SHORT,    /* header not fully captured     */
+    IEEE80211_DATA_ADDRS_BAD_PROTOCOL, /* not a plain data frame / ver  */
+    IEEE80211_DATA_ADDRS_WDS,          /* ToDS & FromDS: 4-address      */
+    IEEE80211_DATA_ADDRS_AMBIGUOUS,    /* no DS bits: IBSS / direct     */
+} ieee80211_data_addrs_status_t;
+
+/*
+ * Bounds-checked extraction of the data frame address fields. The minimum
+ * header length is computed FROM the Frame Control: 24 bytes + 6 (both DS
+ * bits: addr4) + 2 (QoS subtype) + 4 (order bit: HT control). Protected
+ * bodies are irrelevant: the MAC header stays plaintext and no body byte
+ * is ever read here.
+ *
+ * Returns true when the header was fully present and structurally valid
+ * (status OK, WDS or AMBIGUOUS - all three carry verified addresses);
+ * false for NULL args, TOO_SHORT and BAD_PROTOCOL, in which case `out`
+ * only has `status` set. WDS and AMBIGUOUS are deliberately NOT mapped to
+ * infrastructure roles: the caller must skip ordinary AP<->STA inference
+ * for them (see docs/PHASE2_WORLD_MODEL.md for the DS mapping table).
+ */
+typedef struct {
+    ieee80211_data_addrs_status_t status;
+    uint8_t addr1[6];
+    uint8_t addr2[6];
+    uint8_t addr3[6];
+    uint8_t addr4[6]; /* zero unless both DS bits set */
+    uint16_t header_len;  /* minimum header incl. QoS / HT control */
+    bool to_ds;
+    bool from_ds;
+    bool qos;
+    bool four_addr;
+    bool protected_frame;
+} ieee80211_data_addrs_t;
+
+bool ieee80211_parse_data_addresses(const uint8_t *frame, uint16_t length,
+                                    ieee80211_data_addrs_t *out);

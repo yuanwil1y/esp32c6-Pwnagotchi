@@ -81,6 +81,36 @@ static void world_feed_ap(const ieee80211_ap_observation_t *obs,
     xSemaphoreGive(s_world_mux);
 }
 
+static void world_feed_data(const ieee80211_data_addrs_t *addrs,
+                            uint64_t now_ms, uint8_t channel, int8_t rssi)
+{
+    if (xSemaphoreTake(s_world_mux, pdMS_TO_TICKS(10)) != pdTRUE) {
+        return;
+    }
+    world_on_data_frame(&s_world, addrs, now_ms, channel, rssi);
+    xSemaphoreGive(s_world_mux);
+}
+
+static void world_feed_probe(const ieee80211_probe_req_observation_t *obs,
+                             uint64_t now_ms)
+{
+    if (xSemaphoreTake(s_world_mux, pdMS_TO_TICKS(10)) != pdTRUE) {
+        return;
+    }
+    world_on_probe_request(&s_world, obs, now_ms);
+    xSemaphoreGive(s_world_mux);
+}
+
+static void world_feed_sta_tx(const uint8_t mac[6], uint64_t now_ms,
+                              uint8_t channel, int8_t rssi)
+{
+    if (xSemaphoreTake(s_world_mux, pdMS_TO_TICKS(10)) != pdTRUE) {
+        return;
+    }
+    world_on_sta_mgmt_tx(&s_world, mac, now_ms, channel, rssi);
+    xSemaphoreGive(s_world_mux);
+}
+
 /* TTL/eviction housekeeping; safe to call with or without traffic. The
  * timestamp is only advanced after a completed maintenance run, so a
  * failed mutex take retries on the next call. */
@@ -512,6 +542,9 @@ static void handle_probe_request(const radio_packet_t *pkt,
     }
     portEXIT_CRITICAL(&s_stats_mux);
 
+    /* STA discovery regardless of the log throttle. */
+    world_feed_probe(&obs, radio_now_ms());
+
     if (!log_this || !obs_log_rate_ok()) {
         return;
     }
@@ -593,8 +626,28 @@ static void radio_rx_task(void *arg)
             case IEEE80211_MGMT_PROBE_REQ:
                 handle_probe_request(pkt, parse_len, &opts);
                 break;
+            case IEEE80211_MGMT_AUTH:
+            case IEEE80211_MGMT_ASSOC_REQ:
+            case IEEE80211_MGMT_REASSOC_REQ:
+                /* Client-transmitted management frames: STA tx evidence
+                 * only (no AP creation, no relation). Deauth/disassoc/
+                 * action frames are deliberately excluded: their SA may
+                 * be the AP itself. */
+                if (parse_len >= IEEE80211_MGMT_ADDR2_OFF + 6) {
+                    world_feed_sta_tx(&pkt->data[IEEE80211_MGMT_ADDR2_OFF],
+                                      radio_now_ms(), pkt->channel, pkt->rssi);
+                }
+                break;
             default:
                 break;
+            }
+        } else if (info.valid && info.type == IEEE80211_TYPE_DATA &&
+                   info.fc.subtype != 15) {
+            /* MAC-header-only relation evidence; protected bodies are
+             * never parsed. Reserved subtype 15 is skipped. */
+            ieee80211_data_addrs_t addrs;
+            if (ieee80211_parse_data_addresses(pkt->data, parse_len, &addrs)) {
+                world_feed_data(&addrs, radio_now_ms(), pkt->channel, pkt->rssi);
             }
         }
 
@@ -671,11 +724,21 @@ static void radio_stats_task(void *arg)
                  stats.current_channel, stats.hop_count, stats.hop_errors,
                  stats.dwell_ms);
         ESP_LOGI(TAG,
-                 "WORLD ap=%u created=%" PRIu32 " expired=%" PRIu32
-                 " evicted=%" PRIu32 " rejected=%" PRIu32
+                 "WORLD ap=%u sta=%u rel=%u"
+                 " A:cre=%" PRIu32 "/exp=%" PRIu32 "/ev=%" PRIu32 "/rej=%" PRIu32
+                 " S:cre=%" PRIu32 "/exp=%" PRIu32 "/ev=%" PRIu32 "/rej=%" PRIu32
+                 " R:new=%" PRIu32 "/exp=%" PRIu32 "/sw=%" PRIu32 "/cfl=%" PRIu32
+                 " amb=%" PRIu32 " wds=%" PRIu32 " short=%" PRIu32
                  " stale=%" PRIu32 " invalid=%" PRIu32,
-                 stats.ap_db_current, stats.ap_db_created, stats.ap_db_expired,
-                 stats.ap_db_evicted, stats.ap_db_rejected,
+                 stats.ap_db_current, stats.sta_db_current, stats.rel_db_current,
+                 stats.ap_db_created, stats.ap_db_expired, stats.ap_db_evicted,
+                 stats.ap_db_rejected,
+                 stats.sta_db_created, stats.sta_db_expired, stats.sta_db_evicted,
+                 stats.sta_db_rejected,
+                 stats.rel_db_formed, stats.rel_db_expired, stats.rel_db_switched,
+                 stats.rel_db_conflicts,
+                 stats.world_data_ambiguous, stats.world_data_wds,
+                 stats.world_data_short,
                  stats.world_obs_stale, stats.world_obs_invalid);
     }
 }
@@ -705,10 +768,23 @@ void wifi_sniffer_get_stats(radio_stats_t *out)
         xSemaphoreGive(s_world_mux);
 
         out->ap_db_current = ws.ap_current;
+        out->sta_db_current = ws.sta_current;
+        out->rel_db_current = ws.rel_current;
         out->ap_db_created = ws.stats.ap_created;
         out->ap_db_expired = ws.stats.ap_expired;
         out->ap_db_evicted = ws.stats.ap_evicted;
         out->ap_db_rejected = ws.stats.ap_rejected;
+        out->sta_db_created = ws.stats.sta_created;
+        out->sta_db_expired = ws.stats.sta_expired;
+        out->sta_db_evicted = ws.stats.sta_evicted;
+        out->sta_db_rejected = ws.stats.sta_rejected;
+        out->rel_db_formed = ws.stats.rel_formed;
+        out->rel_db_expired = ws.stats.rel_expired;
+        out->rel_db_switched = ws.stats.rel_switched;
+        out->rel_db_conflicts = ws.stats.rel_conflicts;
+        out->world_data_ambiguous = ws.stats.data_ambiguous;
+        out->world_data_wds = ws.stats.data_wds;
+        out->world_data_short = ws.stats.data_short;
         out->world_obs_stale = ws.stats.obs_stale;
         out->world_obs_invalid = ws.stats.obs_invalid;
     }

@@ -94,14 +94,27 @@ typedef struct {
     uint8_t ap_cache_occupied;
     uint32_t ap_obs_skipped;
 
-    /* Phase 2 World Model (AP database). ap_db_current counts AP records
-     * with a non-expired observation (TTL-aged), unlike ap_cache_occupied
+    /* Phase 2 World Model (AP + STA databases, relations). *_current are
+     * TTL-aged record counts ("observed now"), unlike ap_cache_occupied
      * above which is only the log-dedup cache occupancy. */
     uint16_t ap_db_current;
+    uint16_t sta_db_current;
+    uint16_t rel_db_current;
     uint32_t ap_db_created;
     uint32_t ap_db_expired;
     uint32_t ap_db_evicted;
     uint32_t ap_db_rejected;
+    uint32_t sta_db_created;
+    uint32_t sta_db_expired;
+    uint32_t sta_db_evicted;
+    uint32_t sta_db_rejected;
+    uint32_t rel_db_formed;
+    uint32_t rel_db_expired;
+    uint32_t rel_db_switched;
+    uint32_t rel_db_conflicts;
+    uint32_t world_data_ambiguous;
+    uint32_t world_data_wds;
+    uint32_t world_data_short;
     uint32_t world_obs_stale;
     uint32_t world_obs_invalid;
 
