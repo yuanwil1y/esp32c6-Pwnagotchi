@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 import base64
-import tempfile
 import sys
+import tempfile
+import types
 import unittest
 from pathlib import Path
 import zlib
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools"))
 import capture_serial_export as export  # noqa: E402
@@ -135,6 +137,72 @@ class CaptureSerialExportTests(unittest.TestCase):
             with self.assertRaises(FileExistsError):
                 export._stream_file(FakeSerial(payload), "0123456789ABCDEF",
                                     "pcap", 0, len(payload), path, 0.01)
+
+    def test_main_uses_console_file_names_and_exports_session(self):
+        payload = b"pcap-vector"
+
+        class FakeSerial:
+            def __init__(self):
+                self.lines = []
+                self.commands = []
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, exc_type, exc, traceback):
+                return False
+
+            def reset_input_buffer(self):
+                self.lines.clear()
+
+            def write(self, command):
+                self.commands.append(command.decode("ascii").strip())
+                fields = self.commands[-1].split()
+                if fields[0] == "capture-export-info":
+                    self.lines.extend([
+                        b"!PCAP,INFO,SESSION,STOPPED,0123456789ABCDEF,1\r\n",
+                        b"!PCAP,INFO,PCAP,0,11\r\n",
+                        b"!PCAP,INFO,SUMMARY,0\r\n",
+                        b"!PCAP,INFO,END\r\n",
+                    ])
+                else:
+                    _, _, kind, index, offset_text = fields
+                    offset = int(offset_text)
+                    chunk = payload[offset:]
+                    encoded = base64.b64encode(chunk).decode("ascii")
+                    tag = "P" if kind == "pcap" else "S"
+                    self.lines.append(
+                        f"!PCAP,DATA,{tag},{index},{offset},{len(chunk)},"
+                        f"{zlib.crc32(chunk) & 0xffffffff:08X},{encoded}\r\n"
+                        .encode("ascii"))
+                    self.lines.append(
+                        f"!PCAP,END,{tag},{index},{len(payload)}\r\n"
+                        .encode("ascii"))
+                return len(command)
+
+            def flush(self):
+                pass
+
+            def readline(self):
+                return self.lines.pop(0) if self.lines else b""
+
+        fake_serial = FakeSerial()
+        serial_module = types.SimpleNamespace(Serial=lambda: fake_serial)
+        with tempfile.TemporaryDirectory() as directory:
+            with patch.dict(sys.modules, {"serial": serial_module}), \
+                    patch.object(export.time, "sleep"):
+                result = export.main([
+                    "COM3", "--session", "0123456789ABCDEF",
+                    "--output-dir", directory,
+                ])
+            self.assertEqual(result, 0)
+            self.assertEqual(fake_serial.commands[0],
+                             "capture-export-info 0123456789ABCDEF")
+            self.assertEqual(fake_serial.commands[1],
+                             "capture-export 0123456789ABCDEF pcap 0 0")
+            self.assertEqual(
+                (Path(directory) / "capture-0123456789ABCDEF-0000.pcap").read_bytes(),
+                payload)
 
 
 if __name__ == "__main__":

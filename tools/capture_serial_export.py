@@ -233,13 +233,13 @@ def main(argv=None) -> int:
                 filename = f"capture-{session_id}-{index:04d}.pcap"
                 path = args.output_dir / filename
                 transfer_timeout = max(args.timeout, size / 8000.0 + 10.0)
-                _stream_file(ser, session_id, "P", index, size, path,
+                _stream_file(ser, session_id, "pcap", index, size, path,
                              transfer_timeout)
                 print(f"saved {path} bytes={size}")
             if summary_size > 0:
                 path = args.output_dir / f"session-{session_id}.txt"
                 transfer_timeout = max(args.timeout, summary_size / 8000.0 + 10.0)
-                _stream_file(ser, session_id, "S", 0, summary_size, path,
+                _stream_file(ser, session_id, "summary", 0, summary_size, path,
                              transfer_timeout)
                 print(f"saved {path} bytes={summary_size}")
     except Exception as exc:  # noqa: BLE001 - present serial/transfer failures to operator
