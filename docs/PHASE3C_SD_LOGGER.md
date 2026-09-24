@@ -1,12 +1,16 @@
 # Phase 3C — Bounded asynchronous SD logger
 
-Status: **PENDING**. The fix at code SHA
+Status: **PENDING**. Code SHA
 `3f23fcd08f7da23b606e2289e326bf8d8734875b` passed GitHub host and ESP-IDF CI
 run [36001491669](https://github.com/yuanwil1y/esp32c6-Pwnagotchi/actions/runs/36001491669).
-It replaces the failed console REPL with a bounded direct USB Serial/JTAG
-reader. The matching app-only image is prepared but has not yet been flashed;
-hardware SD recording, controlled stop, extracted-file TShark readback, and
-active-write display/hopping/heap observation remain **PENDING**.
+Its app-only image was flashed and booted stably. A live SD recording ran, but
+`capture-stop` ended in `ERROR` with one I/O error even though accepted,
+serialized, written, and flushed all reached 1,594. Six additional records
+were dropped at the full logger queue. The user has no SD reader, so the file
+has not been extracted or independently read by TShark; hardware PCAP
+readback and successful controlled-stop acceptance remain **PENDING**.
+Active hopping/RX/heap/stack telemetry was observed. Visual LCD responsiveness
+was not independently assessed during the write interval.
 The user confirmed that an SD card is inserted and authorized creating new
 uniquely named files. No existing file is formatted, deleted, or overwritten.
 
@@ -125,8 +129,8 @@ It contains raw wireless metadata and remains local.
 The follow-up replaces ESP-IDF's all-in-one REPL creation with a dedicated
 4 KiB bounded reader task on the existing USB Serial/JTAG driver. It accepts
 only `capture-start`, `capture-stop`, `capture-status`, and `help`; it neither
-owns radio/logger slots nor performs storage work. This change is awaiting
-hardware verification after its successful GitHub CI run.
+owns radio/logger slots nor performs storage work. Its app-only hardware run
+and the remaining acceptance gap are recorded below.
 
 Code SHA `3f23fcd08f7da23b606e2289e326bf8d8734875b` passed run
 [36001491669](https://github.com/yuanwil1y/esp32c6-Pwnagotchi/actions/runs/36001491669):
@@ -141,6 +145,47 @@ firmware SHA is embedded as `3f23fcd08f7da23b606e2289e326bf8d8734875b`.
 Original job logs are retained in
 `docs/logs/phase3c_build_ci_36001491669.log` and
 `docs/logs/phase3c_host_ci_36001491669.log`.
+
+The matching 1,192,112-byte app image was written only at offset `0x10000`;
+esptool reported `Hash of data verified`. Its SHA-256 was
+`FB5D930CDF5B9C69107E8B5EDDE1318D4D1C6EE5216EAEB286E73D943A21C926`. The
+device booted without a reboot loop. USB Serial/JTAG accepted `capture-status`,
+`capture-start`, and `capture-stop`. A new exclusive session opened
+`/sd_card/capture/capture-9D808161AA2EF8C5-0000.pcap`; no existing file was
+opened for write.
+
+During approximately 67 seconds of recording, the latest stop snapshot was
+`state=ERROR accepted=1594 serialized=1594 written=1594 flushed=1594`,
+`storage_drop=6` (all six `queue_full`), `old_rx=0`, `io_drop=0`,
+`errors=1`, and queue depth `0/8`. Maximum open/write/sync/close durations were
+437399/138439/139233/4178 us. The logger had stopped accepting records and its
+owned file handles had been closed by the error cleanup path, but the state is
+not reported as a successful stop. The public status does not identify whether
+the close error came from the PCAP or the sidecar, so that cause remains
+unknown. The counters indicate all accepted records reached both written and
+flushed, but without reading the card they do not establish PCAP integrity.
+The actual PCAP and sidecar have not been copied off the card because the user
+does not have an SD reader. No card format, deletion, or overwrite was done.
+
+Radio telemetry continued during the session: hopping remained at 300 ms with
+zero hop errors; RX drop remained zero and RX queue depth was `0/2`. At the
+last active-write snapshots free heap was about 158 KiB with 154,280 B minimum;
+RX, logger, and UI stack high-water marks were 984 B, 2,348 B, and 1,444 B.
+The UI task continued reporting, but the display and touch were not visually
+verified while the SD was busy. The user toggled a phone's Wi-Fi once during
+recording. The firmware's EAPOL raw observation count remained at its
+pre-session value of 1, so this capture provides no evidence that the
+reconnection's EAPOL frames were received; fixed-channel hopping can miss
+them. No deauthentication was observed by the sniffer and no active wireless
+operation was issued by the logger.
+
+The full raw COM3 monitor log is retained locally, not committed because it
+contains nearby network identifiers:
+`D:\pwn\phase3c-evidence\36001491669\log..20260924205901.txt` (78,226 B,
+SHA-256 `22777FAE04679B9E15BA27E71EC0C56C158C644558FE857CEF2925B26D93CFFB`).
+GitHub Actions run
+[36002325074](https://github.com/yuanwil1y/esp32c6-Pwnagotchi/actions/runs/36002325074)
+also completed successfully for the subsequent documentation-only commit.
 
 The `f2fe1c411d81bf8058fcb801c0be580fb0c8a709` revision passed both CI jobs in
 run [35995388924](https://github.com/yuanwil1y/esp32c6-Pwnagotchi/actions/runs/35995388924):
@@ -348,9 +393,12 @@ and UI, plus before/after logger/console heap and minimum heap, are emitted on
 device. The mount reuses
 the existing board FatFs configuration (`max_files=5`, `CONFIG_FATFS_LFN_HEAP`);
 PCAP and sidecar use two handles within that existing limit. No additional FAT
-workspace size is configured; mount/FatFs dynamic memory will be measured by
-heap deltas on hardware. Exact `.bss`, task high-water, minimum heap, and FAT
-mount workspace remain PENDING until a CI firmware boots successfully on device.
+workspace size is configured. For the booted 3f23 image, CI reports linker
+`.bss=64,576` B and `sd_logger_idf.c.obj` `.bss=10,238` B. Runtime minimum free
+heap was 154,280 B. The observed logger stack high-water mark decreased from
+3,756 B while idle to 2,348 B at the post-stop error snapshot; RX/UI high-water
+marks were 984/1,444 B. FAT workspace has not been isolated from the board's
+shared existing mount and remains unmeasured separately.
 
 The queue slots, index FIFO, and fixed buffers are finite. Parser/callback
 never waits on SD; any queue saturation becomes an explicit storage drop. No
@@ -381,27 +429,38 @@ ESP-IDF v5.4 / ESP32-C6 build
 ```
 
 No local build or test is run for this task. The CI run and all hardware
-attempts are recorded above; the latest control-reader change passed GitHub CI
-and still needs a separate authorized app-only flash before hardware capture.
+attempts are recorded above. The latest control-reader image was flashed
+app-only; the SD close error and missing card readback prevent hardware
+acceptance.
 
 ## Hardware acceptance status
 
-**PENDING — the 24 KiB USB Serial/JTAG image is stable, but its REPL setup
-failed with `ESP_ERR_INVALID_STATE`; no logger session was started and no SD
-PCAP was written.** The direct command-reader fix passed CI and is ready for
-an app-only flash. The SD card remains inserted and creation of uniquely
-named files is authorized. After that image is flashed, verification still
-needs to:
+**PENDING — live recording and radio operation were demonstrated, but the
+controlled stop returned `ERROR`; the physical file is not independently
+verified.** The only available raw capture copy is the local monitor log noted
+above. The user has no SD reader, so the session PCAP and sidecar cannot
+currently be read off the card. The close-failure source (PCAP versus sidecar)
+is unknown from the current firmware's aggregate error status. Visual LCD/touch
+responsiveness during active SD writes also remains unverified. Do not count
+the written/flushed counters or synthetic host TShark run as a hardware PCAP
+PASS.
 
-1. flash only the CI-built app image and retain the original raw COM3 log;
-2. check startup mount/self-test, console availability, logger `STOPPED`, SD/LCD/touch/world, fixed
-   hopper behavior, heap minima, and logger/RX/UI stack telemetry;
-3. use `capture-start`, allow passive capture, then `capture-stop` and confirm
-   `STOPPED`, closed files, and sidecar counts;
-4. independently read the actual SD PCAP with TShark/capinfos and compare
-   record count and incl/orig lengths with `written`; report no-capture periods
-   honestly because fixed hopping can miss frames;
-5. observe UI responsiveness during active 4 KiB SD write/sync activity.
+What was verified: the code and app-only image passed GitHub CI; the device
+booted stably; direct USB Serial/JTAG control worked; a uniquely named file
+was opened and received records; status reported 1,594 accepted/serialized/
+written/flushed records and six logger queue-full drops; RX drops stayed zero;
+300 ms hopping continued without reported hop errors; heap and task stack
+telemetry remained available. The phone Wi-Fi toggle did not increase the
+EAPOL observation counter during this capture, which is consistent with the
+known possibility of missing a brief connection exchange while hopping.
+
+To finish hardware acceptance, use an SD reader to extract the existing
+session files without changing them, run TShark/capinfos on the PCAP and
+compare its packet count and lengths with the recorded counters, and investigate
+the reported close error before any future acceptance claim. Confirm display
+responsiveness during an active write as part of that follow-up. No local build
+or test result is substituted for GitHub CI, and no live capture file was
+uploaded or committed.
 
 The firmware does not request Wi-Fi reassociation, deauthentication, active
 scanning, or transmit packets. This phase does not implement PCAPNG, handshake
