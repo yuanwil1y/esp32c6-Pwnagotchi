@@ -22,10 +22,12 @@ transmissions, deauthentication, hopping changes, or Agent/UI restructuring.
 - Phase 3A CI result: final implementation source SHA
   `5336ac7666371e198b8bb0be9e65deda38b1bcf2` passed GitHub Actions run
   [35972440421](https://github.com/yuanwil1y/esp32c6-Pwnagotchi/actions/runs/35972440421).
-  The run retains the original job logs and uploaded firmware/flash artifacts.
-- Hardware passive observation: **PENDING**. No authorized AP/client natural
-  connection capture was performed in this stage; no hardware result is
-  inferred from offline fixtures or CI.
+  The documentation-only branch head `e81cc54aa78587d67eee941cefa6d33161fba768`
+  also passed [run 35972956027](https://github.com/yuanwil1y/esp32c6-Pwnagotchi/actions/runs/35972956027);
+  that run retains the original job logs and uploaded firmware/flash artifacts
+  used for the live hardware check.
+- Hardware passive observation: a limited authorized live capture was
+  completed on 2026-09-24 through COM3; details and limits are recorded below.
 
 ## RX and capture-view contract
 
@@ -162,6 +164,18 @@ fix was then included and revalidated by final run 35972440421. The failed
 attempt's original log remains available from its Actions run; it is not
 represented as a pass.
 
+The `e81cc54` CI artifact used for the live check was written to the app
+partition only with this command (the artifact path is under the Windows
+temporary directory):
+
+```text
+py -m esptool --chip esp32c6 --port COM3 --baud 460800 --before default_reset --after hard_reset write-flash --flash-mode dio --flash-freq 80m --flash-size 8MB 0x10000 <esp32c6_pwnagotchi.bin from flash-files-e81cc54...>
+```
+
+esptool reported `Wrote 1181920 bytes` and `Hash of data verified`. Serial
+observation used COM3 at 115200 baud, read-only, with DTR/RTS held inactive.
+No firmware build was run locally.
+
 ## Memory and hardware status
 
 - `radio_packet_t` adds one `uint64_t`: 8 bytes per pool slot. The existing
@@ -172,16 +186,36 @@ represented as a pass.
   the existing dynamically created FreeRTOS queue objects unchanged.
 - No task or queue was added. `radio_rx` and `radio_stat` stack allocations
   remain 3,072 bytes each. Parser locals add a bounded capture view and
-  value-only EAPOL observation to the existing parser task; on-device stack
-  high-water measurement is **PENDING**.
-- No authorized natural AP/client connection was available for field
-  observation in this run. Hardware passive EAPOL capture is **PENDING**;
-  fixed 300 ms hopping may miss exchanges. Offline fixtures and CI are not a
-  hardware PASS.
+  value-only EAPOL observation to the existing parser task. During the live
+  run, serial telemetry reported `stk_rx=980` and `stk_stat=652` from
+  `uxTaskGetStackHighWaterMark()`; these are recorded as returned values
+  without unit conversion. The minimum free heap reported was 176,056 bytes.
+- Live hardware check (2026-09-24): an ESP32-C6FH8 (8 MB flash) on COM3 ran
+  the CI image whose boot log identified `e81cc54aa78587d67eee941cefa6d33161fba768`.
+  The app partition at `0x10000` was flashed from the CI artifact and verified
+  by esptool; bootloader, partition table, and NVS were left intact. The
+  previous 4 MB app partition was backed up locally before flashing. During a
+  120-second passive serial observation window with the user-provided
+  authorized AP/client and phone Wi-Fi natural reconnect, the device reported
+  one complete supported EAPOL-Key frame, classified pairwise, direction
+  AP-to-STA. Its RX timestamp was `88383589` monotonic microseconds after
+  boot. The cumulative counters were `raw=1 env=1 key=1 trunc=0 unsup=0
+  malformed=0 key_raw=1 pair=1 group=0`; later samples remained at one frame.
+  This verifies live EAPOL recognition and bounded statistics only. It does
+  not establish all four Key messages or a completed handshake. Fixed 300 ms
+  hopping can miss frames. In the captured interval the radio counters showed
+  `rx=1986 queued=1986 processed=1986 drop=0`; observed deauthentication count
+  remained zero.
+- The unmodified 48,772-byte COM3 serial log is retained outside the repository
+  at `D:\pwn\phase3a-evidence\phase3a-com3-2026-09-24.raw.log`
+  (SHA-256 `73a71d180241ded96a8413aaE9d2a0a4a51af0561ff7eed6779b83710d7e9155`).
+  It includes unrelated nearby probe SSIDs and MAC addresses, so it is not
+  committed to the public repository. CI logs remain available from their
+  linked GitHub Actions runs.
 
 ## Final result
 
 **Phase 3A software: PASS at implementation SHA `5336ac7666371e198b8bb0be9e65deda38b1bcf2`; GitHub Actions run 35972440421.**
-**Phase 3A hardware: PENDING authorized passive capture.**
+**Phase 3A hardware: PASS for a limited live EAPOL-Key observation; full handshake capture and session validation are outside scope and were not performed.**
 
 No Phase 3B work has started. No merge or release was performed.
