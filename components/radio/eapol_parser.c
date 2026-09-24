@@ -200,8 +200,7 @@ bool eapol_parse_frame(const rx_capture_view_t *frame,
     const uint8_t subtype = info.fc.subtype;
     const bool qos_data = subtype >= IEEE80211_DATA_QOS_DATA &&
                           subtype <= IEEE80211_DATA_QOS_DATA_CFACK_CFPOLL;
-    const bool plain_data = subtype >= IEEE80211_DATA_DATA &&
-                            subtype <= IEEE80211_DATA_DATA_CFACK_CFPOLL;
+    const bool plain_data = subtype <= IEEE80211_DATA_DATA_CFACK_CFPOLL;
     const bool no_payload = (subtype >= IEEE80211_DATA_NULL &&
                              subtype <= IEEE80211_DATA_CFACK_CFPOLL) ||
                             subtype == IEEE80211_DATA_QOS_NULL;
