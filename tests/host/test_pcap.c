@@ -47,6 +47,12 @@ static void put_le16(uint8_t *out, uint16_t value)
     out[1] = (uint8_t)(value >> 8);
 }
 
+static void put_be16(uint8_t *out, uint16_t value)
+{
+    out[0] = (uint8_t)(value >> 8);
+    out[1] = (uint8_t)(value & UINT16_C(0x00ff));
+}
+
 static bool encode(const rx_capture_view_t *view,
                    const pcap_time_anchor_t *anchor, uint8_t *out,
                    size_t capacity, size_t *written,
@@ -418,7 +424,7 @@ static uint16_t append_test_snap(uint8_t *mac, uint16_t offset,
         0xaa, 0xaa, 0x03, 0x00, 0x00, 0x00,
     };
     memcpy(&mac[offset], llc_snap_prefix, sizeof(llc_snap_prefix));
-    put_le16(&mac[offset + 6u], ethertype);
+    put_be16(&mac[offset + 6u], ethertype);
     return (uint16_t)(offset + 8u);
 }
 
@@ -492,10 +498,10 @@ static void build_reference_frames(void)
     uint16_t offset = append_test_snap(frame->mac, 24, 0x888eu);
     frame->mac[offset + 0u] = 2;
     frame->mac[offset + 1u] = 0;
-    put_le16(&frame->mac[offset + 2u], 5);
+    put_be16(&frame->mac[offset + 2u], 5);
     frame->mac[offset + 4u] = 1; /* EAP Request */
     frame->mac[offset + 5u] = 0x42;
-    put_le16(&frame->mac[offset + 6u], 5);
+    put_be16(&frame->mac[offset + 6u], 5);
     frame->mac[offset + 8u] = 1; /* Identity */
     add_reference_meta(7, 41, 41, 6, -42, 1000100);
 
@@ -505,12 +511,12 @@ static void build_reference_frames(void)
     offset = append_test_snap(frame->mac, 24, 0x888eu);
     frame->mac[offset + 0u] = 2;
     frame->mac[offset + 1u] = 3;
-    put_le16(&frame->mac[offset + 2u], 95);
+    put_be16(&frame->mac[offset + 2u], 95);
     uint8_t *key_body = &frame->mac[offset + 4u];
     memset(key_body, 0, 95);
     key_body[0] = 2; /* RSN Key descriptor */
-    put_le16(&key_body[1], 0x0089u); /* descriptor v1, pairwise, ACK */
-    put_le16(&key_body[93], 0); /* Key Data Length */
+    put_be16(&key_body[1], 0x0089u); /* descriptor v1, pairwise, ACK */
+    put_be16(&key_body[93], 0); /* Key Data Length */
     add_reference_meta(8, 24u + 8u + 4u + 95u,
                        24u + 8u + 4u + 95u, 11, -37, 1100000);
 
