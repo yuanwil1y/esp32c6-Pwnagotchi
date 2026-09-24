@@ -47,14 +47,6 @@ static void put_le16(uint8_t *out, uint16_t value)
     out[1] = (uint8_t)(value >> 8);
 }
 
-static void put_le32(uint8_t *out, uint32_t value)
-{
-    out[0] = (uint8_t)(value & UINT32_C(0x000000ff));
-    out[1] = (uint8_t)((value >> 8) & UINT32_C(0x000000ff));
-    out[2] = (uint8_t)((value >> 16) & UINT32_C(0x000000ff));
-    out[3] = (uint8_t)(value >> 24);
-}
-
 static bool encode(const rx_capture_view_t *view,
                    const pcap_time_anchor_t *anchor, uint8_t *out,
                    size_t capacity, size_t *written,
