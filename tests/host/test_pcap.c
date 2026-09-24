@@ -531,7 +531,8 @@ static void build_reference_frames(void)
     frame = &s_reference_frames[10];
     init_header(frame->mac, 0x0308u, k_ap, k_sta, k_ap);
     memcpy(&frame->mac[24], k_broadcast, 6);
-    add_reference_meta(10, 30, 30, 15, -80, 1234567);
+    (void)append_test_snap(frame->mac, 30, 0x88b5u);
+    add_reference_meta(10, 38, 38, 15, -80, 1234567);
 }
 
 static rx_capture_view_t reference_view(const reference_frame_t *frame)
