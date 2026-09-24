@@ -1,0 +1,2 @@
+frame	cap_len	frame_len	epoch_us	channel_freq	rssi_dbm	wlan_sa	wlan_da	eapol_type
+1	527	1035	100	2437	-47	02:aa:bb:cc:dd:ee	00:11:22:33:44:55	1

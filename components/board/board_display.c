@@ -544,7 +544,10 @@ esp_err_t board_display_update_phase1c(uint32_t rx_total, uint32_t ap_unique,
 /* Requires the LVGL mutex to be held. */
 static void phase1_refresh_locked(uint8_t channel, uint16_t ap_current,
                                   uint16_t sta_current, uint16_t rel_current,
-                                  uint32_t rx_total, uint32_t rx_dropped)
+                                  uint32_t rx_total, uint32_t rx_dropped,
+                                  const char *storage_state,
+                                  uint32_t storage_written,
+                                  uint32_t storage_drop)
 {
     if (s_status_label == NULL || s_screen_kind != STATUS_SCREEN_PHASE1) {
         return;
@@ -555,10 +558,10 @@ static void phase1_refresh_locked(uint8_t channel, uint16_t ap_current,
     lv_label_set_text_fmt(s_status_label,
                           "esp32c6-Pwnagotchi\n"
                           "\n"
-                          "Phase 3B\n"
+                          "Phase 3C\n"
                           "LCD: OK\n"
                           "Touch: %s\n"
-                          "SD: %s\n"
+                          "SD: %s W:%lu D:%lu\n"
                           "WiFi: %s\n"
                           "\n"
                           "CH: %u\n"
@@ -570,7 +573,10 @@ static void phase1_refresh_locked(uint8_t channel, uint16_t ap_current,
                           "\n"
                           "sniffing...",
                           s_status_touch_ok ? "OK" : "FAIL",
-                          s_status_sd_ok ? "OK" : "FAIL",
+                          storage_state != NULL ? storage_state :
+                              (s_status_sd_ok ? "IDLE" : "NO CARD"),
+                          (unsigned long)storage_written,
+                          (unsigned long)storage_drop,
                           s_status_wifi_ok ? "SNIFFING" : "FAIL",
                           (unsigned)channel,
                           (unsigned)ap_current,
@@ -596,7 +602,7 @@ esp_err_t board_display_show_phase1_status(bool touch_ok, bool sd_ok, bool wifi_
         board_display_unlock();
         return ESP_ERR_NO_MEM;
     }
-    phase1_refresh_locked(0, 0, 0, 0, 0, 0);
+    phase1_refresh_locked(0, 0, 0, 0, 0, 0, NULL, 0, 0);
 
     board_display_unlock();
     return ESP_OK;
@@ -604,14 +610,18 @@ esp_err_t board_display_show_phase1_status(bool touch_ok, bool sd_ok, bool wifi_
 
 esp_err_t board_display_update_phase1(uint8_t channel, uint16_t ap_current,
                                       uint16_t sta_current, uint16_t rel_current,
-                                      uint32_t rx_total, uint32_t rx_dropped)
+                                      uint32_t rx_total, uint32_t rx_dropped,
+                                      const char *storage_state,
+                                      uint32_t storage_written,
+                                      uint32_t storage_drop)
 {
     if (!board_display_lock(BOARD_DISPLAY_WAIT_FOREVER)) {
         return ESP_ERR_INVALID_STATE;
     }
 
     phase1_refresh_locked(channel, ap_current, sta_current, rel_current,
-                          rx_total, rx_dropped);
+                          rx_total, rx_dropped, storage_state,
+                          storage_written, storage_drop);
 
     board_display_unlock();
     return ESP_OK;

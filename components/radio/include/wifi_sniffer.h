@@ -5,6 +5,10 @@
 #include "esp_err.h"
 #include "eapol_parser.h"
 #include "radio_types.h"
+#include "rx_path.h"
+
+typedef bool (*wifi_capture_sink_fn)(const radio_packet_t *packet);
+typedef bool (*wifi_capture_accepting_fn)(void);
 
 /*
  * Phase 1A Wi-Fi promiscuous RX front end.
@@ -17,6 +21,11 @@
 
 /* One-shot init: safe to call before board UI is up. */
 esp_err_t wifi_sniffer_init(void);
+
+/* Optional passive capture tap installed before init. The consumer task calls
+ * it for a value-copy handoff; it must return promptly and never do I/O. */
+void wifi_sniffer_set_capture_sink(wifi_capture_sink_fn sink,
+                                   wifi_capture_accepting_fn accepting);
 
 /* Start the radio and promiscuous RX on `channel` (1..14). */
 esp_err_t wifi_sniffer_start(uint8_t channel);

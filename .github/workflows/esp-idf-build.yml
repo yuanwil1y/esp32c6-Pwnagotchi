@@ -28,11 +28,18 @@ jobs:
         run: |
           python3 tests/host/validate_reference_pcap.py tests/host/build/reference.pcap
 
+      - name: Validate SD logger state-machine capture with TShark
+        run: |
+          python3 tests/host/validate_phase3c_capture.py tests/host/build/phase3c_logger_sample.pcap
+
       - name: Upload synthetic reference capture
         uses: actions/upload-artifact@v4
         with:
           name: reference-pcap-${{ github.sha }}
-          path: tests/host/build/reference.pcap
+          path: |
+            tests/host/build/reference.pcap
+            tests/host/build/phase3c_logger_sample.pcap
+            tests/host/build/phase3c_logger_sample.summary.txt
           if-no-files-found: error
 
   build:
@@ -56,6 +63,9 @@ jobs:
           esp_idf_version: v5.4
           target: esp32c6
           path: .
+          command: |
+            idf.py build &&
+            idf.py size size-components size-files | tee build/phase3c-size-report.txt
 
       - name: Assemble firmware.zip
         run: |
@@ -67,6 +77,7 @@ jobs:
           cp build/flasher_args.json firmware/ 2>/dev/null || true
           cp build/project_description.json firmware/ 2>/dev/null || true
           cp build/config/sdkconfig.h firmware/ 2>/dev/null || true
+          cp build/phase3c-size-report.txt firmware/
           echo "${GITHUB_SHA}" > firmware/git_commit.txt
           cd firmware && zip -r ../firmware.zip . && cd ..
           unzip -l firmware.zip

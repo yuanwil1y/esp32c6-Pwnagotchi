@@ -59,6 +59,8 @@ static rx_path_stats_t s_rx_stats;
 static eapol_stats_t s_eapol_stats;
 static uint8_t s_current_channel;
 static bool s_initialized;
+static wifi_capture_sink_fn s_capture_sink;
+static wifi_capture_accepting_fn s_capture_accepting;
 
 /*
  * Phase 2 World Model. Single writer (radio_rx_task); readers copy a small
@@ -665,6 +667,13 @@ static void radio_rx_task(void *arg)
             continue;
         }
 
+        /* Independent storage copy happens before semantic parsing. It owns
+         * only logger-pool memory and never waits for the SD writer. */
+        if (s_capture_sink != NULL && s_capture_accepting != NULL &&
+            s_capture_accepting()) {
+            (void)s_capture_sink(pkt);
+        }
+
         const uint16_t parse_len = packet_parse_length(pkt);
         const ieee80211_parse_opts_t opts = {
             .capture_truncated = rx_path_body_truncated(pkt),
@@ -924,6 +933,16 @@ void wifi_sniffer_get_eapol_stats(eapol_stats_t *out)
     portENTER_CRITICAL(&s_stats_mux);
     *out = s_eapol_stats;
     portEXIT_CRITICAL(&s_stats_mux);
+}
+
+void wifi_sniffer_set_capture_sink(wifi_capture_sink_fn sink,
+                                   wifi_capture_accepting_fn accepting)
+{
+    if (s_initialized) {
+        return;
+    }
+    s_capture_sink = sink;
+    s_capture_accepting = accepting;
 }
 
 esp_err_t wifi_sniffer_init(void)

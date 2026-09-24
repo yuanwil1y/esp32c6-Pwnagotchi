@@ -14,6 +14,7 @@
 #include "board_touch.h"
 #include "channel_hopper.h"
 #include "radio_types.h"
+#include "sd_logger.h"
 #include "wifi_sniffer.h"
 
 #if __has_include("build_info.h")
@@ -23,24 +24,33 @@
 #define APP_BUILD_GIT_SHORT "unknown"
 #endif
 
-static const char *TAG = "phase1";
+static const char *TAG = "phase3c";
 
 #define PHASE1_UI_TASK_STACK    4096
 #define PHASE1_UI_TASK_PRIO     3
 #define PHASE1_UI_PERIOD_MS     500 /* 2 Hz, inside the 2-5 Hz budget */
 #define PHASE1_HOPPER_DWELL_MS  300
 
-/* Refreshes the Phase 1 status lines from a stats snapshot. Never touches
- * the Wi-Fi driver; the promiscuous callback stays free of LVGL work. */
+/* Refreshes the status screen from value snapshots. Never touches the Wi-Fi
+ * driver; the promiscuous callback stays free of LVGL and storage work. */
 static void phase1_ui_task(void *arg)
 {
     (void)arg;
+    uint8_t report_counter = 0;
 
     while (true) {
         vTaskDelay(pdMS_TO_TICKS(PHASE1_UI_PERIOD_MS));
 
         radio_stats_t stats;
         wifi_sniffer_get_stats(&stats);
+        sd_logger_stats_t storage;
+        sd_logger_get_stats(&storage);
+        const uint32_t storage_written = storage.written > UINT32_MAX
+                                             ? UINT32_MAX
+                                             : (uint32_t)storage.written;
+        const uint32_t storage_drop = storage.storage_drop > UINT32_MAX
+                                          ? UINT32_MAX
+                                          : (uint32_t)storage.storage_drop;
         /* Phase 2: the status screen shows the World Model's TTL-aged
          * current counts (AP records, observed station addresses, valid
          * relations), replacing the Phase 1.5 log-cache occupancy. */
@@ -50,13 +60,21 @@ static void phase1_ui_task(void *arg)
                                           stats.rel_db_current,
                                           stats.rx.rx_total,
                                           stats.rx.rx_dropped_pool +
-                                          stats.rx.rx_dropped_queue);
+                                          stats.rx.rx_dropped_queue,
+                                          sd_logger_state_short_name(storage.state),
+                                          storage_written,
+                                          storage_drop);
+        if (++report_counter >= 6u) {
+            ESP_LOGI(TAG, "ui_stack_hwm=%u",
+                     (unsigned)uxTaskGetStackHighWaterMark(NULL));
+            report_counter = 0;
+        }
     }
 }
 
 void app_main(void)
 {
-    ESP_LOGI(TAG, "esp32c6-Pwnagotchi Phase 3B PCAP + radiotap");
+    ESP_LOGI(TAG, "esp32c6-Pwnagotchi Phase 3C SD capture logger");
     ESP_LOGI(TAG, "firmware git commit: %s (%s)", APP_BUILD_GIT_SHA, APP_BUILD_GIT_SHORT);
 
     ESP_ERROR_CHECK(board_backlight_init());
@@ -82,6 +100,21 @@ void app_main(void)
     }
     if (sd_result != ESP_OK) {
         ESP_LOGW(TAG, "SD bring-up failed: %s", esp_err_to_name(sd_result));
+    }
+
+    esp_err_t logger_result = sd_logger_init(APP_BUILD_GIT_SHA,
+                                             sd_result == ESP_OK);
+    if (logger_result == ESP_OK) {
+        wifi_sniffer_set_capture_sink(sd_logger_try_submit,
+                                      sd_logger_is_accepting);
+        const esp_err_t console_result = sd_logger_console_start();
+        if (console_result != ESP_OK) {
+            ESP_LOGW(TAG, "capture UART commands unavailable: %s",
+                     esp_err_to_name(console_result));
+        }
+    } else {
+        ESP_LOGE(TAG, "SD logger task unavailable: %s",
+                 esp_err_to_name(logger_result));
     }
 
     esp_err_t wifi_result = wifi_sniffer_init();
@@ -113,7 +146,7 @@ void app_main(void)
         ESP_LOGE(TAG, "phase1_ui task creation failed");
     }
 
-    ESP_LOGI(TAG, "Phase 1 ready: LCD=OK I2C=%s Touch=%s SD=%s WiFi=%s HOP=%s",
+    ESP_LOGI(TAG, "Phase 3C ready: LCD=OK I2C=%s Touch=%s SD=%s WiFi=%s HOP=%s",
              i2c_result == ESP_OK ? "OK" : "FAIL",
              touch_result == ESP_OK ? "OK" : "FAIL",
              sd_result == ESP_OK ? "OK" : "FAIL",

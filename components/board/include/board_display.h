@@ -33,7 +33,10 @@ esp_err_t board_display_update_phase1c(uint32_t rx_total, uint32_t ap_unique,
 esp_err_t board_display_show_phase1_status(bool touch_ok, bool sd_ok, bool wifi_ok);
 esp_err_t board_display_update_phase1(uint8_t channel, uint16_t ap_current,
                                       uint16_t sta_current, uint16_t rel_current,
-                                      uint32_t rx_total, uint32_t rx_dropped);
+                                      uint32_t rx_total, uint32_t rx_dropped,
+                                      const char *storage_state,
+                                      uint32_t storage_written,
+                                      uint32_t storage_drop);
 
 bool board_display_lock(uint32_t timeout_ms);
 void board_display_unlock(void);
