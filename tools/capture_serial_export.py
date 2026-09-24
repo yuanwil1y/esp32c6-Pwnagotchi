@@ -27,7 +27,14 @@ SESSION_RE = re.compile(r"^[0-9A-Fa-f]{16}$")
 def clean_line(line: bytes | str) -> str:
     if isinstance(line, bytes):
         line = line.decode("ascii", errors="replace")
-    return ANSI_RE.sub("", line).strip()
+    text = ANSI_RE.sub("", line).strip()
+    # The console prompt has no newline and can be coalesced with the first
+    # export frame when both fit in one USB Serial/JTAG read.
+    if text.startswith("capture> !PCAP,"):
+        text = text[len("capture> "):]
+    elif text.startswith("capture>!PCAP,"):
+        text = text[len("capture>"):]
+    return text
 
 
 def decode_data_line(line: bytes | str):

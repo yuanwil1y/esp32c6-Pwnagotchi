@@ -45,6 +45,9 @@ class CaptureSerialExportTests(unittest.TestCase):
     def test_strip_terminal_control_sequences(self):
         line = "\x1b[32m!PCAP,INFO,END\x1b[0m\r\n"
         self.assertEqual(export.clean_line(line), "!PCAP,INFO,END")
+        self.assertEqual(
+            export.clean_line("capture> !PCAP,DATA,P,0,0,3,352441C2,YWJj\r\n"),
+            "!PCAP,DATA,P,0,0,3,352441C2,YWJj")
 
     def test_stream_more_than_sixteen_chunks_and_retry_a_gap(self):
         class FakeSerial:
@@ -65,7 +68,7 @@ class CaptureSerialExportTests(unittest.TestCase):
                     chunk = self.payload[offset:offset + 512]
                     if not (first and not self.dropped_first_chunk):
                         encoded = base64.b64encode(chunk).decode("ascii")
-                        line = (f"!PCAP,DATA,{kind[0].upper()},{index},{offset},"
+                        line = (f"capture> !PCAP,DATA,{kind[0].upper()},{index},{offset},"
                                 f"{len(chunk)},{zlib.crc32(chunk) & 0xffffffff:08X},"
                                 f"{encoded}\r\n")
                         self.lines.append(line.encode("ascii"))
@@ -112,7 +115,7 @@ class CaptureSerialExportTests(unittest.TestCase):
                 if chunk:
                     encoded = base64.b64encode(chunk).decode("ascii")
                     self.lines.append(
-                        f"!PCAP,DATA,{kind[0].upper()},{index},{offset},{len(chunk)},"
+                        f"capture> !PCAP,DATA,{kind[0].upper()},{index},{offset},{len(chunk)},"
                         f"{zlib.crc32(chunk) & 0xffffffff:08X},{encoded}\r\n"
                         .encode("ascii"))
                 self.lines.append(
@@ -172,7 +175,7 @@ class CaptureSerialExportTests(unittest.TestCase):
                     encoded = base64.b64encode(chunk).decode("ascii")
                     tag = "P" if kind == "pcap" else "S"
                     self.lines.append(
-                        f"!PCAP,DATA,{tag},{index},{offset},{len(chunk)},"
+                        f"capture> !PCAP,DATA,{tag},{index},{offset},{len(chunk)},"
                         f"{zlib.crc32(chunk) & 0xffffffff:08X},{encoded}\r\n"
                         .encode("ascii"))
                     self.lines.append(
