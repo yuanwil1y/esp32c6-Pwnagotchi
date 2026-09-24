@@ -1,5 +1,6 @@
 #include "world.h"
 
+#include <stdio.h>
 #include <string.h>
 
 /*
@@ -398,18 +399,26 @@ void world_on_ap_observation(world_t *w,
         ap->ssid_known = true;
     }
 
-    /* Security (Phase 2A: presence level).
-     * - positive RSN/WPA presence from a complete observation => KNOWN;
-     * - complete without security IEs: privacy bit decides OPEN vs
+    /* Security (Phase 2C: suite level).
+     * - any observation whose RSN/WPA IE was fully and legally parsed is
+     *   POSITIVE evidence - applicable even from a truncated capture,
+     *   because the IE body was completely inside it: replace suites,
+     *   state KNOWN;
+     * - a COMPLETE observation without valid or present security IEs is
+     *   authoritative absence: privacy bit decides OPEN vs
      *   LEGACY_PRIVACY (never asserted as WEP);
-     * - truncated/malformed observations never touch security state. */
-    if (obs->complete) {
+     * - a COMPLETE observation whose security IE was present but
+     *   malformed never overwrites a known result (only the
+     *   header-verified privacy bit refreshes);
+     * - truncated/malformed observations without valid suites never
+     *   touch security state: "not captured yet" is not "not present". */
+    if (obs->sec.rsn_valid || obs->sec.wpa_valid) {
+        ap->sec = obs->sec;
+        ap->sec.privacy = obs->privacy;
+        ap->sec_state = WORLD_SEC_KNOWN;
+    } else if (obs->complete) {
         if (obs->rsn_present || obs->wpa_vendor_present) {
-            memset(&ap->sec, 0, sizeof(ap->sec));
-            ap->sec.rsn_present = obs->rsn_present;
-            ap->sec.wpa_present = obs->wpa_vendor_present;
             ap->sec.privacy = obs->privacy;
-            ap->sec_state = WORLD_SEC_KNOWN;
         } else if (obs->privacy) {
             memset(&ap->sec, 0, sizeof(ap->sec));
             ap->sec.privacy = true;
@@ -640,6 +649,76 @@ void world_snapshot(const world_t *w, world_snapshot_t *out)
     out->sta_current = w->sta_used;
     out->rel_current = w->rel_used;
     out->stats = w->stats;
+}
+
+/*
+ * Human-readable name for one AP's security knowledge. Based ONLY on
+ * verified field combinations (never on mere RSN presence):
+ * - UNKNOWN / OPEN / PRIVACY reflect the merged state; PRIVACY means
+ *   "legacy privacy bit without a decodable RSN/WPA IE" and deliberately
+ *   does not assert WEP;
+ * - KNOWN names come from the AKM/cipher sets: "RSN exists" alone never
+ *   yields "WPA2-PSK". Unknown suites stay visible as '?'.
+ */
+void world_security_name(const world_ap_t *ap, char *out, size_t out_size)
+{
+    if (out == NULL || out_size == 0) {
+        return;
+    }
+    if (ap == NULL) {
+        snprintf(out, out_size, "UNKNOWN");
+        return;
+    }
+
+    const ieee80211_security_desc_t *s = &ap->sec;
+    const uint16_t akm_1x = IEEE80211_AKM_802_1X | IEEE80211_AKM_1X_SHA256 |
+                            IEEE80211_AKM_FT_802_1X | IEEE80211_AKM_FT_1X_SHA384 |
+                            IEEE80211_AKM_1X_SUITE_B | IEEE80211_AKM_1X_SUITE_B_192;
+    const uint16_t akm_psk = IEEE80211_AKM_PSK | IEEE80211_AKM_FT_PSK |
+                             IEEE80211_AKM_PSK_SHA256 | IEEE80211_AKM_FT_PSK_SHA384;
+
+    char base[24];
+    if (ap->sec_state == WORLD_SEC_UNKNOWN) {
+        snprintf(base, sizeof(base), "UNKNOWN");
+    } else if (ap->sec_state == WORLD_SEC_OPEN) {
+        snprintf(base, sizeof(base), "OPEN");
+    } else if (ap->sec_state == WORLD_SEC_LEGACY_PRIVACY) {
+        /* Unknown legacy encryption: NOT asserted as WEP. */
+        snprintf(base, sizeof(base), "PRIVACY");
+    } else if (s->wpa_valid && s->rsn_valid) {
+        snprintf(base, sizeof(base), "WPA/WPA2");
+    } else if (s->wpa_valid) {
+        if (s->akm & akm_psk) {
+            snprintf(base, sizeof(base), "WPA-PSK");
+        } else if (s->akm & akm_1x) {
+            snprintf(base, sizeof(base), "WPA-1X");
+        } else {
+            snprintf(base, sizeof(base), "WPA-?");
+        }
+    } else if (s->akm & IEEE80211_AKM_OWE) {
+        snprintf(base, sizeof(base), "WPA3-OWE");
+    } else if ((s->akm & IEEE80211_AKM_SAE) && (s->akm & akm_psk)) {
+        snprintf(base, sizeof(base), "WPA2/WPA3");
+    } else if (s->akm & IEEE80211_AKM_SAE) {
+        snprintf(base, sizeof(base), "WPA3-SAE");
+    } else if ((s->akm & akm_1x) && (s->akm & akm_psk)) {
+        snprintf(base, sizeof(base), "WPA2-PSK+1X");
+    } else if (s->akm & akm_1x) {
+        snprintf(base, sizeof(base), "WPA2-1X");
+    } else if (s->akm & akm_psk) {
+        snprintf(base, sizeof(base), "WPA2-PSK");
+    } else {
+        /* KNOWN suites but no recognizable AKM (or unknown-only). */
+        snprintf(base, sizeof(base), "WPA2-?");
+    }
+
+    if (s->mfp_required) {
+        snprintf(out, out_size, "%s-PMF(req)", base);
+    } else if (s->mfp_capable) {
+        snprintf(out, out_size, "%s-PMF", base);
+    } else {
+        snprintf(out, out_size, "%s", base);
+    }
 }
 
 bool world_get_ap(const world_t *w, uint16_t idx, world_ap_view_t *out)

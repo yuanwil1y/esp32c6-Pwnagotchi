@@ -115,6 +115,13 @@ enum {
 #define IEEE80211_WPA_OUI            0x0050F2
 #define IEEE80211_WPA_OUI_TYPE       0x01
 
+/* RSN (IEEE 802.11i) suite OUI: 00:0F:AC. */
+#define IEEE80211_RSN_OUI            0x000FAC
+
+/* RSN Capabilities bits (little-endian 16-bit field). */
+#define IEEE80211_RSN_CAP_MFPR       0x0040u  /* bit 6: MFP required */
+#define IEEE80211_RSN_CAP_MFPC       0x0080u  /* bit 7: MFP capable  */
+
 #define IEEE80211_SSID_MAX_LEN       32
 #define IEEE80211_SSID_BUF_LEN       (IEEE80211_SSID_MAX_LEN + 1)
 
@@ -195,7 +202,7 @@ typedef enum {
 #define IEEE80211_AKM_UNKNOWN         (1u << 15)
 
 typedef struct {
-    bool rsn_present;   /* RSN IE (48) seen at all */
+    bool rsn_present;   /* RSN IE (48) seen at all (body fully captured) */
     bool wpa_present;   /* WPA vendor IE (221, OUI 00:50:F2 type 01) seen */
     bool rsn_valid;     /* RSN IE fully parsed with legal structure */
     bool wpa_valid;     /* WPA vendor IE fully parsed with legal structure */
@@ -211,6 +218,27 @@ typedef struct {
     bool mfp_required;  /* RSN capabilities MFPR */
     bool caps_present;  /* RSN capabilities field present AND complete */
 } ieee80211_security_desc_t;
+
+/*
+ * Phase 2C suite parsing rules (regression-tested):
+ * - The IE body is decoded only when the walk has verified the WHOLE
+ *   declared body is inside the capture; a capture cut inside a security
+ *   IE therefore never produces partial suites (the walk reports
+ *   ie_walk_incomplete instead).
+ * - Structure: version(2, must be 1) + group suite(4) + pairwise
+ *   count(2)+suites + AKM count(2)+suites + optional RSN caps(2). Every
+ *   count is validated against the remaining bytes by DIVISION (count >
+ *   remaining/4 => illegal; no multiplication is ever performed on the
+ *   declared count).
+ * - A missing AKM list / caps field is legal (optional tail); an
+ *   illegally structured IE sets malformed_ie in a complete capture and
+ *   leaves *_valid false (never authoritative, never overwrites known
+ *   results downstream).
+ * - Unknown suite types are kept as *_UNKNOWN bits, never guessed: an
+ *   unknown AKM is never reported as PSK.
+ * - WPA vendor IEs use OUI 00:50:F2 for their suites, RSN uses 00:0F:AC;
+ *   suites with the wrong OUI for their context decode as UNKNOWN.
+ */
 
 /*
  * Beacon / probe response observation. rx_channel and rssi come from the

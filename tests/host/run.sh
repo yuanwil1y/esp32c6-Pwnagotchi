@@ -14,7 +14,7 @@ CFLAGS="-std=c11 -Wall -Wextra -Werror -O1 -g"
 INC="-I../../components/radio/include -I../../components/world/include -I."
 PROD="../../components/radio/ieee80211_parser.c ../../components/radio/rx_path.c ../../components/radio/obs_cache.c ../../components/radio/hopper_policy.c ../../components/world/world.c"
 COMMON="runner.c mock_io.c"
-SUITES="test_parser test_rx_path test_rx_hostile test_obs_cache test_hopper test_world test_data_addrs test_world_sta"
+SUITES="test_parser test_rx_path test_rx_hostile test_obs_cache test_hopper test_world test_data_addrs test_world_sta test_security"
 
 mkdir -p build
 

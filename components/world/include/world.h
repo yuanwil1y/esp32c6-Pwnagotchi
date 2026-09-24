@@ -283,6 +283,14 @@ void world_on_sta_mgmt_tx(world_t *w, const uint8_t mac[6],
 /* Snapshot copy (current occupancies + counters). */
 void world_snapshot(const world_t *w, world_snapshot_t *out);
 
+/*
+ * Human-readable security name for one AP, derived ONLY from verified
+ * field combinations in its merged security knowledge ("RSN present"
+ * alone never produces "WPA2-PSK"; PRIVACY never asserts WEP). Writes a
+ * NUL-terminated string into out (truncated to fit).
+ */
+void world_security_name(const world_ap_t *ap, char *out, size_t out_size);
+
 /* Bounded page exports: copies entry `idx` by value. Returns false when
  * the slot is unused or idx is out of range. */
 bool world_get_ap(const world_t *w, uint16_t idx, world_ap_view_t *out);

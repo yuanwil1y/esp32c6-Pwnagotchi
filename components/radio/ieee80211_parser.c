@@ -8,6 +8,139 @@ static uint16_t read_le16(const uint8_t *p)
     return (uint16_t)((uint16_t)p[0] | ((uint16_t)p[1] << 8));
 }
 
+/* --- Phase 2C: strict RSN / WPA suite decoding ----------------------- */
+
+/* Decode one 4-byte cipher suite with the OUI expected in context. */
+static uint16_t suite_to_cipher_mask(const uint8_t *s, uint8_t o0, uint8_t o1,
+                                     uint8_t o2)
+{
+    if (s[0] != o0 || s[1] != o1 || s[2] != o2) {
+        return IEEE80211_CIPHER_UNKNOWN;
+    }
+    switch (s[3]) {
+    case 0:  return IEEE80211_CIPHER_USE_GROUP;
+    case 1:  return IEEE80211_CIPHER_WEP40;
+    case 2:  return IEEE80211_CIPHER_TKIP;
+    case 4:  return IEEE80211_CIPHER_CCMP128;
+    case 5:  return IEEE80211_CIPHER_WEP104;
+    case 6:  return IEEE80211_CIPHER_BIP_CMAC128;
+    case 8:  return IEEE80211_CIPHER_GCMP128;
+    case 9:  return IEEE80211_CIPHER_GCMP256;
+    case 10: return IEEE80211_CIPHER_CCMP256;
+    case 11: return IEEE80211_CIPHER_BIP_GMAC128;
+    case 12: return IEEE80211_CIPHER_BIP_GMAC256;
+    case 13: return IEEE80211_CIPHER_BIP_CMAC256;
+    default: return IEEE80211_CIPHER_UNKNOWN;
+    }
+}
+
+/* Decode one 4-byte AKM suite with the OUI expected in context. */
+static uint16_t suite_to_akm_mask(const uint8_t *s, uint8_t o0, uint8_t o1,
+                                  uint8_t o2)
+{
+    if (s[0] != o0 || s[1] != o1 || s[2] != o2) {
+        return IEEE80211_AKM_UNKNOWN;
+    }
+    switch (s[3]) {
+    case 1:  return IEEE80211_AKM_802_1X;
+    case 2:  return IEEE80211_AKM_PSK;
+    case 3:  return IEEE80211_AKM_FT_802_1X;
+    case 4:  return IEEE80211_AKM_FT_PSK;
+    case 5:  return IEEE80211_AKM_1X_SHA256;
+    case 6:  return IEEE80211_AKM_PSK_SHA256;
+    case 8:  return IEEE80211_AKM_SAE;
+    case 9:  return IEEE80211_AKM_FT_SAE;
+    case 11: return IEEE80211_AKM_1X_SUITE_B;
+    case 12: return IEEE80211_AKM_1X_SUITE_B_192;
+    case 13: return IEEE80211_AKM_FT_1X_SHA384;
+    case 14: return IEEE80211_AKM_FILS_SHA256;
+    case 15: return IEEE80211_AKM_FILS_SHA384;
+    case 18: return IEEE80211_AKM_OWE;
+    case 19: return IEEE80211_AKM_FT_PSK_SHA384;
+    default: return IEEE80211_AKM_UNKNOWN;
+    }
+}
+
+/*
+ * Decode the suite area shared by RSN and WPA vendor IEs:
+ *   version(2) group(4) pcount(2) pcount*suite acount(2) acount*suite
+ *   [RSN only: caps(2)]
+ * `is_rsn` selects the expected suite OUI and whether caps may appear.
+ * Returns false on ANY structural violation (caller decides malformed vs
+ * incomplete). Counts are validated by division only.
+ */
+static bool parse_security_suites(const uint8_t *body, uint8_t ie_len,
+                                  bool is_rsn, ieee80211_security_desc_t *sec)
+{
+    const uint8_t o0 = is_rsn ? 0x00 : 0x00;
+    const uint8_t o1 = is_rsn ? 0x0F : 0x50;
+    const uint8_t o2 = is_rsn ? 0xAC : 0xF2;
+
+    uint32_t pos = 0;
+    uint32_t rem = ie_len;
+
+    if (rem < 2) {
+        return false;
+    }
+    sec->version = read_le16(&body[pos]);
+    if (sec->version != 1) {
+        return false;
+    }
+    pos += 2;
+    rem -= 2;
+
+    if (rem < 4) {
+        return false;
+    }
+    sec->group = suite_to_cipher_mask(&body[pos], o0, o1, o2);
+    pos += 4;
+    rem -= 4;
+
+    if (rem < 2) {
+        return false;
+    }
+    uint16_t pcount = read_le16(&body[pos]);
+    pos += 2;
+    rem -= 2;
+    if ((uint32_t)pcount > rem / 4u) {
+        return false; /* declared count exceeds the bytes that exist */
+    }
+    for (uint16_t i = 0; i < pcount; i++) {
+        sec->pairwise |= suite_to_cipher_mask(&body[pos], o0, o1, o2);
+        pos += 4;
+        rem -= 4;
+    }
+
+    if (rem >= 2) {
+        uint16_t acount = read_le16(&body[pos]);
+        pos += 2;
+        rem -= 2;
+        if ((uint32_t)acount > rem / 4u) {
+            return false;
+        }
+        for (uint16_t i = 0; i < acount; i++) {
+            sec->akm |= suite_to_akm_mask(&body[pos], o0, o1, o2);
+            pos += 4;
+            rem -= 4;
+        }
+    }
+    /* rem == 0 here means the optional AKM list is absent: legal. */
+
+    if (is_rsn && rem >= 2) {
+        const uint16_t caps = read_le16(&body[pos]);
+        sec->caps_present = true;
+        sec->mfp_capable = (caps & IEEE80211_RSN_CAP_MFPC) != 0;
+        sec->mfp_required = (caps & IEEE80211_RSN_CAP_MFPR) != 0;
+        pos += 2;
+        rem -= 2;
+        /* Bytes after the caps field (PMKID list / group management
+         * cipher in non-beacon frames) are tolerated: every field we
+         * report was fully decoded. */
+    }
+
+    return true;
+}
+
 bool ieee80211_parse(const uint8_t *frame, uint16_t length,
                      ieee80211_frame_info_t *out)
 {
@@ -199,7 +332,15 @@ static void walk_information_elements(const uint8_t *frame, uint16_t length,
         case IEEE80211_IE_RSN:
             if (ap_out != NULL) {
                 ap_out->rsn_present = true;
-                ap_out->sec.rsn_present = true; /* suite decode: Phase 2C */
+                ap_out->sec.rsn_present = true;
+                if (!parse_security_suites(data, ie_len, true, &ap_out->sec)) {
+                    /* The declared body was fully captured (the walk
+                     * verified it above): an internal structure
+                     * violation is malformed, never a capture artifact. */
+                    ap_out->malformed_ie = true;
+                    return;
+                }
+                ap_out->sec.rsn_valid = true;
             }
             break;
         case IEEE80211_IE_VENDOR:
@@ -208,7 +349,13 @@ static void walk_information_elements(const uint8_t *frame, uint16_t length,
                 data[0] == 0x00 && data[1] == 0x50 && data[2] == 0xF2 &&
                 data[3] == IEEE80211_WPA_OUI_TYPE) {
                 ap_out->wpa_vendor_present = true;
-                ap_out->sec.wpa_present = true; /* suite decode: Phase 2C */
+                ap_out->sec.wpa_present = true;
+                if (!parse_security_suites(&data[4], (uint8_t)(ie_len - 4),
+                                           false, &ap_out->sec)) {
+                    ap_out->malformed_ie = true;
+                    return;
+                }
+                ap_out->sec.wpa_valid = true;
             }
             break;
         default:
