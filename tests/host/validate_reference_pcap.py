@@ -62,6 +62,14 @@ def main():
 
     expected_file = (Path(__file__).resolve().parents[1] /
                      "fixtures" / "phase3b" / "expected.tsv")
+    committed_capture = expected_file.parent / "reference.pcap"
+    committed_bytes = committed_capture.read_bytes()
+    generated_bytes = capture.read_bytes()
+    if generated_bytes != committed_bytes:
+        raise AssertionError("generated PCAP differs from committed reference.pcap")
+    print(f"PASS: generated PCAP matches committed reference.pcap "
+          f"({len(generated_bytes)} bytes)")
+
     with expected_file.open(newline="", encoding="utf-8") as expected_stream:
         expected_rows = list(csv.reader(expected_stream, delimiter="\t"))
     expected_header = expected_rows.pop(0)

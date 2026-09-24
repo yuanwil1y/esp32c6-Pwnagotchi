@@ -1,0 +1,28 @@
+2026-09-24T09:11:11.5218420Z ##[group]Run python3 tests/host/validate_reference_pcap.py tests/host/build/reference.pcap
+2026-09-24T09:11:11.5219104Z [36;1mpython3 tests/host/validate_reference_pcap.py tests/host/build/reference.pcap[0m
+2026-09-24T09:11:11.5256557Z shell: /usr/bin/bash -e {0}
+2026-09-24T09:11:11.5256817Z ##[endgroup]
+2026-09-24T09:11:11.9901178Z TShark (Wireshark) 4.2.2 (Git v4.2.2 packaged as 4.2.2-1.1build3).
+2026-09-24T09:11:11.9901880Z == capinfos ==
+2026-09-24T09:11:11.9902853Z File name:           tests/host/build/reference.pcap
+2026-09-24T09:11:11.9903469Z Packet size limit:   file hdr: 527 bytes
+2026-09-24T09:11:11.9903827Z Packet size limit:   inferred: 63 bytes
+2026-09-24T09:11:11.9904721Z Number of packets:   11
+2026-09-24T09:11:11.9905033Z File size:           810 bytes
+2026-09-24T09:11:11.9905347Z == TShark fields (tab-separated) ==
+2026-09-24T09:11:11.9906145Z frame.number	frame.cap_len	frame.len	frame.time_epoch	radiotap.channel.freq	radiotap.dbm_antsignal	wlan.sa	wlan.da	eapol.type
+2026-09-24T09:11:11.9906978Z 1	60	60	1700000000.999900000	2412	-42	02:11:22:33:44:55	ff:ff:ff:ff:ff:ff	
+2026-09-24T09:11:11.9907655Z 2	41	41	1700000000.999950000	2437	-65	02:aa:bb:cc:dd:01	ff:ff:ff:ff:ff:ff	
+2026-09-24T09:11:11.9908193Z 3	47	47	1700000001.000100000	2462	-47	02:aa:bb:cc:dd:01	02:11:22:33:44:55	
+2026-09-24T09:11:11.9908694Z 4	44	44	1700000001.001000000		-55	02:aa:bb:cc:dd:01	02:11:22:33:44:55	
+2026-09-24T09:11:11.9909201Z 5	39	39	1700000001.002000000	2484	-78	02:aa:bb:cc:dd:01	02:11:22:33:44:55	
+2026-09-24T09:11:11.9909709Z 6	41	41	1700000001.003000000	2412	-83	02:aa:bb:cc:dd:01	02:11:22:33:44:55	
+2026-09-24T09:11:11.9910132Z 7	25	25	1700000001.999900000	2437	-90			
+2026-09-24T09:11:11.9911268Z 8	56	56	1700000002.000000000	2437	-42	02:aa:bb:cc:dd:01	02:11:22:33:44:55	0
+2026-09-24T09:11:11.9911765Z 9	146	146	1700000002.099900000	2462	-37	02:11:22:33:44:55	02:aa:bb:cc:dd:01	3
+2026-09-24T09:11:11.9912228Z 10	63	146	1700000002.199900000	2484	-60	02:11:22:33:44:55	02:aa:bb:cc:dd:01	3
+2026-09-24T09:11:11.9913578Z 11	48	48	1700000002.234467000		-80	ff:ff:ff:ff:ff:ff	02:11:22:33:44:55
+2026-09-24T09:11:11.9913993Z PASS: 11 frame rows match expected.tsv
+2026-09-24T09:11:11.9914290Z == malformed diagnostic frame numbers ==
+2026-09-24T09:11:11.9915192Z (none)
+2026-09-24T09:11:11.9915499Z PASS: only the intentionally capture-truncated frame may be malformed
