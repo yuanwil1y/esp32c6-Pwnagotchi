@@ -436,14 +436,14 @@ acceptance.
 ## Hardware acceptance status
 
 **PENDING — live recording and radio operation were demonstrated, but the
-controlled stop returned `ERROR`; the physical file is not independently
-verified.** The only available raw capture copy is the local monitor log noted
-above. The user has no SD reader, so the session PCAP and sidecar cannot
-currently be read off the card. The close-failure source (PCAP versus sidecar)
-is unknown from the current firmware's aggregate error status. Visual LCD/touch
-responsiveness during active SD writes also remains unverified. Do not count
-the written/flushed counters or synthetic host TShark run as a hardware PCAP
-PASS.
+controlled stop returned `ERROR`; the retrieved PCAP has been read by Scapy,
+while real-file TShark/capinfos verification is still pending.** USB
+Serial/JTAG successfully copied the existing PCAP to a local evidence
+directory without changing its SD copy; the session sidecar size was zero.
+The close-failure source (PCAP versus sidecar) is unknown from the original
+firmware's aggregate error status. Visual LCD/touch responsiveness during
+active SD writes also remains unverified. The written/flushed counters and
+synthetic host TShark run alone are not a hardware PCAP PASS.
 
 What was verified: the code and app-only image passed GitHub CI; the device
 booted stably; direct USB Serial/JTAG control worked; a uniquely named file
@@ -454,13 +454,13 @@ telemetry remained available. The phone Wi-Fi toggle did not increase the
 EAPOL observation counter during this capture, which is consistent with the
 known possibility of missing a brief connection exchange while hopping.
 
-To finish hardware acceptance, use an SD reader to extract the existing
-session files without changing them, run TShark/capinfos on the PCAP and
-compare its packet count and lengths with the recorded counters, and investigate
-the reported close error before any future acceptance claim. Confirm display
-responsiveness during an active write as part of that follow-up. No local build
-or test result is substituted for GitHub CI, and no live capture file was
-uploaded or committed.
+To finish hardware acceptance, run TShark/capinfos on the local serial export
+and compare packet count and lengths with the recorded counters, investigate
+the reported close error, and confirm display responsiveness during an active
+write. Scapy's successful offline parse is recorded below, but does not replace
+the requested real-file TShark/capinfos check. No local build or host test
+result is substituted for GitHub CI, and no live capture file was uploaded or
+committed.
 
 The firmware does not request Wi-Fi reassociation, deauthentication, active
 scanning, or transmit packets. This phase does not implement PCAPNG, handshake
@@ -501,11 +501,10 @@ python tools/capture_serial_export.py COM3 --session 9D808161AA2EF8C5 --output-d
 ```
 
 The receiver does not upload the resulting PCAP or summary. The output can be
-independently checked with TShark after retrieval. This serial path is only a
-transport for the existing SD bytes: until it successfully transfers the
-session and an independent reader checks it, the SD recording acceptance stays
-**PENDING**. The implementation and its CI result are recorded in the final
-follow-up entry below.
+independently checked with TShark after retrieval. The serial transfer and a
+Scapy offline read of the retrieved PCAP have succeeded; real-file
+TShark/capinfos acceptance remains **PENDING**. The implementation, CI, and
+hardware results are recorded below.
 
 ### Follow-up implementation and validation
 
@@ -559,15 +558,54 @@ follow-up entry below.
   is `D371BEE0950D1AB08A2A14B420CD5C353CA67457FCD786C1F409FBA456EAA19B`.
   The passing job logs are retained at
   `docs/logs/github-actions-36013635332.txt`.
-- The bounded-write app has not yet been flashed. After it is flashed, resume
-  the zero-byte local `.part` for `9D808161AA2EF8C5`, complete the serial
-  transfer, and independently inspect the retrieved PCAP before changing the
-  hardware acceptance status. No SD file is created, changed, or deleted by
-  the readback path.
-- Hardware PCAP readback is still **PENDING**. The last recorded logger state
-  was `ERROR` after 1,594 records; its I/O-stage cause cannot be retroactively
-  recovered from that firmware. After the bounded-write fix, acceptance still
-  requires a complete serial transfer and independent `capinfos`/TShark packet
-  count and length results. This is not a Phase 3C acceptance PASS. Live raw
-  serial debug output is kept outside Git at `D:\pwn\phase3c-evidence\` because
-  it includes nearby network identifiers.
+- Documentation commit `5a4c40e146baa266f780ef85d3d2f8499e262bfb` also passed
+  the full GitHub Actions run
+  [36014370196](https://github.com/yuanwil1y/esp32c6-Pwnagotchi/actions/runs/36014370196):
+  plain and ASan/UBSan host tests, fixture TShark/capinfos validation, and the
+  IDF build all succeeded. Its actual job logs are in
+  `docs/logs/github-actions-36014370196.txt`.
+- The bounded-write app at `cf8708bf60495b6e538830dbe5aec37c2898ecbf` was
+  app-only flashed to `0x10000` on COM3 with esptool v5.4.0. It erased only
+  `0x10000–0x134fff`; esptool verified the written data hash. The board
+  rebooted and remained responsive. No bootloader, partition table, or SD
+  content was written by this flash.
+- With that image, the following command completed with CRC-verified chunks
+  and saved the existing PCAP as
+  `capture-9D808161AA2EF8C5-0000.pcap`, 216,586 B. Device metadata still
+  reports one PCAP segment and zero-byte summary. The transfer reads the
+  existing file; it does not restart recording or alter the card.
+
+  ```text
+  python -u tools/capture_serial_export.py COM3 --session 9D808161AA2EF8C5 --output-dir D:\pwn\phase3c-evidence\serial-export-9D808161AA2EF8C5
+  ```
+- Scapy 2.7.0 `PcapReader` independently opened the downloaded PCAP as
+  LINKTYPE_IEEE802_11_RADIOTAP (127): 1,594 frames, 191,058 captured bytes,
+  193,262 original bytes, and 36 frames with caplen < origlen. The sum of
+  global header (24 B), record headers (16 B each), and captured data matches
+  the downloaded 216,586 B. Timestamp range was 0.777708–64.800060 s
+  (64.022352 s; the session's epoch-zero monotonic timeline, not UTC). Scapy
+  decoded 1,087 control, 467 management, and 40 data frames; radiotap
+  frequencies were 2412, 2417, 2422, 2427, 2432, 2437, 2442, 2447, 2452,
+  2457, and 2462 MHz; RSSI ranged from -96 to -37 dBm. This old recording
+  contained zero EAPOL frames.
+- Direct real-file TShark/capinfos verification is still pending. Neither tool
+  was installed; the Wireshark 4.6.8 winget download failed with
+  `InternetReadFile() failed (0x80072ee2)`. Scapy's offline read is an
+  independent useful check, but it is not reported as a TShark/capinfos PASS.
+- A later `capture-status` command after the firmware reboot reported logger
+  `STOPPED` with zero current-session logger counters (the reboot reset these
+  RAM counters; this is not the old file's summary). The same serial response
+  showed RX 3,050/queued 3,050/processed 3,050, RX drops 0, 300 ms hopping
+  with zero errors, and current-boot EAPOL counters `raw=17 env=17 key=17
+  trunc=0 unsup=0 malformed=0 mac_unsup=17 key_raw=17 pair=17 group=0`. The
+  parser classified those current-boot frames as complete pairwise EAPOL-Key
+  messages but could not reliably map their MAC addresses to BSSID/STA. They
+  are frame counters, not a unique handshake count. They are separate from
+  the retrieved older PCAP, which contains no EAPOL.
+- Actual serial status bytes and the PCAP remain local under
+  `D:\pwn\phase3c-evidence\` and were not uploaded or committed because they
+  contain private radio observations. Live raw serial debug output is also
+  retained there. The close failure cause cannot be recovered from the old
+  firmware's missing zero-byte summary; Phase 3C acceptance remains **PENDING**
+  until real-file TShark/capinfos verification and the remaining hardware
+  checks are complete.
