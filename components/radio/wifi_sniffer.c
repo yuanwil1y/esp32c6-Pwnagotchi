@@ -28,7 +28,11 @@ static const char *TAG = "RADIO";
 static const char *TAG_80211 = "80211";
 static const char *TAG_OBS = "OBS";
 
-#define RADIO_RX_TASK_STACK       2048
+/* On-target finding (Phase 2 acceptance, firmware 7cea1da): the rx task
+ * hit a 72-byte high-water mark on the 2048-byte stack once the world
+ * feeding and data-address paths were added. Raised to 3072 so the
+ * worst-case parser/world path keeps a sane margin. */
+#define RADIO_RX_TASK_STACK       3072
 #define RADIO_RX_TASK_PRIO        5
 #define RADIO_STATS_TASK_STACK    3072
 #define RADIO_STATS_TASK_PRIO     2
