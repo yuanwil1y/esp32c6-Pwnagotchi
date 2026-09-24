@@ -137,10 +137,15 @@ static void t_beacon_typical_fields(void)
     beacon_init_default(&f);
     append_ie(&f, IEEE80211_IE_SSID, (const uint8_t *)"TEST", 4);
     append_ie(&f, IEEE80211_IE_DS_PARAM, (const uint8_t[]){6}, 1);
+    /* Legal RSN IE (Phase 2C strictness): version 1, CCMP group,
+     * 1 CCMP pairwise suite, 1 PSK AKM suite. The pre-2C fixture
+     * declared an AKM count without the suite bytes - an illegal
+     * structure the strict parser now (correctly) rejects. */
     append_ie(&f, IEEE80211_IE_RSN,
               (const uint8_t[]){0x01, 0x00, 0x00, 0x0F, 0xAC, 0x04, 0x01, 0x00,
-                                0x00, 0x0F, 0xAC, 0x04, 0x01, 0x00, 0x00, 0x00},
-              16);
+                                0x00, 0x0F, 0xAC, 0x04, 0x01, 0x00, 0x00, 0x0F,
+                                0xAC, 0x02, 0x00, 0x00},
+              20);
 
     ieee80211_parse_opts_t opts = {0};
     ieee80211_ap_observation_t obs;

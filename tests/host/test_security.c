@@ -422,8 +422,8 @@ static void t_optional_tails(void)
         const uint8_t n = build_rsn(body, SUITE_CCMP, pair, 1, akm, 1, 0x0080, 1);
         sec_append_raw(&f, 48, body, n);
         /* Hand the parser 2 bytes less than the declared IE needs. */
-        const uint16_t saved = f->len;
-        f->len = (uint16_t)(saved - 2);
+        const uint16_t saved = f.len;
+        f.len = (uint16_t)(saved - 2);
         CHECK(parse_beacon(&f, true, &obs));
         CHECK(!obs.complete);
         CHECK(obs.ie_walk_incomplete);
