@@ -17,8 +17,9 @@ Epoch、Personality、完整 UI 与自适应跳频仍属后续阶段。
 | Phase 1.5 回归保留 | PASS | 同上（callback/IE 套件原样运行） |
 | 实机验收（稳定运行 + 现网对照） | **PASS** | §8，日志 docs/logs/phase2_*.log；受控漫游切换项未现场复现（host 已覆盖） |
 
-分支 `phase2-world-model`（未合并 main；固件 commit SHA 见 §8）。
-host 套件 9 个二进制共 95 用例，plain 与 ASan/UBSan 各跑一遍，全部
+Phase 2 原始开发分支为 `phase2-world-model`，其实机基线固件 commit
+SHA 见 §8；Phase 2.5 review 修复后的主线提交与 CI 固件见 §10。
+当前 host 套件 10 个二进制共 101 个注册用例，plain 与 ASan/UBSan 各跑一遍，全部
 编译生产源码（`ieee80211_parser.c` / `rx_path.c` / `obs_cache.c` /
 `hopper_policy.c` / `world.c`），无一测试重实现生产逻辑。
 
@@ -78,8 +79,9 @@ ILP32（esp32c6）下按结构体布局规则计算（boot 日志
 - 无任何新增动态分配；无新任务（world 运行在 radio_rx_task 内）。
 - 队列/快照/锁开销：1 个 FreeRTOS mutex；每条 world 输入为短临界区
   （O(64) 或 O(128) 的线性查表 + 常数合并），无整库复制路径。
-- 栈：radio_rx 2048 B / radio_stat 3072 B 不变；实机用新增的
-  `stk_rx`/`stk_stat`（uxTaskGetStackHighWaterMark）确认余量（§8）。
+- 栈：radio_rx / radio_stat 均为 3072 B。第一轮实机发现 RX 栈余量仅
+  72 B 后，已在 369729c 将 radio_rx 从 2048 B 提到 3072 B；第二轮
+  `stk_rx`/`stk_stat` 实测余量见 §8。
 
 **AP 记录**（BSSID 唯一键）：raw SSID bytes + len + known、
 first/last_seen、接收信道（last_rx_channel）与宣告信道（DS IE）、
@@ -202,8 +204,9 @@ WPA/WPA2（双 IE）/ WPA-PSK / WPA-1X / PRIVACY / OPEN / UNKNOWN，
 ## 5. 与 Phase 1.5 契约的关系
 
 - 解析状态与字段有效性契约沿用：malformed_ie / ie_walk_incomplete /
-  dup_critical_ie / complete 语义不变；capture 截断与 malformed 不
-  混计。2C 只是在 RSN/WPA IE 内部增加了结构校验（畸形结构计入
+  dup_critical_ie 语义不变；Phase 2.5 增加 `dup_security_ie`，重复
+  RSN/WPA IE 不作为完整观察。capture 截断与 malformed 不混计。2C
+  在 RSN/WPA IE 内部增加结构校验（畸形结构计入
   malformed_ie，Phase 1.5 的 `beacon_typical_fields` fixture 原本
   编码了一个 AKM count 无 suite 字节的非法 RSN，已更正为合法 RSN，
   断言不变）。
@@ -226,7 +229,8 @@ host 套件（`bash tests/host/run.sh`，plain 后 ASan+UBSan
 | test_world（2A） | 16 | 创建/合并、hidden 不清名、截断部分更新、DS 正向证据、complete 权威、无效 BSSID、stale、TTL 边界、无包 maintenance、容量淘汰+平局、满表先清过期、churn 有界、页导出、parser→world e2e |
 | test_data_addrs（2B） | 6 | 四象限 DS、头长算术（QoS/四地址/HTC）、短头、协议版本、受保护帧、广播/组播 |
 | test_world_sta（2B） | 20 | RSSI 归属、DS 侧地址不污染、上下行同一 STA、provisional 转正、广播/自地址排除、probe 只发现 STA、证据强度/切换/冲突、关系 60 s vs STA 120 s、AP 过期解绑、stale、槽复用不悬挂、弱创建者不淘汰、ambiguous/WDS、churn 不变量 |
-| test_security（2C） | 13 | RSN PSK/1X/SAE/OWE/transition/GCMP、WPA vendor、OUI 区分、未知 suite、count 越界、version/短体、可选尾（缺 caps 合法 / 截断区分）、长 beacon 截断在 RSN 前/内/后、valid→malformed 不降级、截断正向证据升级、命名 |
+| test_security（2C/2.5） | 15 | RSN PSK/1X/SAE/OWE/transition/GCMP、WPA vendor、OUI 区分、未知 suite、count/tail 边界、version/短体、长 beacon 截断位置、畸形 IE 不降级、解析原子性、双协议部分观察合并、命名 |
+| test_mgmt_tx（2.5） | 4 | AUTH request/response 方向、status/transaction、ASSOC/REASSOC body 长度、无效或歧义 header |
 
 CI（GitHub Actions `ESP-IDF Build`）：host-tests job（plain+ASan/UBSan）
 与 ESP-IDF v5.4/esp32c6 固件构建并行，每次 push 验证。
@@ -245,8 +249,9 @@ CI（GitHub Actions `ESP-IDF Build`）：host-tests job（plain+ASan/UBSan）
 
 ## 7. 已知限制与 Phase 3 交接
 
-- 关系为观察级：无关联状态机、无 auth/assoc status 解码、无
-  deauth/disassoc 语义；一次 deauth 不代表掉线。
+- 关系为观察级：无关联状态机；仅将结构完整、方向确认的成功 AUTH
+  request 与 ASSOC/REASSOC request 作为 STA 发射观察，不推断关联成功；
+  不解释 response、deauth/disassoc 语义，一次 deauth 不代表掉线。
 - MGMT order 位（HT 变长头）与分片 body 仍保守拒绝深解析（Phase 1.5
   限制不变）；data 路径已按 FC 计算 HT Control 头长。
 - 随机化 MAC 无法等同物理设备；UI/计数语义为"观察到的地址"。
@@ -382,6 +387,31 @@ min_heap、stk_rx/stk_stat 最小值、世界计数终值、崩溃标记 0。
 - `b862765` phase2c: strict RSN/WPA suite parser and world security merge
 - `6e9d9a4` phase2c fix: legal RSN fixture in Phase 1.5 regression; pointer misuse
 - `c2e7ee4` phase2d: UI/observability integration + docs
+
+## 10. Phase 2.5 review 修复与交接
+
+针对 Phase 2 完成后的代码 review，修复以下边界问题：
+
+- Management AUTH/ASSOC/REASSOC 只有确认发射地址不是 BSSID、接收地址
+  与 BSSID 一致、固定字段完整且 status 成功时，才作为 STA 自发帧写入
+  World；AUTH 不用 transaction 序号奇偶猜方向。
+- RSN 与 WPA 套件分开暂存和提交；畸形 IE 不再部分污染另一个协议的
+  已解析字段。完整的 WPA+RSN 观察后收到截断帧，只合并有效正向证据；
+  只有完整干净观察才清除未出现的协议。
+- RSN/WPA suite parser 以局部结果原子提交，拒绝零 AKM count、越界
+  PMKID 列表以及不完整的可选尾部；重复安全 IE 不作为完整观察。
+- Data 帧只有 QoS subtype 带 Order 时才计入 4-byte HT Control；普通
+  Data 的 Order 位不额外延长 MAC header。
+
+新增 host 回归覆盖方向误判、解析原子性、双协议部分观察合并、可选尾
+边界和 header 长度。ESP-IDF CI 构建通过后生成的 `firmware-<commit>.zip`
+是本轮实机测试文件；boot 行的 git SHA 必须与压缩包中的
+`git_commit.txt` 一致。按维护者要求，本轮硬件 smoke test 为**连续运行
+1 分钟**，检查启动、RX/queue/drop、heap、任务栈余量及无 reboot/panic/
+watchdog；不要求延长 soak。
+
+本轮 CI 结果会随合并提交补记；1 分钟实机 smoke test 待测试 agent
+使用下方 CI 固件执行后回填结果。
 
 ## Phase 2 验收状态
 

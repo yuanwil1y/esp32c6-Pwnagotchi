@@ -98,10 +98,14 @@ static void t_header_length_math(void)
     CHECK(ieee80211_parse_data_addresses(f.buf, f.len, &a));
     CHECK(!a.qos && a.header_len == 24);
 
-    /* Order bit: +4 HT control, no QoS. */
+    /* Strictly ordered non-QoS data does not carry HT Control. */
     data_init(&f, 0x08, 0x81, 28);
     CHECK(ieee80211_parse_data_addresses(f.buf, f.len, &a));
-    CHECK(a.header_len == 28);
+    CHECK(a.header_len == 24);
+
+    data_init(&f, 0x08, 0x81, 24);
+    CHECK(ieee80211_parse_data_addresses(f.buf, f.len, &a));
+    CHECK(a.header_len == 24);
 
     /* Four address + QoS: 24 + 6 + 2. */
     data_init(&f, 0x88, 0x03, 32);
@@ -134,8 +138,8 @@ static void t_short_headers_rejected(void)
     CHECK(!ieee80211_parse_data_addresses(f.buf, f.len, &a));
     CHECK(a.status == IEEE80211_DATA_ADDRS_TOO_SHORT);
 
-    /* HT control cut. */
-    data_init(&f, 0x08, 0x81, 27);
+    /* QoS+HT control cut. */
+    data_init(&f, 0x88, 0x81, 31);
     CHECK(!ieee80211_parse_data_addresses(f.buf, f.len, &a));
     CHECK(a.status == IEEE80211_DATA_ADDRS_TOO_SHORT);
 

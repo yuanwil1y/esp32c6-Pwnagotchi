@@ -187,17 +187,17 @@ static void t_truncated_observation_partial_update(void)
     ieee80211_ap_observation_t obs = obs_beacon(b, "secure", -50, 6);
     obs.rsn_present = true;
     obs.sec.rsn_present = true;
-    obs.sec.rsn_valid = true;
-    obs.sec.version = 1;
-    obs.sec.group = IEEE80211_CIPHER_CCMP128;
-    obs.sec.pairwise = IEEE80211_CIPHER_CCMP128;
-    obs.sec.akm = IEEE80211_AKM_PSK;
+    obs.sec.rsn.valid = true;
+    obs.sec.rsn.version = 1;
+    obs.sec.rsn.group = IEEE80211_CIPHER_CCMP128;
+    obs.sec.rsn.pairwise = IEEE80211_CIPHER_CCMP128;
+    obs.sec.rsn.akm = IEEE80211_AKM_PSK;
     world_on_ap_observation(&w, &obs, 1000, true);
     {
         world_ap_view_t v;
         CHECK(ap_find_view(b, &v));
         CHECK(v.ap.sec_state == WORLD_SEC_KNOWN);
-        CHECK(v.ap.sec.akm == IEEE80211_AKM_PSK);
+        CHECK(v.ap.sec.rsn.akm == IEEE80211_AKM_PSK);
     }
 
     /* Truncated capture: activity + rssi + channel refresh, but no field
@@ -206,8 +206,8 @@ static void t_truncated_observation_partial_update(void)
     obs.ie_walk_incomplete = true;
     obs.rsn_present = false;      /* "not seen" carries no evidence here */
     obs.sec.rsn_present = false;
-    obs.sec.rsn_valid = false;    /* no valid parse in this observation */
-    obs.sec.akm = 0;
+    obs.sec.rsn.valid = false;    /* no valid parse in this observation */
+    obs.sec.rsn.akm = 0;
     obs.ssid_len = 0;             /* SSID area cut before the SSID IE */
     obs.hidden_ssid = false;
     obs.ds_param_present = false; /* DS IE not reached */
@@ -224,7 +224,7 @@ static void t_truncated_observation_partial_update(void)
     CHECK(v.ap.ssid_known && v.ap.ssid_len == 6);
     /* Security NOT downgraded to OPEN by a truncated observation. */
     CHECK(v.ap.sec_state == WORLD_SEC_KNOWN);
-    CHECK(v.ap.sec.akm == IEEE80211_AKM_PSK);
+    CHECK(v.ap.sec.rsn.akm == IEEE80211_AKM_PSK);
     /* Advertised channel NOT cleared by absence. */
     CHECK(v.ap.advertised_channel == 6);
 
@@ -271,8 +271,8 @@ static void t_complete_observation_is_authoritative(void)
     ieee80211_ap_observation_t obs = obs_beacon(b, "x", -50, 6);
     obs.rsn_present = true;
     obs.sec.rsn_present = true;
-    obs.sec.rsn_valid = true;
-    obs.sec.akm = IEEE80211_AKM_PSK;
+    obs.sec.rsn.valid = true;
+    obs.sec.rsn.akm = IEEE80211_AKM_PSK;
     world_on_ap_observation(&w, &obs, 1000, true);
     {
         world_ap_view_t v;

@@ -120,14 +120,14 @@ static void t_rsn_psk(void)
     ieee80211_ap_observation_t obs;
     CHECK(parse_beacon(&f, false, &obs));
     CHECK(obs.complete);
-    CHECK(obs.rsn_present && obs.sec.rsn_present && obs.sec.rsn_valid);
-    CHECK(!obs.sec.wpa_valid);
-    CHECK(obs.sec.version == 1);
-    CHECK(obs.sec.group == IEEE80211_CIPHER_CCMP128);
-    CHECK(obs.sec.pairwise == IEEE80211_CIPHER_CCMP128);
-    CHECK(obs.sec.akm == IEEE80211_AKM_PSK);
-    CHECK(!obs.sec.caps_present);
-    CHECK(!obs.sec.mfp_capable && !obs.sec.mfp_required);
+    CHECK(obs.rsn_present && obs.sec.rsn_present && obs.sec.rsn.valid);
+    CHECK(!obs.sec.wpa.valid);
+    CHECK(obs.sec.rsn.version == 1);
+    CHECK(obs.sec.rsn.group == IEEE80211_CIPHER_CCMP128);
+    CHECK(obs.sec.rsn.pairwise == IEEE80211_CIPHER_CCMP128);
+    CHECK(obs.sec.rsn.akm == IEEE80211_AKM_PSK);
+    CHECK(!obs.sec.rsn.caps_present);
+    CHECK(!obs.sec.rsn.mfp_capable && !obs.sec.rsn.mfp_required);
 }
 
 static void t_rsn_enterprise_sae_owe_transition(void)
@@ -144,7 +144,7 @@ static void t_rsn_enterprise_sae_owe_transition(void)
         sec_append_raw(&f, 48, body,
                        build_rsn(body, SUITE_CCMP, pair, 1, akm, 1, -1, 1));
         CHECK(parse_beacon(&f, false, &obs));
-        CHECK(obs.sec.rsn_valid && obs.sec.akm == IEEE80211_AKM_802_1X);
+        CHECK(obs.sec.rsn.valid && obs.sec.rsn.akm == IEEE80211_AKM_802_1X);
     }
 
     /* SAE (WPA3-Personal). */
@@ -156,9 +156,9 @@ static void t_rsn_enterprise_sae_owe_transition(void)
         sec_append_raw(&f, 48, body,
                        build_rsn(body, SUITE_CCMP, pair, 1, akm, 1, 0x00C0, 1)); /* MFPC+MFPR */
         CHECK(parse_beacon(&f, false, &obs));
-        CHECK(obs.sec.rsn_valid && obs.sec.akm == IEEE80211_AKM_SAE);
-        CHECK(obs.sec.caps_present);
-        CHECK(obs.sec.mfp_capable && obs.sec.mfp_required);
+        CHECK(obs.sec.rsn.valid && obs.sec.rsn.akm == IEEE80211_AKM_SAE);
+        CHECK(obs.sec.rsn.caps_present);
+        CHECK(obs.sec.rsn.mfp_capable && obs.sec.rsn.mfp_required);
     }
 
     /* OWE. */
@@ -170,7 +170,7 @@ static void t_rsn_enterprise_sae_owe_transition(void)
         sec_append_raw(&f, 48, body,
                        build_rsn(body, SUITE_CCMP, pair, 1, akm, 1, -1, 1));
         CHECK(parse_beacon(&f, false, &obs));
-        CHECK(obs.sec.rsn_valid && obs.sec.akm == IEEE80211_AKM_OWE);
+        CHECK(obs.sec.rsn.valid && obs.sec.rsn.akm == IEEE80211_AKM_OWE);
     }
 
     /* PSK + SAE transition. */
@@ -188,11 +188,11 @@ static void t_rsn_enterprise_sae_owe_transition(void)
         sec_append_raw(&f, 48, body,
                        build_rsn(body, SUITE_CCMP, pair, 2, akm, 2, 0x0080, 1));
         CHECK(parse_beacon(&f, false, &obs));
-        CHECK(obs.sec.rsn_valid);
-        CHECK(obs.sec.pairwise == (IEEE80211_CIPHER_CCMP128 | IEEE80211_CIPHER_TKIP));
-        CHECK(obs.sec.akm == (IEEE80211_AKM_PSK | IEEE80211_AKM_SAE));
-        CHECK(obs.sec.mfp_capable && !obs.sec.mfp_required);
-        CHECK(obs.sec.group == IEEE80211_CIPHER_CCMP128);
+        CHECK(obs.sec.rsn.valid);
+        CHECK(obs.sec.rsn.pairwise == (IEEE80211_CIPHER_CCMP128 | IEEE80211_CIPHER_TKIP));
+        CHECK(obs.sec.rsn.akm == (IEEE80211_AKM_PSK | IEEE80211_AKM_SAE));
+        CHECK(obs.sec.rsn.mfp_capable && !obs.sec.rsn.mfp_required);
+        CHECK(obs.sec.rsn.group == IEEE80211_CIPHER_CCMP128);
     }
 
     /* GCMP-256 group/pairwise. */
@@ -204,9 +204,9 @@ static void t_rsn_enterprise_sae_owe_transition(void)
         sec_append_raw(&f, 48, body,
                        build_rsn(body, SUITE_GCMP, pair, 1, akm, 1, -1, 1));
         CHECK(parse_beacon(&f, false, &obs));
-        CHECK(obs.sec.rsn_valid);
-        CHECK(obs.sec.group == IEEE80211_CIPHER_GCMP256);
-        CHECK(obs.sec.pairwise == IEEE80211_CIPHER_GCMP256);
+        CHECK(obs.sec.rsn.valid);
+        CHECK(obs.sec.rsn.group == IEEE80211_CIPHER_GCMP256);
+        CHECK(obs.sec.rsn.pairwise == IEEE80211_CIPHER_GCMP256);
     }
 }
 
@@ -229,12 +229,12 @@ static void t_wpa_vendor_psk(void)
     ieee80211_ap_observation_t obs;
     CHECK(parse_beacon(&f, false, &obs));
     CHECK(obs.complete);
-    CHECK(obs.wpa_vendor_present && obs.sec.wpa_present && obs.sec.wpa_valid);
+    CHECK(obs.wpa_vendor_present && obs.sec.wpa_present && obs.sec.wpa.valid);
     CHECK(!obs.sec.rsn_present);
-    CHECK(obs.sec.version == 1);
-    CHECK(obs.sec.group == IEEE80211_CIPHER_TKIP);
-    CHECK(obs.sec.pairwise == IEEE80211_CIPHER_TKIP);
-    CHECK(obs.sec.akm == IEEE80211_AKM_PSK);
+    CHECK(obs.sec.wpa.version == 1);
+    CHECK(obs.sec.wpa.group == IEEE80211_CIPHER_TKIP);
+    CHECK(obs.sec.wpa.pairwise == IEEE80211_CIPHER_TKIP);
+    CHECK(obs.sec.wpa.akm == IEEE80211_AKM_PSK);
 }
 
 static void t_wpa_and_rsn_distinction(void)
@@ -263,11 +263,13 @@ static void t_wpa_and_rsn_distinction(void)
 
     ieee80211_ap_observation_t obs;
     CHECK(parse_beacon(&f, false, &obs));
-    CHECK(obs.sec.wpa_valid && obs.sec.rsn_valid);
+    CHECK(obs.sec.wpa.valid && obs.sec.rsn.valid);
     /* All suites have the wrong OUI for their context: unknown, not PSK. */
-    CHECK(obs.sec.pairwise == IEEE80211_CIPHER_UNKNOWN);
-    CHECK(obs.sec.akm == IEEE80211_AKM_UNKNOWN);
-    CHECK(obs.sec.group == IEEE80211_CIPHER_CCMP128); /* RSN group is 00:0F:AC */
+    CHECK(obs.sec.wpa.pairwise == IEEE80211_CIPHER_UNKNOWN);
+    CHECK(obs.sec.wpa.akm == IEEE80211_AKM_UNKNOWN);
+    CHECK(obs.sec.rsn.pairwise == IEEE80211_CIPHER_UNKNOWN);
+    CHECK(obs.sec.rsn.akm == IEEE80211_AKM_UNKNOWN);
+    CHECK(obs.sec.rsn.group == IEEE80211_CIPHER_CCMP128); /* RSN group is 00:0F:AC */
 }
 
 static void t_unknown_suites_kept_unknown(void)
@@ -283,9 +285,9 @@ static void t_unknown_suites_kept_unknown(void)
     ieee80211_ap_observation_t obs;
     CHECK(parse_beacon(&f, false, &obs));
     CHECK(obs.complete);
-    CHECK(obs.sec.rsn_valid);            /* structure is legal */
-    CHECK(obs.sec.akm == IEEE80211_AKM_UNKNOWN); /* never guessed as PSK */
-    CHECK(obs.sec.pairwise == IEEE80211_CIPHER_CCMP128);
+    CHECK(obs.sec.rsn.valid);            /* structure is legal */
+    CHECK(obs.sec.rsn.akm == IEEE80211_AKM_UNKNOWN); /* never guessed as PSK */
+    CHECK(obs.sec.rsn.pairwise == IEEE80211_CIPHER_CCMP128);
 }
 
 /* ---------------- parser: malformed structures ---------------- */
@@ -311,7 +313,7 @@ static void t_count_overflow_malformed(void)
     ieee80211_ap_observation_t obs;
     CHECK(parse_beacon(&f, false, &obs));
     CHECK(obs.rsn_present && obs.sec.rsn_present);
-    CHECK(!obs.sec.rsn_valid);
+    CHECK(!obs.sec.rsn.valid);
     CHECK(obs.malformed_ie);
     CHECK(!obs.complete);
 }
@@ -330,7 +332,7 @@ static void t_bad_version_and_short_bodies(void)
         const uint8_t n = build_rsn(body, SUITE_CCMP, pair, 1, akm, 1, -1, 2);
         sec_append_raw(&f, 48, body, n);
         CHECK(parse_beacon(&f, false, &obs));
-        CHECK(!obs.sec.rsn_valid && obs.malformed_ie);
+        CHECK(!obs.sec.rsn.valid && obs.malformed_ie);
     }
 
     /* Empty RSN body. */
@@ -339,7 +341,7 @@ static void t_bad_version_and_short_bodies(void)
         sec_beacon_init(&f, true);
         sec_append_raw(&f, 48, (const uint8_t *)"", 0);
         CHECK(parse_beacon(&f, false, &obs));
-        CHECK(obs.rsn_present && !obs.sec.rsn_valid && obs.malformed_ie);
+        CHECK(obs.rsn_present && !obs.sec.rsn.valid && obs.malformed_ie);
     }
 
     /* Body cut inside the version field. */
@@ -349,7 +351,7 @@ static void t_bad_version_and_short_bodies(void)
         const uint8_t one[1] = {0x01};
         sec_append_raw(&f, 48, one, 1);
         CHECK(parse_beacon(&f, false, &obs));
-        CHECK(obs.rsn_present && !obs.sec.rsn_valid && obs.malformed_ie);
+        CHECK(obs.rsn_present && !obs.sec.rsn.valid && obs.malformed_ie);
     }
 
     /* AKM count lies about its suites (mid-structure overflow). */
@@ -371,7 +373,28 @@ static void t_bad_version_and_short_bodies(void)
         n += 2;
         sec_append_raw(&f, 48, body, n);
         CHECK(parse_beacon(&f, false, &obs));
-        CHECK(obs.rsn_present && !obs.sec.rsn_valid && obs.malformed_ie);
+        CHECK(obs.rsn_present && !obs.sec.rsn.valid && obs.malformed_ie);
+    }
+
+    /* A present AKM count must name at least one suite. */
+    {
+        sec_frame_t f;
+        sec_beacon_init(&f, true);
+        uint8_t body[64];
+        uint8_t n = 0;
+        put_le16(&body[n], 1);
+        n += 2;
+        memcpy(&body[n], SUITE_CCMP, 4);
+        n += 4;
+        put_le16(&body[n], 1);
+        n += 2;
+        memcpy(&body[n], SUITE_CCMP, 4);
+        n += 4;
+        put_le16(&body[n], 0);
+        n += 2;
+        sec_append_raw(&f, 48, body, n);
+        CHECK(parse_beacon(&f, false, &obs));
+        CHECK(obs.rsn_present && !obs.sec.rsn.valid && obs.malformed_ie);
     }
 }
 
@@ -397,10 +420,10 @@ static void t_optional_tails(void)
         n += 4;
         sec_append_raw(&f, 48, body, n);
         CHECK(parse_beacon(&f, false, &obs));
-        CHECK(obs.complete && obs.sec.rsn_valid);
-        CHECK(obs.sec.pairwise == IEEE80211_CIPHER_CCMP128);
-        CHECK(obs.sec.akm == 0);
-        CHECK(!obs.sec.caps_present);
+        CHECK(obs.complete && obs.sec.rsn.valid);
+        CHECK(obs.sec.rsn.pairwise == IEEE80211_CIPHER_CCMP128);
+        CHECK(obs.sec.rsn.akm == 0);
+        CHECK(!obs.sec.rsn.caps_present);
     }
 
     /* Caps present and complete (MFPC). */
@@ -410,8 +433,45 @@ static void t_optional_tails(void)
         const uint8_t n = build_rsn(body, SUITE_CCMP, pair, 1, akm, 1, 0x0080, 1);
         sec_append_raw(&f, 48, body, n);
         CHECK(parse_beacon(&f, false, &obs));
-        CHECK(obs.sec.rsn_valid && obs.sec.caps_present);
-        CHECK(obs.sec.mfp_capable && !obs.sec.mfp_required);
+        CHECK(obs.sec.rsn.valid && obs.sec.rsn.caps_present);
+        CHECK(obs.sec.rsn.mfp_capable && !obs.sec.rsn.mfp_required);
+    }
+
+    /* Complete PMKID and group-management tails are accepted. */
+    {
+        sec_frame_t f;
+        sec_beacon_init(&f, true);
+        uint8_t n = build_rsn(body, SUITE_CCMP, pair, 1, akm, 1, 0, 1);
+        put_le16(&body[n], 0); /* zero PMKIDs */
+        n += 2;
+        memcpy(&body[n], (const uint8_t[]){0x00, 0x0F, 0xAC, 0x06}, 4);
+        n += 4;
+        sec_append_raw(&f, 48, body, n);
+        CHECK(parse_beacon(&f, false, &obs));
+        CHECK(obs.complete && obs.sec.rsn.valid && obs.sec.rsn.caps_present);
+    }
+
+    /* The PMKID count must fit its list; group-management cipher is either
+     * absent or exactly four bytes. */
+    {
+        sec_frame_t f;
+        sec_beacon_init(&f, true);
+        uint8_t n = build_rsn(body, SUITE_CCMP, pair, 1, akm, 1, 0, 1);
+        put_le16(&body[n], 1); /* one PMKID, no 16-byte entry follows */
+        n += 2;
+        sec_append_raw(&f, 48, body, n);
+        CHECK(parse_beacon(&f, false, &obs));
+        CHECK(obs.malformed_ie && !obs.sec.rsn.valid);
+
+        sec_beacon_init(&f, true);
+        n = build_rsn(body, SUITE_CCMP, pair, 1, akm, 1, 0, 1);
+        put_le16(&body[n], 0);
+        n += 2;
+        memcpy(&body[n], (const uint8_t[]){0x00, 0x0F, 0xAC}, 3);
+        n += 3;
+        sec_append_raw(&f, 48, body, n);
+        CHECK(parse_beacon(&f, false, &obs));
+        CHECK(obs.malformed_ie && !obs.sec.rsn.valid);
     }
 
     /* Caps declared by the IE length but the byte cut is a CAPTURE cut:
@@ -428,7 +488,7 @@ static void t_optional_tails(void)
         CHECK(!obs.complete);
         CHECK(obs.ie_walk_incomplete);
         CHECK(!obs.malformed_ie);
-        CHECK(!obs.sec.rsn_valid); /* nothing partial claimed */
+        CHECK(!obs.sec.rsn.valid); /* nothing partial claimed */
     }
 }
 
@@ -462,7 +522,7 @@ static void t_long_beacon_cut_positions(void)
         f.len = (uint16_t)(rsn_start - 2);
         CHECK(parse_beacon(&f, true, &obs));
         CHECK(!obs.complete && obs.ie_walk_incomplete);
-        CHECK(!obs.rsn_present && !obs.sec.rsn_present && !obs.sec.rsn_valid);
+        CHECK(!obs.rsn_present && !obs.sec.rsn_present && !obs.sec.rsn.valid);
     }
 
     /* Cut INSIDE the RSN IE: present-at-boundary is unknowable; the walk
@@ -472,7 +532,7 @@ static void t_long_beacon_cut_positions(void)
         f.len = (uint16_t)(rsn_start + 6); /* header + version + part of group */
         CHECK(parse_beacon(&f, true, &obs));
         CHECK(!obs.complete && obs.ie_walk_incomplete && !obs.malformed_ie);
-        CHECK(!obs.sec.rsn_valid);
+        CHECK(!obs.sec.rsn.valid);
     }
 
     /* Cut AFTER the RSN IE (inside trailing filler): the RSN IE itself
@@ -483,14 +543,14 @@ static void t_long_beacon_cut_positions(void)
         f.len = (uint16_t)(rsn_end + 2);
         CHECK(parse_beacon(&f, true, &obs));
         CHECK(!obs.complete && obs.ie_walk_incomplete);
-        CHECK(obs.sec.rsn_present && obs.sec.rsn_valid);
-        CHECK(obs.sec.akm == IEEE80211_AKM_PSK);
-        CHECK(obs.sec.pairwise == IEEE80211_CIPHER_CCMP128);
+        CHECK(obs.sec.rsn_present && obs.sec.rsn.valid);
+        CHECK(obs.sec.rsn.akm == IEEE80211_AKM_PSK);
+        CHECK(obs.sec.rsn.pairwise == IEEE80211_CIPHER_CCMP128);
     }
 
     /* Complete capture: everything valid. */
     CHECK(parse_beacon(&full, false, &obs));
-    CHECK(obs.complete && obs.sec.rsn_valid);
+    CHECK(obs.complete && obs.sec.rsn.valid);
 }
 
 /* ---------------- world merge policy ---------------- */
@@ -571,7 +631,7 @@ static void t_world_valid_then_malformed_no_downgrade(void)
         world_ap_view_t v;
         CHECK(world_get_ap(&w, 0, &v));
         CHECK(v.ap.sec_state == WORLD_SEC_KNOWN);
-        CHECK(v.ap.sec.akm == IEEE80211_AKM_PSK);
+        CHECK(v.ap.sec.rsn.akm == IEEE80211_AKM_PSK);
         char name[32];
         world_security_name(&v.ap, name, sizeof(name));
         CHECK(strcmp(name, "WPA2-PSK") == 0);
@@ -598,7 +658,7 @@ static void t_world_valid_then_malformed_no_downgrade(void)
         world_ap_view_t v;
         CHECK(world_get_ap(&w, 0, &v));
         CHECK(v.ap.sec_state == WORLD_SEC_KNOWN);
-        CHECK(v.ap.sec.akm == IEEE80211_AKM_PSK); /* old suites kept */
+        CHECK(v.ap.sec.rsn.akm == IEEE80211_AKM_PSK); /* old suites kept */
         char name[32];
         world_security_name(&v.ap, name, sizeof(name));
         CHECK(strcmp(name, "WPA2-PSK") == 0);
@@ -610,7 +670,7 @@ static void t_world_valid_then_malformed_no_downgrade(void)
     sec_append_raw(&trunc, 250, (const uint8_t *)"", 0); /* trailing filler */
     trunc.len -= 1; /* cut inside the filler */
     CHECK(parse_beacon(&trunc, true, &obs));
-    CHECK(!obs.complete && obs.sec.rsn_valid);
+    CHECK(!obs.complete && obs.sec.rsn.valid);
     world_on_ap_observation(&w, &obs, 3000, true);
     {
         world_ap_view_t v;
@@ -664,13 +724,13 @@ static void t_world_truncated_rsn_positive_evidence(void)
     sec_append_raw(&f2, 250, filler, 0);
     f2.len -= 1; /* cut inside the trailing filler */
     CHECK(parse_beacon(&f2, true, &obs));
-    CHECK(!obs.complete && obs.sec.rsn_valid);
+    CHECK(!obs.complete && obs.sec.rsn.valid);
     world_on_ap_observation(&w, &obs, 2000, true);
     {
         world_ap_view_t v;
         CHECK(world_get_ap(&w, 0, &v));
         CHECK(v.ap.sec_state == WORLD_SEC_KNOWN);
-        CHECK(v.ap.sec.akm == IEEE80211_AKM_SAE);
+        CHECK(v.ap.sec.rsn.akm == IEEE80211_AKM_SAE);
         char name[32];
         world_security_name(&v.ap, name, sizeof(name));
         CHECK(strcmp(name, "WPA3-SAE-PMF") == 0);
@@ -756,7 +816,7 @@ static void t_world_security_names(void)
                                      wpair, 1, wakm, 1, -1, 1);
         sec_append_raw(&f, 221, vbody, (uint8_t)(wn + 4));
         CHECK(parse_beacon(&f, false, &obs));
-        CHECK(obs.sec.rsn_valid && obs.sec.wpa_valid);
+        CHECK(obs.sec.rsn.valid && obs.sec.wpa.valid);
         world_init(&w);
         world_on_ap_observation(&w, &obs, 1000, true);
         world_ap_view_t v;
@@ -779,6 +839,111 @@ static void t_world_security_names(void)
     }
 }
 
+static void t_security_ie_commit_is_atomic_and_order_independent(void)
+{
+    sec_frame_t f;
+    uint8_t rsn_body[64];
+    uint8_t wpa_body[68];
+    const uint8_t pair[1][4] = {{0x00, 0x0F, 0xAC, 0x04}};
+    const uint8_t akm[1][4] = {{0x00, 0x0F, 0xAC, 0x02}};
+    const uint8_t rsn_len = build_rsn(rsn_body, SUITE_CCMP, pair, 1,
+                                      akm, 1, -1, 1);
+    ieee80211_ap_observation_t obs;
+
+    /* A later malformed WPA IE cannot mutate the already parsed RSN. */
+    sec_beacon_init(&f, true);
+    sec_append_raw(&f, 48, rsn_body, rsn_len);
+    wpa_body[0] = 0x00; wpa_body[1] = 0x50;
+    wpa_body[2] = 0xF2; wpa_body[3] = 0x01;
+    wpa_body[4] = 0x02; wpa_body[5] = 0x00; /* invalid version */
+    sec_append_raw(&f, 221, wpa_body, 6);
+    CHECK(parse_beacon(&f, false, &obs));
+    CHECK(obs.malformed_ie && !obs.complete);
+    CHECK(obs.sec.rsn.valid && !obs.sec.wpa.valid);
+    CHECK(obs.sec.rsn.group == IEEE80211_CIPHER_CCMP128);
+    CHECK(obs.sec.rsn.akm == IEEE80211_AKM_PSK);
+
+    /* A valid WPA IE followed by a malformed RSN remains isolated to WPA. */
+    sec_beacon_init(&f, true);
+    wpa_body[4] = 1; wpa_body[5] = 0; /* version */
+    memcpy(&wpa_body[6], (const uint8_t[]){0x00, 0x50, 0xF2, 0x02}, 4);
+    put_le16(&wpa_body[10], 1);
+    memcpy(&wpa_body[12], (const uint8_t[]){0x00, 0x50, 0xF2, 0x02}, 4);
+    put_le16(&wpa_body[16], 1);
+    memcpy(&wpa_body[18], (const uint8_t[]){0x00, 0x50, 0xF2, 0x02}, 4);
+    sec_append_raw(&f, 221, wpa_body, 22);
+    uint8_t malformed_rsn[] = {2, 0};
+    sec_append_raw(&f, 48, malformed_rsn, sizeof(malformed_rsn));
+    CHECK(parse_beacon(&f, false, &obs));
+    CHECK(obs.malformed_ie && obs.sec.wpa.valid && !obs.sec.rsn.valid);
+    CHECK(obs.sec.wpa.akm == IEEE80211_AKM_PSK);
+
+    /* Duplicate RSN policy is deterministic: first valid IE wins and the
+     * observation is incomplete, so it cannot prove absent WPA support. */
+    sec_beacon_init(&f, true);
+    sec_append_raw(&f, 48, rsn_body, rsn_len);
+    uint8_t other_body[64];
+    const uint8_t pair_tkip[1][4] = {{0x00, 0x0F, 0xAC, 0x02}};
+    const uint8_t other_len = build_rsn(other_body, SUITE_CCMP, pair_tkip, 1,
+                                        akm, 1, -1, 1);
+    sec_append_raw(&f, 48, other_body, other_len);
+    CHECK(parse_beacon(&f, false, &obs));
+    CHECK(obs.dup_security_ie && !obs.complete);
+    CHECK(obs.sec.rsn.valid);
+    CHECK(obs.sec.rsn.pairwise == IEEE80211_CIPHER_CCMP128);
+}
+
+static void t_world_partial_protocol_merge_preserves_other_protocol(void)
+{
+    world_init(&w);
+    sec_frame_t f;
+    uint8_t body[68];
+    const uint8_t pair[1][4] = {{0x00, 0x0F, 0xAC, 0x04}};
+    const uint8_t akm[1][4] = {{0x00, 0x0F, 0xAC, 0x02}};
+    uint8_t n = build_rsn(body, SUITE_CCMP, pair, 1, akm, 1, -1, 1);
+    sec_beacon_init(&f, true);
+    sec_append_raw(&f, 48, body, n);
+
+    body[0] = 0x00; body[1] = 0x50; body[2] = 0xF2; body[3] = 0x01;
+    const uint8_t wpair[1][4] = {{0x00, 0x50, 0xF2, 0x02}};
+    const uint8_t wakm[1][4] = {{0x00, 0x50, 0xF2, 0x02}};
+    n = build_rsn(&body[4], (const uint8_t[4]){0x00, 0x50, 0xF2, 0x02},
+                  wpair, 1, wakm, 1, -1, 1);
+    sec_append_raw(&f, 221, body, (uint8_t)(n + 4));
+
+    ieee80211_ap_observation_t obs;
+    CHECK(parse_beacon(&f, false, &obs));
+    CHECK(obs.sec.rsn.valid && obs.sec.wpa.valid);
+    world_on_ap_observation(&w, &obs, 1000, true);
+
+    /* The same AP is later captured only through its valid RSN IE. This
+     * is positive RSN evidence but not negative WPA evidence. */
+    sec_frame_t partial;
+    sec_beacon_init(&partial, true);
+    n = build_rsn(body, SUITE_CCMP, pair, 1, akm, 1, -1, 1);
+    sec_append_raw(&partial, 48, body, n);
+    CHECK(parse_beacon(&partial, true, &obs));
+    CHECK(!obs.complete && obs.sec.rsn.valid && !obs.sec.wpa.valid);
+    world_on_ap_observation(&w, &obs, 2000, true);
+
+    world_ap_view_t v;
+    CHECK(world_get_ap(&w, 0, &v));
+    CHECK(v.ap.sec.rsn.valid && v.ap.sec.wpa.valid);
+    char name[32];
+    world_security_name(&v.ap, name, sizeof(name));
+    CHECK(strcmp(name, "WPA/WPA2") == 0);
+
+    /* A complete RSN-only beacon is authoritative and removes WPA. */
+    CHECK(parse_beacon(&partial, false, &obs));
+    CHECK(obs.complete && obs.sec.rsn.valid && !obs.sec.wpa.valid);
+    world_on_ap_observation(&w, &obs, 3000, true);
+    CHECK(world_get_ap(&w, 0, &v));
+    CHECK(v.ap.sec.rsn.valid && !v.ap.sec.wpa.valid);
+    world_security_name(&v.ap, name, sizeof(name));
+    CHECK(strcmp(name, "WPA2-PSK") == 0);
+    CHECK(world_check_invariants(&w));
+}
+
 int main(void)
 {
     test_register("sec_rsn_psk", t_rsn_psk);
@@ -794,5 +959,9 @@ int main(void)
     test_register("sec_world_valid_then_malformed_no_downgrade", t_world_valid_then_malformed_no_downgrade);
     test_register("sec_world_truncated_rsn_positive_evidence", t_world_truncated_rsn_positive_evidence);
     test_register("sec_world_security_names", t_world_security_names);
+    test_register("sec_ie_commit_is_atomic_and_order_independent",
+                  t_security_ie_commit_is_atomic_and_order_independent);
+    test_register("sec_world_partial_protocol_merge_preserves_other_protocol",
+                  t_world_partial_protocol_merge_preserves_other_protocol);
     return test_run_all();
 }

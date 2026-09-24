@@ -70,20 +70,21 @@ static uint16_t suite_to_akm_mask(const uint8_t *s, uint8_t o0, uint8_t o1,
  * incomplete). Counts are validated by division only.
  */
 static bool parse_security_suites(const uint8_t *body, uint8_t ie_len,
-                                  bool is_rsn, ieee80211_security_desc_t *sec)
+                                  bool is_rsn, ieee80211_security_suites_t *out)
 {
     const uint8_t o0 = is_rsn ? 0x00 : 0x00;
     const uint8_t o1 = is_rsn ? 0x0F : 0x50;
     const uint8_t o2 = is_rsn ? 0xAC : 0xF2;
 
+    ieee80211_security_suites_t sec = {0};
     uint32_t pos = 0;
     uint32_t rem = ie_len;
 
     if (rem < 2) {
         return false;
     }
-    sec->version = read_le16(&body[pos]);
-    if (sec->version != 1) {
+    sec.version = read_le16(&body[pos]);
+    if (sec.version != 1) {
         return false;
     }
     pos += 2;
@@ -92,7 +93,7 @@ static bool parse_security_suites(const uint8_t *body, uint8_t ie_len,
     if (rem < 4) {
         return false;
     }
-    sec->group = suite_to_cipher_mask(&body[pos], o0, o1, o2);
+    sec.group = suite_to_cipher_mask(&body[pos], o0, o1, o2);
     pos += 4;
     rem -= 4;
 
@@ -102,11 +103,11 @@ static bool parse_security_suites(const uint8_t *body, uint8_t ie_len,
     uint16_t pcount = read_le16(&body[pos]);
     pos += 2;
     rem -= 2;
-    if ((uint32_t)pcount > rem / 4u) {
+    if (pcount == 0 || (uint32_t)pcount > rem / 4u) {
         return false; /* declared count exceeds the bytes that exist */
     }
     for (uint16_t i = 0; i < pcount; i++) {
-        sec->pairwise |= suite_to_cipher_mask(&body[pos], o0, o1, o2);
+        sec.pairwise |= suite_to_cipher_mask(&body[pos], o0, o1, o2);
         pos += 4;
         rem -= 4;
     }
@@ -115,29 +116,57 @@ static bool parse_security_suites(const uint8_t *body, uint8_t ie_len,
         uint16_t acount = read_le16(&body[pos]);
         pos += 2;
         rem -= 2;
-        if ((uint32_t)acount > rem / 4u) {
+        if (acount == 0 || (uint32_t)acount > rem / 4u) {
             return false;
         }
         for (uint16_t i = 0; i < acount; i++) {
-            sec->akm |= suite_to_akm_mask(&body[pos], o0, o1, o2);
+            sec.akm |= suite_to_akm_mask(&body[pos], o0, o1, o2);
             pos += 4;
             rem -= 4;
         }
     }
-    /* rem == 0 here means the optional AKM list is absent: legal. */
-
-    if (is_rsn && rem >= 2) {
-        const uint16_t caps = read_le16(&body[pos]);
-        sec->caps_present = true;
-        sec->mfp_capable = (caps & IEEE80211_RSN_CAP_MFPC) != 0;
-        sec->mfp_required = (caps & IEEE80211_RSN_CAP_MFPR) != 0;
-        pos += 2;
-        rem -= 2;
-        /* Bytes after the caps field (PMKID list / group management
-         * cipher in non-beacon frames) are tolerated: every field we
-         * report was fully decoded. */
+    /* A one-byte remnant cannot be a complete optional field. */
+    if (rem == 1) {
+        return false;
     }
 
+    if (rem >= 2) {
+        if (is_rsn) {
+            const uint16_t caps = read_le16(&body[pos]);
+            sec.caps_present = true;
+            sec.mfp_capable = (caps & IEEE80211_RSN_CAP_MFPC) != 0;
+            sec.mfp_required = (caps & IEEE80211_RSN_CAP_MFPR) != 0;
+        }
+        pos += 2;
+        rem -= 2;
+    }
+
+    if (is_rsn && rem > 0) {
+        /* If a PMKID tail is present, it starts with a count after the
+         * capabilities field, even when that count is zero. */
+        if (rem < 2) {
+            return false;
+        }
+        const uint16_t pmkid_count = read_le16(&body[pos]);
+        pos += 2;
+        rem -= 2;
+        if ((uint32_t)pmkid_count > rem / 16u) {
+            return false;
+        }
+        pos += (uint32_t)pmkid_count * 16u;
+        rem -= (uint32_t)pmkid_count * 16u;
+
+        /* Optional group-management cipher suite is exactly four bytes. */
+        if (rem != 0 && rem != 4) {
+            return false;
+        }
+    } else if (!is_rsn && rem != 0) {
+        /* WPA IE permits its two-byte capabilities field only. */
+        return false;
+    }
+
+    sec.valid = true;
+    *out = sec;
     return true;
 }
 
@@ -210,6 +239,8 @@ bool ieee80211_parse(const uint8_t *frame, uint16_t length,
 typedef struct {
     bool ssid_seen;
     bool ds_seen;
+    bool rsn_seen;
+    bool wpa_seen;
 } ie_walk_state_t;
 
 static void walk_information_elements(const uint8_t *frame, uint16_t length,
@@ -331,16 +362,22 @@ static void walk_information_elements(const uint8_t *frame, uint16_t length,
             break;
         case IEEE80211_IE_RSN:
             if (ap_out != NULL) {
+                if (st->rsn_seen) {
+                    ap_out->dup_security_ie = true;
+                    break;
+                }
+                st->rsn_seen = true;
                 ap_out->rsn_present = true;
                 ap_out->sec.rsn_present = true;
-                if (!parse_security_suites(data, ie_len, true, &ap_out->sec)) {
+                ieee80211_security_suites_t parsed = {0};
+                if (!parse_security_suites(data, ie_len, true, &parsed)) {
                     /* The declared body was fully captured (the walk
                      * verified it above): an internal structure
                      * violation is malformed, never a capture artifact. */
                     ap_out->malformed_ie = true;
                     return;
                 }
-                ap_out->sec.rsn_valid = true;
+                ap_out->sec.rsn = parsed;
             }
             break;
         case IEEE80211_IE_VENDOR:
@@ -348,14 +385,20 @@ static void walk_information_elements(const uint8_t *frame, uint16_t length,
             if (ap_out != NULL && ie_len >= 4 &&
                 data[0] == 0x00 && data[1] == 0x50 && data[2] == 0xF2 &&
                 data[3] == IEEE80211_WPA_OUI_TYPE) {
+                if (st->wpa_seen) {
+                    ap_out->dup_security_ie = true;
+                    break;
+                }
+                st->wpa_seen = true;
                 ap_out->wpa_vendor_present = true;
                 ap_out->sec.wpa_present = true;
+                ieee80211_security_suites_t parsed = {0};
                 if (!parse_security_suites(&data[4], (uint8_t)(ie_len - 4),
-                                           false, &ap_out->sec)) {
+                                           false, &parsed)) {
                     ap_out->malformed_ie = true;
                     return;
                 }
-                ap_out->sec.wpa_valid = true;
+                ap_out->sec.wpa = parsed;
             }
             break;
         default:
@@ -436,7 +479,7 @@ bool ieee80211_parse_beacon_or_probe_resp(const uint8_t *frame, uint16_t length,
         out->ie_walk_incomplete = true;
     }
     out->complete = !out->malformed_ie && !out->ie_walk_incomplete &&
-                    !out->dup_critical_ie;
+                    !out->dup_critical_ie && !out->dup_security_ie;
     return true;
 }
 
@@ -509,6 +552,63 @@ const char *ieee80211_security_name(ieee80211_security_t sec)
     }
 }
 
+bool ieee80211_parse_client_mgmt_tx(const uint8_t *frame, uint16_t length,
+                                    uint8_t source[6])
+{
+    if (frame == NULL || source == NULL || length < IEEE80211_MGMT_HDR_LEN) {
+        return false;
+    }
+
+    ieee80211_frame_info_t info = {0};
+    if (!ieee80211_parse(frame, length, &info) ||
+        info.fc.protocol_version != 0 || info.type != IEEE80211_TYPE_MGMT ||
+        info.fc.to_ds || info.fc.from_ds || info.fc.order ||
+        info.fc.more_fragments || info.fc.protected_frame) {
+        return false;
+    }
+
+    const uint8_t *receiver = &frame[4];
+    const uint8_t *transmitter = &frame[IEEE80211_MGMT_ADDR2_OFF];
+    const uint8_t *bssid = &frame[IEEE80211_MGMT_ADDR3_OFF];
+    if (memcmp(receiver, bssid, 6) != 0 ||
+        (transmitter[0] & 0x01) != 0 ||
+        memcmp(transmitter, bssid, 6) == 0) {
+        return false;
+    }
+
+    switch (info.fc.subtype) {
+    case IEEE80211_MGMT_AUTH: {
+        /* Auth fixed body: algorithm, transaction sequence, status. The
+         * direction comes from RA/BSSID/TA roles, not sequence parity;
+         * this remains conservative across authentication algorithms. */
+        if (length < IEEE80211_MGMT_HDR_LEN + 6) {
+            return false;
+        }
+        const uint16_t transaction = read_le16(&frame[IEEE80211_MGMT_HDR_LEN + 2]);
+        const uint16_t status = read_le16(&frame[IEEE80211_MGMT_HDR_LEN + 4]);
+        if (transaction == 0 || status != 0) {
+            return false;
+        }
+        break;
+    }
+    case IEEE80211_MGMT_ASSOC_REQ:
+        if (length < IEEE80211_MGMT_HDR_LEN + 4) {
+            return false;
+        }
+        break;
+    case IEEE80211_MGMT_REASSOC_REQ:
+        if (length < IEEE80211_MGMT_HDR_LEN + 10) {
+            return false;
+        }
+        break;
+    default:
+        return false;
+    }
+
+    memcpy(source, transmitter, 6);
+    return true;
+}
+
 bool ieee80211_parse_data_addresses(const uint8_t *frame, uint16_t length,
                                     ieee80211_data_addrs_t *out)
 {
@@ -542,7 +642,7 @@ bool ieee80211_parse_data_addresses(const uint8_t *frame, uint16_t length,
     if (out->qos) {
         hdr += 2; /* QoS control */
     }
-    if (info.fc.order) {
+    if (out->qos && info.fc.order) {
         hdr += 4; /* HT control */
     }
     out->header_len = (uint16_t)hdr;

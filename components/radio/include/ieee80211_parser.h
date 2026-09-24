@@ -162,10 +162,11 @@ typedef enum {
 /*
  * Phase 2 security description. The IE walk fills the presence flags and,
  * for legally structured RSN / WPA vendor IEs, the decoded suites (Phase
- * 2C; Phase 2A fills presence only). Bit masks keep the struct small and
- * merge-friendly. `*_valid` means "this IE was fully parsed and its
- * structure was legal"; presence without validity means the IE existed
- * but was malformed or cut by the capture - never authoritative.
+ * 2C; Phase 2A fills presence only). Bit masks keep each protocol's suite
+ * set small and merge-friendly. `valid` means that protocol's IE was fully
+ * parsed and structurally legal; presence without validity means the IE
+ * existed but was malformed or cut by the capture, so it is never
+ * authoritative.
  */
 
 /* Cipher suite type codes (RSN OUI 00:0F:AC; WPA uses 00:50:F2). */
@@ -202,21 +203,24 @@ typedef enum {
 #define IEEE80211_AKM_UNKNOWN         (1u << 15)
 
 typedef struct {
-    bool rsn_present;   /* RSN IE (48) seen at all (body fully captured) */
-    bool wpa_present;   /* WPA vendor IE (221, OUI 00:50:F2 type 01) seen */
-    bool rsn_valid;     /* RSN IE fully parsed with legal structure */
-    bool wpa_valid;     /* WPA vendor IE fully parsed with legal structure */
+    bool valid;
+    uint16_t version;
+    uint16_t group;
+    uint16_t pairwise;
+    uint16_t akm;
+    bool caps_present;
+    bool mfp_capable;
+    bool mfp_required;
+} ieee80211_security_suites_t;
+
+/* Keep WPA and RSN suites separate. A truncated beacon may contain only
+ * one protocol's complete IE, and must not erase knowledge of the other. */
+typedef struct {
+    bool rsn_present;   /* RSN IE (48) seen in this observation */
+    bool wpa_present;   /* WPA vendor IE seen in this observation */
     bool privacy;       /* capability PRIVACY bit (header-verified) */
-
-    uint16_t version;   /* version field of the last fully valid parse */
-
-    uint16_t group;     /* group cipher mask (exactly one bit when valid) */
-    uint16_t pairwise;  /* pairwise cipher mask */
-    uint16_t akm;       /* AKM suite mask */
-
-    bool mfp_capable;   /* RSN capabilities MFPC */
-    bool mfp_required;  /* RSN capabilities MFPR */
-    bool caps_present;  /* RSN capabilities field present AND complete */
+    ieee80211_security_suites_t rsn;
+    ieee80211_security_suites_t wpa;
 } ieee80211_security_desc_t;
 
 /*
@@ -230,10 +234,11 @@ typedef struct {
  *   count is validated against the remaining bytes by DIVISION (count >
  *   remaining/4 => illegal; no multiplication is ever performed on the
  *   declared count).
- * - A missing AKM list / caps field is legal (optional tail); an
- *   illegally structured IE sets malformed_ie in a complete capture and
- *   leaves *_valid false (never authoritative, never overwrites known
- *   results downstream).
+ * - The AKM list and capabilities may be omitted when the IE ends at that
+ *   point; a present AKM list must have a nonzero count. Any incomplete
+ *   count/capability/PMKID/group-management tail is rejected. An illegal
+ *   IE sets malformed_ie in a complete capture and leaves `valid` false,
+ *   so it cannot overwrite known results downstream.
  * - Unknown suite types are kept as *_UNKNOWN bits, never guessed: an
  *   unknown AKM is never reported as PSK.
  * - WPA vendor IEs use OUI 00:50:F2 for their suites, RSN uses 00:0F:AC;
@@ -258,7 +263,8 @@ typedef struct {
  *                        more than once; only the first occurrence is used
  * - complete           : true only when the whole MAC body was present in
  *                        the capture and the walk finished cleanly with no
- *                        malformed, incomplete or duplicated critical IEs.
+ *                        malformed, incomplete or duplicated critical or
+ *                        security IEs.
  *                        Only complete observations may carry negative
  *                        evidence (e.g. "no RSN IE seen").
  */
@@ -293,6 +299,7 @@ typedef struct {
     /* Phase 1.5 status fields. */
     bool ie_walk_incomplete;
     bool dup_critical_ie;
+    bool dup_security_ie;
     bool complete;
 } ieee80211_ap_observation_t;
 
@@ -364,6 +371,16 @@ bool ieee80211_parse_probe_request(const uint8_t *frame, uint16_t length,
 ieee80211_security_t ieee80211_classify_security(const ieee80211_ap_observation_t *obs);
 
 const char *ieee80211_security_name(ieee80211_security_t sec);
+
+/*
+ * Extract a client-transmitted Authentication/Association/Reassociation
+ * request source MAC. Requires a complete supported management header and
+ * fixed body, addr1==addr3 (BSSID), and a distinct unicast addr2. AP
+ * responses, protected/fragmented/ordered frames and ambiguous directions
+ * are rejected. This reports a transmitter observation only, not success.
+ */
+bool ieee80211_parse_client_mgmt_tx(const uint8_t *frame, uint16_t length,
+                                    uint8_t source[6]);
 
 /* Format "AA:BB:CC:DD:EE:FF". out_size must be >= 18. */
 void ieee80211_format_mac(const uint8_t mac[6], char *out, size_t out_size);

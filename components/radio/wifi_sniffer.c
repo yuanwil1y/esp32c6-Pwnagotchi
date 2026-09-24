@@ -667,13 +667,16 @@ static void radio_rx_task(void *arg)
             case IEEE80211_MGMT_AUTH:
             case IEEE80211_MGMT_ASSOC_REQ:
             case IEEE80211_MGMT_REASSOC_REQ:
-                /* Client-transmitted management frames: STA tx evidence
-                 * only (no AP creation, no relation). Deauth/disassoc/
-                 * action frames are deliberately excluded: their SA may
-                 * be the AP itself. */
-                if (parse_len >= IEEE80211_MGMT_ADDR2_OFF + 6) {
-                    world_feed_sta_tx(&pkt->data[IEEE80211_MGMT_ADDR2_OFF],
-                                      radio_now_ms(), pkt->channel, pkt->rssi);
+                /* Extract only a complete client-to-BSSID request. AUTH
+                 * responses have the AP itself as transmitter and must
+                 * never create an STA record. */
+                {
+                    uint8_t source[6];
+                    if (ieee80211_parse_client_mgmt_tx(pkt->data, parse_len,
+                                                       source)) {
+                        world_feed_sta_tx(source, radio_now_ms(),
+                                          pkt->channel, pkt->rssi);
+                    }
                 }
                 break;
             default:
