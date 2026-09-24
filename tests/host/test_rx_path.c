@@ -392,6 +392,15 @@ static void t_capture_view_fcs_and_body_truncation(void)
     CHECK(v.captured_mac_length == RADIO_PACKET_MAX_LEN);
     CHECK(v.original_mac_length == 596);
     CHECK(v.capture_truncated);
+
+    /* Defensive: if a corrupt/foreign slot claims more stored bytes than
+     * the fixed array permits, the resulting bounded view stays honest. */
+    p.length = 513;
+    p.orig_length = 517; /* complete 513-byte MAC body per metadata */
+    CHECK(rx_path_make_capture_view(&p, &v));
+    CHECK(v.captured_mac_length == RADIO_PACKET_MAX_LEN);
+    CHECK(v.original_mac_length == 513);
+    CHECK(v.capture_truncated);
 }
 
 int main(void)

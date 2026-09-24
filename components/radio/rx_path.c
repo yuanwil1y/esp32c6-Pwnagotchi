@@ -212,6 +212,11 @@ bool rx_path_make_capture_view(const radio_packet_t *pkt,
     if (out->captured_mac_length > RADIO_PACKET_MAX_LEN) {
         out->captured_mac_length = RADIO_PACKET_MAX_LEN;
     }
+    if (out->original_mac_length_valid) {
+        /* Include the view's own storage bound in its truncation promise. */
+        out->capture_truncated =
+            out->captured_mac_length < out->original_mac_length;
+    }
     out->rx_channel = pkt->channel;
     out->rssi = pkt->rssi;
     out->rx_timestamp_us = pkt->rx_timestamp_us;
