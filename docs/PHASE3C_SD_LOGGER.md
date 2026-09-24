@@ -1,12 +1,12 @@
 # Phase 3C — Bounded asynchronous SD logger
 
-Status: **PENDING**. The `8835e59c7887b87f68eb694841548626e68d2671` image
-passed CI and was flashed to COM3, where boot, Wi-Fi, and hopping remained
-stable. Hardware startup logged `capture UART commands unavailable:
-ESP_ERR_INVALID_STATE`, so no SD recording could be started. A bounded direct
-USB Serial/JTAG command reader now replaces that REPL setup path; its CI and
-hardware checks are pending. Do not treat the earlier successful boot as SD
-logger acceptance.
+Status: **PENDING**. The fix at code SHA
+`3f23fcd08f7da23b606e2289e326bf8d8734875b` passed GitHub host and ESP-IDF CI
+run [36001491669](https://github.com/yuanwil1y/esp32c6-Pwnagotchi/actions/runs/36001491669).
+It replaces the failed console REPL with a bounded direct USB Serial/JTAG
+reader. The matching app-only image is prepared but has not yet been flashed;
+hardware SD recording, controlled stop, extracted-file TShark readback, and
+active-write display/hopping/heap observation remain **PENDING**.
 The user confirmed that an SD card is inserted and authorized creating new
 uniquely named files. No existing file is formatted, deleted, or overwritten.
 
@@ -126,7 +126,21 @@ The follow-up replaces ESP-IDF's all-in-one REPL creation with a dedicated
 4 KiB bounded reader task on the existing USB Serial/JTAG driver. It accepts
 only `capture-start`, `capture-stop`, `capture-status`, and `help`; it neither
 owns radio/logger slots nor performs storage work. This change is awaiting
-GitHub CI before another app-only flash.
+hardware verification after its successful GitHub CI run.
+
+Code SHA `3f23fcd08f7da23b606e2289e326bf8d8734875b` passed run
+[36001491669](https://github.com/yuanwil1y/esp32c6-Pwnagotchi/actions/runs/36001491669):
+host plain + ASan/UBSan, Phase 3B reference PCAP and synthetic logger PCAP
+TShark/capinfos checks, and ESP-IDF v5.4 ESP32-C6 build. The CI app image is
+1,192,112 B (0x1230b0); total image size is 1,191,987 B, `.bss` is 64,576 B,
+and `sd_logger_idf.c.obj` contributes 10,238 B `.bss`. The artifact SHA-256 is
+`FB5D930CDF5B9C69107E8B5EDDE1318D4D1C6EE5216EAEB286E73D943A21C926`. CI
+`flash_args` lists bootloader at `0x0`, partition table at `0x8000`, and app
+at `0x10000`; hardware verification will write only the app address. The
+firmware SHA is embedded as `3f23fcd08f7da23b606e2289e326bf8d8734875b`.
+Original job logs are retained in
+`docs/logs/phase3c_build_ci_36001491669.log` and
+`docs/logs/phase3c_host_ci_36001491669.log`.
 
 The `f2fe1c411d81bf8058fcb801c0be580fb0c8a709` revision passed both CI jobs in
 run [35995388924](https://github.com/yuanwil1y/esp32c6-Pwnagotchi/actions/runs/35995388924):
@@ -367,16 +381,17 @@ ESP-IDF v5.4 / ESP32-C6 build
 ```
 
 No local build or test is run for this task. The CI run and all hardware
-attempts are recorded above; the latest control-reader change must pass GitHub
-CI and receive a separate authorized app-only flash before hardware capture.
+attempts are recorded above; the latest control-reader change passed GitHub CI
+and still needs a separate authorized app-only flash before hardware capture.
 
 ## Hardware acceptance status
 
-**PENDING — the 24 KiB USB Serial/JTAG build is stable, but the REPL setup
+**PENDING — the 24 KiB USB Serial/JTAG image is stable, but its REPL setup
 failed with `ESP_ERR_INVALID_STATE`; no logger session was started and no SD
-PCAP was written.** The SD card remains inserted and creation of uniquely
-named files is authorized. After the control-reader change passes CI and is
-flashed app-only, verification still needs to:
+PCAP was written.** The direct command-reader fix passed CI and is ready for
+an app-only flash. The SD card remains inserted and creation of uniquely
+named files is authorized. After that image is flashed, verification still
+needs to:
 
 1. flash only the CI-built app image and retain the original raw COM3 log;
 2. check startup mount/self-test, console availability, logger `STOPPED`, SD/LCD/touch/world, fixed
