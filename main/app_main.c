@@ -30,7 +30,7 @@ static const char *TAG = "phase3c";
 #define PHASE1_UI_TASK_PRIO     3
 #define PHASE1_UI_PERIOD_MS     500 /* 2 Hz, inside the 2-5 Hz budget */
 #define PHASE1_HOPPER_DWELL_MS  300
-#define PHASE3C_CONSOLE_STARTUP_STACK 12288u
+#define PHASE3C_CONSOLE_STARTUP_STACK 16384u
 #define PHASE3C_CONSOLE_STARTUP_PRIO  1u
 
 /* esp_console/linenoise initialization has a deeper stack than app_main's

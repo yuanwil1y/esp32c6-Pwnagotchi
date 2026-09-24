@@ -1,10 +1,11 @@
 # Phase 3C — Bounded asynchronous SD logger
 
-Status: Phase 3C host/IDF CI passed for commit `d921f036d5a3a6355fbe26cd3e6f084da0aa0fa7`
-on Actions run [35991522213](https://github.com/yuanwil1y/esp32c6-Pwnagotchi/actions/runs/35991522213).
-The first live boot of that image exposed an `app_main` stack-protection fault
-after SD mount/self-test and logger initialization. Startup-stack correction
-and revalidation are in progress. Real capture, controlled stop, extracted-file
+Status: host/IDF CI passed for the console-isolation revision
+`e43968db4d8181b5cd00dd586184c2ce300e921b` on run
+[35993675554](https://github.com/yuanwil1y/esp32c6-Pwnagotchi/actions/runs/35993675554).
+Live testing then identified insufficient stack in the isolated console
+initialization task. Its stack is being raised from 12 KiB to 16 KiB for the
+next CI and hardware attempt. Real capture, controlled stop, extracted-file
 TShark readback, and live display/hopping/heap observation remain **PENDING**.
 The user confirmed that an SD card is inserted and authorized creating new
 uniquely named files. No existing file is formatted, deleted, or overwritten.
@@ -64,8 +65,9 @@ capture was started. Automatic reboot created several newly named self-test
 probe files; the old fixed `/sd_card/phase0_test.txt` path was never opened for
 write, and no existing file was overwritten or deleted.
 
-An 8 KiB main-task stack retry still faulted at the same initialization point.
-Its 49,235-byte raw COM3 log is kept outside the repository at
+The next image, `6e4827cf05a3bccd165a06f68ae17de04e065e35`, tried an 8 KiB
+main-task stack but still faulted in `main`. Its 49,235-byte raw COM3 log is
+kept outside the repository at
 `D:\pwn\phase3c-evidence\35992620025\phase3c-com3-boot.raw.log`
 (SHA-256 `981E311CDD1BB5271339E96729DC86BEE1CDB3D4AFAC92C155A4CC93A01896A2`).
 That window contains five visible stack protection faults and six successful
@@ -73,12 +75,16 @@ uniquely named self-test writes; the captured stack bounds were
 `0x40837b2c..0x40839d20` with SP `0x40837b20`. Wi-Fi remained uninitialized and
 no capture session had been started.
 
-The UART console/linenoise setup is now isolated in a temporary 12,288 B
-`sd_console_init` task, which records its high-water mark and self-deletes
-after starting the REPL. The IDF main-task stack remains at its default
-3,584 B; corrected firmware CI and hardware revalidation are pending. The
-console initialization stack is a transient allocation and the persistent REPL
-keeps its separate 4,096 B stack.
+The following `e43968db4d8181b5cd00dd586184c2ce300e921b` image isolated UART
+console/linenoise setup in a temporary 12,288 B `sd_console_init` task and
+restored the IDF main-task default of 3,584 B. Its 60,087-byte raw COM3 log is
+at `D:\pwn\phase3c-evidence\35993675554\phase3c-com3-boot.raw.log` (SHA-256
+`BFBE8E1215AA07E10EC3C39A5D218DC8BCEEAC1E8FB43C0314A3740E979ABAFE`). The
+window shows seven stack protection faults in `sd_console_init`; captured SP
+`0x4084bc10` crossed its lower bound `0x4084bed8` by 712 B. The main stack did
+not fault, but console initialization never completed, so Wi-Fi and capture
+still did not start. The next revision raises only this temporary setup-task
+stack to 16,384 B; CI and hardware revalidation are pending.
 
 ## Ownership and data flow
 
@@ -250,9 +256,9 @@ recorded with hardware results. Logger-specific atomics/counters/paths and
 other storage control BSS are also reflected in that value and linker size
 output.
 
-The task stack request is 6,144 B for `sd_logger`, 12,288 B for the temporary
+The task stack request is 6,144 B for `sd_logger`, 16,384 B for the temporary
 `sd_console_init` task, and 4,096 B for the persistent UART REPL. Together these
-new task stacks request 22,528 B at their peak overlap; the temporary startup
+new task stacks request 26,624 B at their peak overlap; the temporary startup
 stack is released after the REPL starts. They are runtime allocations, not
 static BSS; FreeRTOS task control objects and one event group are also runtime
 allocations. The IDF main task remains at its default 3,584 B. Existing UI
