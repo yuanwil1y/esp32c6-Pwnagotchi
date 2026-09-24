@@ -6,6 +6,7 @@ idf_component_register(
         "hopper_policy.c"
         "ieee80211_parser.c"
         "eapol_parser.c"
+        "pcap_serializer.c"
         "channel_hopper.c"
     INCLUDE_DIRS "include"
     PRIV_REQUIRES

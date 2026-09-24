@@ -555,7 +555,7 @@ static void phase1_refresh_locked(uint8_t channel, uint16_t ap_current,
     lv_label_set_text_fmt(s_status_label,
                           "esp32c6-Pwnagotchi\n"
                           "\n"
-                          "Phase 2\n"
+                          "Phase 3B\n"
                           "LCD: OK\n"
                           "Touch: %s\n"
                           "SD: %s\n"

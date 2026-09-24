@@ -56,7 +56,7 @@ static void phase1_ui_task(void *arg)
 
 void app_main(void)
 {
-    ESP_LOGI(TAG, "esp32c6-Pwnagotchi Phase 2 World Model baseline");
+    ESP_LOGI(TAG, "esp32c6-Pwnagotchi Phase 3B PCAP + radiotap");
     ESP_LOGI(TAG, "firmware git commit: %s (%s)", APP_BUILD_GIT_SHA, APP_BUILD_GIT_SHORT);
 
     ESP_ERROR_CHECK(board_backlight_init());

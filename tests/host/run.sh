@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Phase 1.5 host regression tests: compile the PRODUCTION radio sources
-# (ieee80211_parser.c, rx_path.c, eapol_parser.c, obs_cache.c,
+# (ieee80211_parser.c, rx_path.c, eapol_parser.c, pcap_serializer.c,
+#  obs_cache.c,
 #  hopper_policy.c) directly
 # against small mock environments and run every test binary, plain and
 # under ASan+UBSan. No test re-implements production logic.
@@ -13,9 +14,9 @@ cd "$(dirname "$0")"
 CC=${CC:-cc}
 CFLAGS="-std=c11 -Wall -Wextra -Werror -O1 -g"
 INC="-I../../components/radio/include -I../../components/world/include -I."
-PROD="../../components/radio/ieee80211_parser.c ../../components/radio/rx_path.c ../../components/radio/eapol_parser.c ../../components/radio/obs_cache.c ../../components/radio/hopper_policy.c ../../components/world/world.c"
+PROD="../../components/radio/ieee80211_parser.c ../../components/radio/rx_path.c ../../components/radio/eapol_parser.c ../../components/radio/pcap_serializer.c ../../components/radio/obs_cache.c ../../components/radio/hopper_policy.c ../../components/world/world.c"
 COMMON="runner.c mock_io.c"
-SUITES="test_parser test_rx_path test_rx_hostile test_obs_cache test_hopper test_world test_data_addrs test_world_sta test_security test_mgmt_tx test_eapol"
+SUITES="test_parser test_rx_path test_rx_hostile test_obs_cache test_hopper test_world test_data_addrs test_world_sta test_security test_mgmt_tx test_eapol test_pcap"
 
 mkdir -p build
 

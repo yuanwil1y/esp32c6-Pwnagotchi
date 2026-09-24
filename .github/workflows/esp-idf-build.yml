@@ -19,6 +19,22 @@ jobs:
         run: |
           bash tests/host/run.sh
 
+      - name: Install independent pcap reader
+        run: |
+          sudo apt-get update
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y tshark
+
+      - name: Validate reference capture with TShark
+        run: |
+          python3 tests/host/validate_reference_pcap.py tests/host/build/reference.pcap
+
+      - name: Upload synthetic reference capture
+        uses: actions/upload-artifact@v4
+        with:
+          name: reference-pcap-${{ github.sha }}
+          path: tests/host/build/reference.pcap
+          if-no-files-found: error
+
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 30
