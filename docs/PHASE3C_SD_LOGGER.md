@@ -1,12 +1,12 @@
 # Phase 3C — Bounded asynchronous SD logger
 
-Status: host/IDF CI passed for `c56dca3ff54f9de50caa55eb92457eeb2a327df0`
+Status: host/IDF CI passed for `f2fe1c411d81bf8058fcb801c0be580fb0c8a709`
 on run
-[35994419351](https://github.com/yuanwil1y/esp32c6-Pwnagotchi/actions/runs/35994419351).
-Hardware revalidation found that the isolated `sd_console_init` task still
-overflows its 16 KiB stack by 24 bytes at the captured guard boundary. This
-revision raises it to 20 KiB; CI and another hardware boot attempt are pending.
-Real capture, controlled stop, extracted-file TShark readback, and live
+[35995388924](https://github.com/yuanwil1y/esp32c6-Pwnagotchi/actions/runs/35995388924).
+The 20 KiB `sd_console_init` stack request took effect, but the hardware trace
+shows the stack pointer crossing its lower bound by 8 bytes. This revision
+raises it to 24 KiB; CI and another hardware boot attempt are pending. Real
+capture, controlled stop, extracted-file TShark readback, and live
 display/hopping/heap observation remain **PENDING**.
 The user confirmed that an SD card is inserted and authorized creating new
 uniquely named files. No existing file is formatted, deleted, or overwritten.
@@ -94,8 +94,32 @@ fault, SP `0x4084bec0` was 24 B below the reported lower bound `0x4084bed8`;
 the captured window contains eight visible stack faults and nine successful
 unique self-test writes. Console initialization did not complete, Wi-Fi did
 not start, and no recording session began. The device is now disconnected.
-The current revision raises the temporary console stack to 20,480 B; this is
-not a claim that the hardware issue is resolved.
+The 24,576 B stack revision and switch to the board's USB Serial/JTAG control
+console are pending CI and hardware validation.
+
+The `f2fe1c411d81bf8058fcb801c0be580fb0c8a709` revision passed both CI jobs in
+run [35995388924](https://github.com/yuanwil1y/esp32c6-Pwnagotchi/actions/runs/35995388924):
+host plain and ASan/UBSan, both independent TShark validators, and the IDF v5.4
+build. The CI app image is 1,233,504 B; linker `.bss` is 64,688 B, and
+`sd_logger_idf.c.obj` contributes 10,238 B `.bss`. The generated config
+confirms the main-task stack remains at the default 3,584 B. The image SHA-256
+is `096C93AD6317C47D49467A27CB42C117A4897618D53C77DD96B6F9FCB8C43707` and its
+embedded full git SHA matches the revision.
+
+That image was written only to app offset `0x10000`; esptool v5.4 reported
+`Hash of data verified`. The 25-second raw COM3 capture is kept outside the
+repository at
+`D:\pwn\phase3c-evidence\35995388924\phase3c-com3-boot.raw.log` (114,165 B,
+SHA-256 `5B09E4D6DDA1A54535C9164FC1102060F7D32A4BBC1DC895BFCB6F9FCB8C43707`).
+It contains 13 observed stack faults and 13 successful uniquely named SD
+self-tests. Each fault names `sd_console_init`; the first reports bounds
+`0x4084bed8..0x40850ed0` (20,472 B actual span) and SP `0x4084bed0`, 8 B past
+the lower bound. LCD/touch setup, SD mount, SD write/readback, and logger
+initialization passed; Wi-Fi/sniffer/hopping and the command REPL did not
+start, and recording remained OFF. Thus there is no live logger I/O or
+capture acceptance evidence yet. The device has been disconnected. This trace
+corrects an earlier mistaken subtraction: the 20,480 B stack request did take
+effect; the request was simply still too small.
 
 ## Ownership and data flow
 
@@ -113,7 +137,7 @@ sd_logger task (sole SD/FILE owner)
   ├─ bounded file operations, periodic sync, stop/drain, rotation
   └─ PCAP + sidecar through the existing FatFs/VFS mount
 
-UI / UART console
+UI / USB Serial/JTAG console
   └─ value-only stats snapshot; never owns a logger buffer or FILE handle
 ```
 
@@ -221,7 +245,7 @@ remain hardware acceptance items below.
 
 ## Control and counters
 
-The UART console provides:
+The USB Serial/JTAG console provides:
 
 - `capture-start` — request a fresh session and exclusive file names;
 - `capture-stop` — reject new records, drain/sync/close, wait up to five seconds;
@@ -267,9 +291,9 @@ recorded with hardware results. Logger-specific atomics/counters/paths and
 other storage control BSS are also reflected in that value and linker size
 output.
 
-The task stack request is 6,144 B for `sd_logger`, 20,480 B for the temporary
-`sd_console_init` task, and 4,096 B for the persistent UART REPL. Together these
-new task stacks request 30,720 B at their peak overlap; the temporary startup
+The task stack request is 6,144 B for `sd_logger`, 24,576 B for the temporary
+`sd_console_init` task, and 4,096 B for the persistent USB Serial/JTAG REPL. Together these
+new task stacks request 34,816 B at their peak overlap; the temporary startup
 stack is released after the REPL starts. They are runtime allocations, not
 static BSS; FreeRTOS task control objects and one event group are also runtime
 allocations. The IDF main task remains at its default 3,584 B. Existing UI
@@ -281,7 +305,7 @@ the existing board FatFs configuration (`max_files=5`, `CONFIG_FATFS_LFN_HEAP`);
 PCAP and sidecar use two handles within that existing limit. No additional FAT
 workspace size is configured; mount/FatFs dynamic memory will be measured by
 heap deltas on hardware. Exact `.bss`, task high-water, minimum heap, and FAT
-mount workspace remain PENDING until the CI firmware runs on device.
+mount workspace remain PENDING until a CI firmware boots successfully on device.
 
 The queue slots, index FIFO, and fixed buffers are finite. Parser/callback
 never waits on SD; any queue saturation becomes an explicit storage drop. No
@@ -311,16 +335,17 @@ python3 tests/host/validate_phase3c_capture.py tests/host/build/phase3c_logger_s
 ESP-IDF v5.4 / ESP32-C6 build
 ```
 
-No local compile/test is run for this task. This document will be updated with
-the actual Phase 3C commit SHA, Actions run and logs, and device evidence after
-the branch CI and authorized hardware check. Failed attempts, if any, will
-remain identified as failed rather than being described as passes.
+No local build or test is run for this task. The CI run and the failed hardware
+boot attempts are recorded above; this document will be updated after the
+24 KiB / USB Serial/JTAG revision receives CI and authorized hardware checks.
 
 ## Hardware acceptance status
 
-**PENDING — no Phase 3C firmware has yet been flashed or recorded on COM3.**
-The user confirmed the device is attached to COM3 and the SD card is inserted;
-file creation is authorized. After CI success, verification still needs to:
+**PENDING — Phase 3C firmware has been flashed to COM3, but repeated startup
+stack faults prevented Wi-Fi/sniffer startup and no capture was performed.**
+The board has been disconnected after the failed boot; the SD card remains
+inserted and creation of uniquely named files is authorized. Once the 24 KiB /
+USB Serial/JTAG revision passes CI and is flashed, verification still needs to:
 
 1. flash only the CI-built app image and retain the original raw COM3 log;
 2. check startup mount/self-test, logger `STOPPED`, SD/lcd/touch/world, fixed

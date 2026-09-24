@@ -496,9 +496,10 @@ esp_err_t sd_logger_console_start(void)
     repl_config.task_stack_size = 4096u;
     repl_config.task_priority = 1u;
     repl_config.max_cmdline_length = 160;
-    esp_console_dev_uart_config_t uart_config =
-        ESP_CONSOLE_DEV_UART_CONFIG_DEFAULT();
-    err = esp_console_new_repl_uart(&uart_config, &repl_config, &s_repl);
+    esp_console_dev_usb_serial_jtag_config_t usb_serial_jtag_config =
+        ESP_CONSOLE_DEV_USB_SERIAL_JTAG_CONFIG_DEFAULT();
+    err = esp_console_new_repl_usb_serial_jtag(&usb_serial_jtag_config,
+                                               &repl_config, &s_repl);
     if (err != ESP_OK) {
         return err;
     }
