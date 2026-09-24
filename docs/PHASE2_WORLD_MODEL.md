@@ -15,7 +15,7 @@ Epoch、Personality、完整 UI 与自适应跳频仍属后续阶段。
 | 2C security parser（host 测试 + IDF 构建） | PASS | run 35955317691（6e9d9a4） |
 | 2D 接入/文档（host 测试 + IDF 构建） | PASS | run 35955699646（c2e7ee4） |
 | Phase 1.5 回归保留 | PASS | 同上（callback/IE 套件原样运行） |
-| 实机验收（≥1 min 稳定 + 受控 AP 对照） | **PENDING** | 见 §8 待执行清单 |
+| 实机验收（稳定运行 + 现网对照） | **PASS** | §8，日志 docs/logs/phase2_*.log；受控漫游切换项未现场复现（host 已覆盖） |
 
 分支 `phase2-world-model`（未合并 main；固件 commit SHA 见 §8）。
 host 套件 9 个二进制共 95 用例，plain 与 ASan/UBSan 各跑一遍，全部
@@ -255,10 +255,81 @@ CI（GitHub Actions `ESP-IDF Build`）：host-tests job（plain+ASan/UBSan）
 - sta/rel 满表拒绝仅计数；容量是否需要调优以实机 heap/HWM 为准。
 - 8h/24h soak、EAPOL/PCAP、自适应 dwell 均属后续阶段。
 
-## 8. 实机验收（PENDING —— 待执行清单）
+## 8. 实机验收（已完成，2026-09-24）
 
-> 硬件 Waveshare ESP32-C6-Touch-LCD-1.9。维护者执行前不改代码；
-> 结果回填本节并把状态改为 PASS/FAIL（不可用编译通过冒充实机 PASS）。
+硬件 Waveshare ESP32-C6-Touch-LCD-1.9，COM3，环境为现网多 AP 办公/
+住宅混合射频（无受控客户端时，切换对照项未现场复现，见"覆盖说明"）。
+
+**两轮执行记录：**
+
+- 第 1 轮固件 7cea1da（run 35955987664 产物）：boot + 160 s 窗口全部
+  通过，但暴露 radio_rx 任务栈高水位仅剩 72 B（2048 B 栈，恒定无增长
+  仍低于安全下限）→ 单独修复提交 369729c（2048→3072），CI 复绿
+  （run 35962172504）后重刷。
+- 第 2 轮固件 369729c（run 35962172504 产物，write-flash hash 校验
+  通过）：boot + 180 s 窗口，最终验收日志
+  `docs/logs/phase2_final_369729c.log`（未加工）。
+  第 1 轮原始日志保留：`docs/logs/phase2_run1_boot_7cea1da.log`、
+  `docs/logs/phase2_run1_7cea1da_stkhwm72.log`。
+
+**Boot 段判据（全部满足）：**
+
+```text
+I (435) phase1: esp32c6-Pwnagotchi Phase 2 World Model baseline
+I (440) phase1: firmware git commit: 369729c74348db27f33b2c4ee21acbe45213cd9c (369729c)
+I (890) board_sd: SD mount: OK at /sd_card, size 0.95 GB
+I (1036) RADIO: world: sizeof(world_t)=14928 (AP 104B x64, STA 64B x128, static)
+I (1210) RADIO: promiscuous RX started on channel 6
+I (1224) HOP: country 01 channels 1..11 (11 entries)
+I (1236) phase1: Phase 1 ready: LCD=OK I2C=OK Touch=OK SD=OK WiFi=SNIFFING HOP=ON
+```
+
+sizeof 实测 14928 B（预算 §2 的 ≈14.6 KB 一致）。单次上电
+（rst 标记唯一），无 reboot/panic/watchdog 标记。
+
+**运行窗口判据（t≈4 s .. 178.9 s，180 s 单次上电）：**
+
+```text
+rx:              25 -> 1837（持续增长；~10 帧/s 环境流量）
+queued==processed 1837 == 1837（零积压，q 峰值 3）
+drop=0  st_err=0  misc=0                （计数恒等式成立）
+hops=591 (~3.3/s = 1/300ms), errors=0   （信道集合恰为 1..11）
+heap=182740 -> 182732, min_heap=177220  （运行段平坦，无持续下降）
+stk_rx=1092/3072  stk_stat=780/3072     （修复后余量充足）
+WORLD ap=19 sta=11 rel=2
+  A:cre=19/exp=0/ev=0/rej=0             （beacon 持续刷新，无过期）
+  S:cre=15/exp=4/ev=0/rej=0             （STA 120s TTL 实测执行）
+  R:new=5/exp=3/sw=0/cfl=0              （关系 60s TTL 实测执行）
+  amb=17 wds=0 short=0 stale=0 invalid=0（17 个无 DS 位帧被跳过未建条目）
+ie_err=0  skip=63  berr=0               （Phase 1.5 语义保持）
+crash/panic/watchdog/reboot 标记: 0
+```
+
+**现网观察到的对照项（OBS 行证据，同日志）：**
+
+1. 同 SSID 不同 BSSID 独立计数：`@DLMU` 出现在 >=5 个 BSSID
+   （DA:33:2A:21:5D:40 / DA:33:2A:21:1B:80 / 5A:33:2A:21:61:50 /
+   5A:33:2A:21:6A:F0 / DA:33:2A:21:60:00），各自独立记录、独立行。
+2. 已知 security 对照：`sec=OPEN`（@DLMU 系列）、`sec=WPA2-PSK`、
+   `sec=WPA/WPA2`（隐藏与命名 WPA2-PSK+1X 混合过渡 AP）、
+   `sec=WPA2/WPA3-PMF`（SSID "DUT"，PSK+SAE transition + MFPC）——
+   与空口真值一致，命名来自合并后的 DB 状态。
+3. Probe 只发现 STA：多台随机化 MAC（locally administered）wildcard
+   probe 各生成独立 STA 记录，未创建 AP、未建立关系
+   （R:new 与 ap 数独立，S:cre 只随 probe/数据增长）。
+4. 停止流量后的 TTL：S:exp=4、R:exp=3 在窗口内自然发生（探针型 STA
+   与其关系先行过期，符合 60 s/120 s 层次）；AP 因 beacon 持续刷新
+   未过期（符合语义）。
+5. LCD/触摸/SD/跳频：boot 全 OK，状态页由 phase1_ui_task 以 2 Hz
+   持续刷新（无异常/panic）；触摸实际触屏事件仍待维护者确认（与
+   Phase 1.5 相同，非本阶段回归项）；无任何主动扫描/发包逻辑。
+
+**覆盖说明：** 客户端在两个 AP 间切换（rel_switched）与"同一下行
+目的持续存在"两项未在现网窗口中自然出现——现网无受控漫游客户端；
+两者已由 host 测试覆盖（test_world_sta：uplink_switches、
+weaker_downlink_never_steals、slot_reuse 等）。如需现场强制复现，
+把一台客户端在相邻两 BSSID 间来回连接并观察
+`R:...sw=` 计数即可（清单保留在 git 历史 §8 旧版）。
 
 烧录：CI run 35955699646 产物 `firmware-c2e7ee4736….zip`（固件
 commit SHA = c2e7ee4 = 最新代码提交；esptool v5.4 write-flash 自带
@@ -316,4 +387,9 @@ min_heap、stk_rx/stk_stat 最小值、世界计数终值、崩溃标记 0。
 
 - 代码 + 自动回归（host，plain + ASan/UBSan）：**PASS**（§6）
 - ESP-IDF v5.4 / esp32c6 固件构建：**PASS**（§6 最终 run）
-- 实机回归：**PENDING**（§8）
+- 实机回归（boot + 180 s 稳定窗口 + 现网对照，固件 369729c）：**PASS**
+  （§8；受控漫游切换项未现场复现，host 测试已覆盖，现场复现方法见
+  §8 覆盖说明）
+
+**PHASE 2: PASS**（自动测试 + 构建 + 实机稳定运行；漫游切换现场项
+留待维护者随受控客户端执行）

@@ -382,7 +382,7 @@ scanning...
 CH=6 BSSID=AA:BB:CC:DD:EE:FF RSSI=-48 SSID=example
 ```
 
-### Phase 2 - World Model（已实现；自动测试/构建全绿，实机验收 PENDING）
+### Phase 2 - World Model（已完成，实机验收 PASS；受控漫游切换项留待现场复现）
 
 实现：`components/world`（AP DB / STA DB / 观察关系 / TTL / security
 parser）+ 最小 UI/统计接入。记录见
