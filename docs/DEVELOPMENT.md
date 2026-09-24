@@ -382,7 +382,13 @@ scanning...
 CH=6 BSSID=AA:BB:CC:DD:EE:FF RSSI=-48 SSID=example
 ```
 
-### Phase 1.5 - 缺陷修复与回归验收（当前阶段）
+### Phase 2 - World Model（已实现；自动测试/构建全绿，实机验收 PENDING）
+
+实现：`components/world`（AP DB / STA DB / 观察关系 / TTL / security
+parser）+ 最小 UI/统计接入。记录见
+[docs/PHASE2_WORLD_MODEL.md](PHASE2_WORLD_MODEL.md)。
+
+### Phase 1.5 - 缺陷修复与回归验收（已完成，PASS）
 
 目标：
 

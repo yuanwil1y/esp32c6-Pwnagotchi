@@ -9,6 +9,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <inttypes.h>
+#include <stdio.h>
 #include <string.h>
 
 #include "esp_event.h"
@@ -62,6 +63,8 @@ static bool s_initialized;
 static world_t s_world;
 static SemaphoreHandle_t s_world_mux;
 static uint64_t s_last_world_maint;
+static TaskHandle_t s_rx_task_handle;
+static TaskHandle_t s_stats_task_handle;
 
 static uint64_t radio_now_ms(void)
 {
@@ -109,6 +112,29 @@ static void world_feed_sta_tx(const uint8_t mac[6], uint64_t now_ms,
     }
     world_on_sta_mgmt_tx(&s_world, mac, now_ms, channel, rssi);
     xSemaphoreGive(s_world_mux);
+}
+
+/* Fill `name` with the DB-side security name of a BSSID (bounded page
+ * scan under the mutex, <= WORLD_AP_MAX value copies; only called on the
+ * rate-limited observation log path). Returns false when not tracked. */
+static bool world_ap_security_name(const uint8_t bssid[6], char *name,
+                                   size_t name_size)
+{
+    bool found = false;
+    if (xSemaphoreTake(s_world_mux, pdMS_TO_TICKS(10)) != pdTRUE) {
+        return false;
+    }
+    for (uint16_t i = 0; i < WORLD_AP_MAX; i++) {
+        world_ap_view_t v;
+        if (world_get_ap(&s_world, i, &v) &&
+            memcmp(v.ap.bssid, bssid, 6) == 0) {
+            world_security_name(&v.ap, name, name_size);
+            found = true;
+            break;
+        }
+    }
+    xSemaphoreGive(s_world_mux);
+    return found;
 }
 
 /* TTL/eviction housekeeping; safe to call with or without traffic. The
@@ -501,16 +527,24 @@ static void handle_ap_observation(const radio_packet_t *pkt,
     char mac[18];
     ieee80211_format_mac(obs.bssid, mac, sizeof(mac));
 
+    /* Named security from the merged DB state (verified suites), not the
+     * per-observation coarse classification. */
+    char sec_name[32] = "UNKNOWN";
+    if (!world_ap_security_name(obs.bssid, sec_name, sizeof(sec_name))) {
+        snprintf(sec_name, sizeof(sec_name), "%s",
+                 ieee80211_security_name(sec));
+    }
+
     if (obs.hidden_ssid) {
         ESP_LOGI(TAG_OBS, "AP bssid=%s ssid=<hidden> rssi=%d rx_ch=%u adv_ch=%u bintv=%u sec=%s",
                  mac, obs.rssi, obs.rx_channel, obs.advertised_channel,
-                 obs.beacon_interval, ieee80211_security_name(sec));
+                 obs.beacon_interval, sec_name);
     } else {
         char printable[IEEE80211_SSID_BUF_LEN];
         ieee80211_ssid_to_printable(obs.ssid, obs.ssid_len, printable, sizeof(printable));
         ESP_LOGI(TAG_OBS, "AP bssid=%s ssid=\"%s\" rssi=%d rx_ch=%u adv_ch=%u bintv=%u sec=%s",
                  mac, printable, obs.rssi, obs.rx_channel, obs.advertised_channel,
-                 obs.beacon_interval, ieee80211_security_name(sec));
+                 obs.beacon_interval, sec_name);
     }
 }
 
@@ -670,13 +704,18 @@ static void radio_stats_task(void *arg)
                  " drop=%" PRIu32 " trunc=%" PRIu32 " st_err=%" PRIu32
                  " mgmt=%" PRIu32 " data=%" PRIu32 " ctrl=%" PRIu32
                  " misc=%" PRIu32 " q=%" PRIu32 "/%" PRIu32
-                 " heap=%" PRIu32 " min_heap=%" PRIu32,
+                 " heap=%" PRIu32 " min_heap=%" PRIu32
+                 " stk_rx=%u stk_stat=%u",
                  stats.rx.rx_total, stats.rx.rx_queued, stats.rx.rx_processed,
                  stats.rx.rx_dropped_pool + stats.rx.rx_dropped_queue,
                  stats.rx.rx_truncated, stats.rx.rx_state_errors,
                  stats.rx.rx_management, stats.rx.rx_data, stats.rx.rx_control,
                  stats.rx.rx_misc, stats.rx.queue_current, stats.rx.queue_peak,
-                 esp_get_free_heap_size(), esp_get_minimum_free_heap_size());
+                 esp_get_free_heap_size(), esp_get_minimum_free_heap_size(),
+                 s_rx_task_handle != NULL
+                     ? (unsigned)uxTaskGetStackHighWaterMark(s_rx_task_handle) : 0u,
+                 s_stats_task_handle != NULL
+                     ? (unsigned)uxTaskGetStackHighWaterMark(s_stats_task_handle) : 0u);
 
         ESP_LOGI(TAG_80211,
                  "total=%" PRIu32 " err=%" PRIu32 " invalid=%" PRIu32
@@ -878,16 +917,20 @@ esp_err_t wifi_sniffer_init(void)
     }
 
     if (xTaskCreate(radio_rx_task, "radio_rx", RADIO_RX_TASK_STACK,
-                    NULL, RADIO_RX_TASK_PRIO, NULL) != pdPASS) {
+                    NULL, RADIO_RX_TASK_PRIO, &s_rx_task_handle) != pdPASS) {
         ESP_LOGE(TAG, "radio_rx task creation failed");
         return ESP_ERR_NO_MEM;
     }
     if (xTaskCreate(radio_stats_task, "radio_stat", RADIO_STATS_TASK_STACK,
-                    NULL, RADIO_STATS_TASK_PRIO, NULL) != pdPASS) {
+                    NULL, RADIO_STATS_TASK_PRIO, &s_stats_task_handle) != pdPASS) {
         ESP_LOGE(TAG, "radio_stat task creation failed");
         return ESP_ERR_NO_MEM;
     }
 
+    ESP_LOGI(TAG,
+             "world: sizeof(world_t)=%u (AP %uB x%u, STA %uB x%u, static)",
+             (unsigned)sizeof(world_t), (unsigned)sizeof(world_ap_t),
+             WORLD_AP_MAX, (unsigned)sizeof(world_sta_t), WORLD_STA_MAX);
     s_initialized = true;
     ESP_LOGI(TAG, "wifi driver ready (pool=%d pkts x %d B, queues=%d)",
              RADIO_PACKET_POOL_SIZE, (int)sizeof(radio_packet_t),

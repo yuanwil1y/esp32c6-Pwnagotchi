@@ -41,10 +41,13 @@ static void phase1_ui_task(void *arg)
 
         radio_stats_t stats;
         wifi_sniffer_get_stats(&stats);
-        /* Phase 1.5: the status line shows the dedup cache occupancy
-         * (0..32), explicitly not a total-unique-AP count. */
+        /* Phase 2: the status screen shows the World Model's TTL-aged
+         * current counts (AP records, observed station addresses, valid
+         * relations), replacing the Phase 1.5 log-cache occupancy. */
         (void)board_display_update_phase1(stats.current_channel,
-                                          stats.ap_cache_occupied,
+                                          stats.ap_db_current,
+                                          stats.sta_db_current,
+                                          stats.rel_db_current,
                                           stats.rx.rx_total,
                                           stats.rx.rx_dropped_pool +
                                           stats.rx.rx_dropped_queue);
@@ -53,7 +56,7 @@ static void phase1_ui_task(void *arg)
 
 void app_main(void)
 {
-    ESP_LOGI(TAG, "esp32c6-Pwnagotchi Phase 1.5 bugfix baseline");
+    ESP_LOGI(TAG, "esp32c6-Pwnagotchi Phase 2 World Model baseline");
     ESP_LOGI(TAG, "firmware git commit: %s (%s)", APP_BUILD_GIT_SHA, APP_BUILD_GIT_SHORT);
 
     ESP_ERROR_CHECK(board_backlight_init());
