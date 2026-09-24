@@ -1,8 +1,11 @@
 # Phase 3C — Bounded asynchronous SD logger
 
-Status: implementation and host/IDF CI are pending on the Phase 3C branch.
-Real SD write, controlled stop, extracted-file TShark readback, and live
-display/hopping/heap observation are **PENDING** until performed on the device.
+Status: Phase 3C host/IDF CI passed for commit `d921f036d5a3a6355fbe26cd3e6f084da0aa0fa7`
+on Actions run [35991522213](https://github.com/yuanwil1y/esp32c6-Pwnagotchi/actions/runs/35991522213).
+The first live boot of that image exposed an `app_main` stack-protection fault
+after SD mount/self-test and logger initialization. Startup-stack correction
+and revalidation are in progress. Real capture, controlled stop, extracted-file
+TShark readback, and live display/hopping/heap observation remain **PENDING**.
 The user confirmed that an SD card is inserted and authorized creating new
 uniquely named files. No existing file is formatted, deleted, or overwritten.
 
@@ -32,6 +35,40 @@ uniquely named files. No existing file is formatted, deleted, or overwritten.
 
 No Phase 2, Phase 3A, or Phase 3B fixes are rewritten by this stage. The
 firmware display label is advanced to Phase 3C.
+
+## Current CI and first hardware attempt
+
+At `d921f036d5a3a6355fbe26cd3e6f084da0aa0fa7`, Actions run 35991522213 passed
+the ESP-IDF v5.4 ESP32-C6 build, `idf.py size size-components size-files`, and
+the complete host suite (13/13 EAPOL envelope cases and 12/12 logger state
+cases, plain and ASan/UBSan). TShark/capinfos 4.2.2 independently read both the
+11-frame Phase 3B reference and the logger-produced synthetic record. The
+synthetic row was `cap_len=527`, `frame.len=1035`, time `0.000100000`, channel
+2437, RSSI -47, expected WLAN addresses, EAPOL type 1, with no malformed
+diagnostic; its sidecar showed accepted=serialized=written=flushed=1. Original
+host/build outputs are in `docs/logs/phase3c_*_35991522213.log`.
+
+The firmware image size was 1,233,216 B, with the 4 MiB app partition reporting
+71% free. Linker size reported total `.bss` 64,688 B; the `libstorage.a`
+contribution was 10,238 B, including 10,238 B attributed to
+`sd_logger_idf.c.obj`. The target logger core reported `sizeof(s_core)=10,184`
+B at startup. The initial main-task stack was the IDF default 3,584 B. The
+device passed LCD/touch bring-up, SD mount, exclusive-file write/readback and
+logger task creation, then immediately raised a stack protection fault in
+`main` before Wi-Fi/sniffer startup. The 29,627-byte raw COM3 log is kept
+outside the repository at
+`D:\pwn\phase3c-evidence\35991522213\phase3c-com3-after-flash.raw.log`
+(SHA-256 `A4C476F57E5024963CB8A61D82D1BB774D18E21F5448DBEDEA0734588005E61F`).
+The device was disconnected while the startup stack is corrected; no EAPOL
+capture was started. Automatic reboot created several newly named self-test
+probe files; the old fixed `/sd_card/phase0_test.txt` path was never opened for
+write, and no existing file was overwritten or deleted.
+
+The correction sets `CONFIG_ESP_MAIN_TASK_STACK_SIZE=8192` because the added
+SD/console initialization path exceeded the default main-task stack. This adds
+4,608 B to the temporary main-task stack allocation during startup; FreeRTOS
+releases it when `app_main` returns. Corrected firmware CI and hardware
+revalidation are still pending.
 
 ## Ownership and data flow
 

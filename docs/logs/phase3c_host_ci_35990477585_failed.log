@@ -1,0 +1,706 @@
+Host regression tests	Set up job	﻿2026-09-24T11:00:21.7760629Z Current runner version: '2.337.0'
+Host regression tests	Set up job	2026-09-24T11:00:21.7786968Z ##[group]Runner Image Provisioner
+Host regression tests	Set up job	2026-09-24T11:00:21.7788018Z Hosted Compute Agent
+Host regression tests	Set up job	2026-09-24T11:00:21.7788746Z Version: 20260828.587
+Host regression tests	Set up job	2026-09-24T11:00:21.7789459Z Commit: abac92662cab4cc7352de4f9f9d2e2419aad9c29
+Host regression tests	Set up job	2026-09-24T11:00:21.7790264Z Build Date: 2026-08-28T16:44:25Z
+Host regression tests	Set up job	2026-09-24T11:00:21.7791069Z Worker ID: {3762561a-3193-4ebf-90bb-268a72acd670}
+Host regression tests	Set up job	2026-09-24T11:00:21.7792116Z Azure Region: westcentralus
+Host regression tests	Set up job	2026-09-24T11:00:21.7792856Z ##[endgroup]
+Host regression tests	Set up job	2026-09-24T11:00:21.7794525Z ##[group]Operating System
+Host regression tests	Set up job	2026-09-24T11:00:21.7795187Z Ubuntu
+Host regression tests	Set up job	2026-09-24T11:00:21.7795812Z 24.04.5
+Host regression tests	Set up job	2026-09-24T11:00:21.7796335Z LTS
+Host regression tests	Set up job	2026-09-24T11:00:21.7796879Z ##[endgroup]
+Host regression tests	Set up job	2026-09-24T11:00:21.7797497Z ##[group]Runner Image
+Host regression tests	Set up job	2026-09-24T11:00:21.7798118Z Image: ubuntu-24.04
+Host regression tests	Set up job	2026-09-24T11:00:21.7798763Z Version: 20260907.300.1
+Host regression tests	Set up job	2026-09-24T11:00:21.7799897Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260907.300/images/ubuntu/Ubuntu2404-Readme.md
+Host regression tests	Set up job	2026-09-24T11:00:21.7802193Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260907.300
+Host regression tests	Set up job	2026-09-24T11:00:21.7803299Z ##[endgroup]
+Host regression tests	Set up job	2026-09-24T11:00:21.7804608Z ##[group]GITHUB_TOKEN Permissions
+Host regression tests	Set up job	2026-09-24T11:00:21.7806493Z Contents: read
+Host regression tests	Set up job	2026-09-24T11:00:21.7807733Z Metadata: read
+Host regression tests	Set up job	2026-09-24T11:00:21.7808324Z Packages: read
+Host regression tests	Set up job	2026-09-24T11:00:21.7808924Z ##[endgroup]
+Host regression tests	Set up job	2026-09-24T11:00:21.7811013Z Secret source: Actions
+Host regression tests	Set up job	2026-09-24T11:00:21.7812379Z Cache mode: write
+Host regression tests	Set up job	2026-09-24T11:00:21.7813294Z Prepare workflow directory
+Host regression tests	Set up job	2026-09-24T11:00:21.8163308Z Prepare all required actions
+Host regression tests	Set up job	2026-09-24T11:00:21.8210759Z Getting action download info
+Host regression tests	Set up job	2026-09-24T11:00:22.1524854Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+Host regression tests	Set up job	2026-09-24T11:00:22.2715402Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+Host regression tests	Set up job	2026-09-24T11:00:22.4867506Z Complete job name: Host regression tests
+Host regression tests	Checkout	﻿2026-09-24T11:00:22.5627770Z ##[group]Run actions/checkout@v4
+Host regression tests	Checkout	2026-09-24T11:00:22.5628695Z with:
+Host regression tests	Checkout	2026-09-24T11:00:22.5629181Z   repository: yuanwil1y/esp32c6-Pwnagotchi
+Host regression tests	Checkout	2026-09-24T11:00:22.5633270Z   token: ***
+Host regression tests	Checkout	2026-09-24T11:00:22.5633720Z   ssh-strict: true
+Host regression tests	Checkout	2026-09-24T11:00:22.5634158Z   ssh-user: git
+Host regression tests	Checkout	2026-09-24T11:00:22.5634608Z   persist-credentials: true
+Host regression tests	Checkout	2026-09-24T11:00:22.5635089Z   clean: true
+Host regression tests	Checkout	2026-09-24T11:00:22.5635554Z   sparse-checkout-cone-mode: true
+Host regression tests	Checkout	2026-09-24T11:00:22.5636193Z   fetch-depth: 1
+Host regression tests	Checkout	2026-09-24T11:00:22.5636696Z   fetch-tags: false
+Host regression tests	Checkout	2026-09-24T11:00:22.5637159Z   show-progress: true
+Host regression tests	Checkout	2026-09-24T11:00:22.5637617Z   lfs: false
+Host regression tests	Checkout	2026-09-24T11:00:22.5638156Z   submodules: false
+Host regression tests	Checkout	2026-09-24T11:00:22.5638612Z   set-safe-directory: true
+Host regression tests	Checkout	2026-09-24T11:00:22.5639125Z   allow-unsafe-pr-checkout: false
+Host regression tests	Checkout	2026-09-24T11:00:22.5639947Z ##[endgroup]
+Host regression tests	Checkout	2026-09-24T11:00:22.6677814Z Syncing repository: yuanwil1y/esp32c6-Pwnagotchi
+Host regression tests	Checkout	2026-09-24T11:00:22.6680462Z ##[group]Getting Git version info
+Host regression tests	Checkout	2026-09-24T11:00:22.6682163Z Working directory is '/home/runner/work/esp32c6-Pwnagotchi/esp32c6-Pwnagotchi'
+Host regression tests	Checkout	2026-09-24T11:00:22.6684233Z [command]/usr/bin/git version
+Host regression tests	Checkout	2026-09-24T11:00:22.6732464Z git version 2.55.0
+Host regression tests	Checkout	2026-09-24T11:00:22.6754314Z ##[endgroup]
+Host regression tests	Checkout	2026-09-24T11:00:22.6769256Z Temporarily overriding HOME='/home/runner/work/_temp/f3706e74-cebb-4fcd-ac20-5a6322256139' before making global git config changes
+Host regression tests	Checkout	2026-09-24T11:00:22.6771616Z Adding repository directory to the temporary git global config as a safe directory
+Host regression tests	Checkout	2026-09-24T11:00:22.6793168Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/esp32c6-Pwnagotchi/esp32c6-Pwnagotchi
+Host regression tests	Checkout	2026-09-24T11:00:22.6835805Z Deleting the contents of '/home/runner/work/esp32c6-Pwnagotchi/esp32c6-Pwnagotchi'
+Host regression tests	Checkout	2026-09-24T11:00:22.6850645Z ##[group]Initializing the repository
+Host regression tests	Checkout	2026-09-24T11:00:22.6852547Z [command]/usr/bin/git init /home/runner/work/esp32c6-Pwnagotchi/esp32c6-Pwnagotchi
+Host regression tests	Checkout	2026-09-24T11:00:22.6976133Z hint: Using 'master' as the name for the initial branch. This default branch name
+Host regression tests	Checkout	2026-09-24T11:00:22.6978195Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+Host regression tests	Checkout	2026-09-24T11:00:22.6979853Z hint: to use in all of your new repositories, which will suppress this warning,
+Host regression tests	Checkout	2026-09-24T11:00:22.6981090Z hint: call:
+Host regression tests	Checkout	2026-09-24T11:00:22.6981945Z hint:
+Host regression tests	Checkout	2026-09-24T11:00:22.6982768Z hint: 	git config --global init.defaultBranch <name>
+Host regression tests	Checkout	2026-09-24T11:00:22.6983798Z hint:
+Host regression tests	Checkout	2026-09-24T11:00:22.6985155Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+Host regression tests	Checkout	2026-09-24T11:00:22.6986680Z hint: 'development'. The just-created branch can be renamed via this command:
+Host regression tests	Checkout	2026-09-24T11:00:22.6988148Z hint:
+Host regression tests	Checkout	2026-09-24T11:00:22.6989016Z hint: 	git branch -m <name>
+Host regression tests	Checkout	2026-09-24T11:00:22.6989954Z hint:
+Host regression tests	Checkout	2026-09-24T11:00:22.6991075Z hint: Disable this message with "git config set advice.defaultBranchName false"
+Host regression tests	Checkout	2026-09-24T11:00:22.7000645Z Initialized empty Git repository in /home/runner/work/esp32c6-Pwnagotchi/esp32c6-Pwnagotchi/.git/
+Host regression tests	Checkout	2026-09-24T11:00:22.7010475Z [command]/usr/bin/git remote add origin https://github.com/yuanwil1y/esp32c6-Pwnagotchi
+Host regression tests	Checkout	2026-09-24T11:00:22.7063272Z ##[endgroup]
+Host regression tests	Checkout	2026-09-24T11:00:22.7064937Z ##[group]Disabling automatic garbage collection
+Host regression tests	Checkout	2026-09-24T11:00:22.7067094Z [command]/usr/bin/git config --local gc.auto 0
+Host regression tests	Checkout	2026-09-24T11:00:22.7101904Z ##[endgroup]
+Host regression tests	Checkout	2026-09-24T11:00:22.7103523Z ##[group]Setting up auth
+Host regression tests	Checkout	2026-09-24T11:00:22.7110414Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+Host regression tests	Checkout	2026-09-24T11:00:22.7143739Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Host regression tests	Checkout	2026-09-24T11:00:22.7542312Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Host regression tests	Checkout	2026-09-24T11:00:22.7584921Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Host regression tests	Checkout	2026-09-24T11:00:22.7827886Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+Host regression tests	Checkout	2026-09-24T11:00:22.7866226Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+Host regression tests	Checkout	2026-09-24T11:00:22.8089811Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+Host regression tests	Checkout	2026-09-24T11:00:22.8128445Z ##[endgroup]
+Host regression tests	Checkout	2026-09-24T11:00:22.8129571Z ##[group]Fetching the repository
+Host regression tests	Checkout	2026-09-24T11:00:22.8140261Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +31a159a249e6181a09e1a8d59be3a40a547ebc13:refs/remotes/origin/phase3c-sd-logger
+Host regression tests	Checkout	2026-09-24T11:00:23.4324409Z From https://github.com/yuanwil1y/esp32c6-Pwnagotchi
+Host regression tests	Checkout	2026-09-24T11:00:23.4326808Z  * [new ref]         31a159a249e6181a09e1a8d59be3a40a547ebc13 -> origin/phase3c-sd-logger
+Host regression tests	Checkout	2026-09-24T11:00:23.4331856Z ##[endgroup]
+Host regression tests	Checkout	2026-09-24T11:00:23.4334753Z ##[group]Determining the checkout info
+Host regression tests	Checkout	2026-09-24T11:00:23.4336426Z ##[endgroup]
+Host regression tests	Checkout	2026-09-24T11:00:23.4343125Z [command]/usr/bin/git sparse-checkout disable
+Host regression tests	Checkout	2026-09-24T11:00:23.4400512Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+Host regression tests	Checkout	2026-09-24T11:00:23.4439334Z ##[group]Checking out the ref
+Host regression tests	Checkout	2026-09-24T11:00:23.4440517Z [command]/usr/bin/git checkout --progress --force -B phase3c-sd-logger refs/remotes/origin/phase3c-sd-logger
+Host regression tests	Checkout	2026-09-24T11:00:23.4579895Z Switched to a new branch 'phase3c-sd-logger'
+Host regression tests	Checkout	2026-09-24T11:00:23.4584823Z branch 'phase3c-sd-logger' set up to track 'origin/phase3c-sd-logger'.
+Host regression tests	Checkout	2026-09-24T11:00:23.4591918Z ##[endgroup]
+Host regression tests	Checkout	2026-09-24T11:00:23.4636568Z [command]/usr/bin/git log -1 --format=%H
+Host regression tests	Checkout	2026-09-24T11:00:23.4663842Z 31a159a249e6181a09e1a8d59be3a40a547ebc13
+Host regression tests	Run host tests (plain + ASan/UBSan)	﻿2026-09-24T11:00:23.4917139Z ##[group]Run bash tests/host/run.sh
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:23.4918565Z ^[[36;1mbash tests/host/run.sh^[[0m
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:23.4959763Z shell: /usr/bin/bash -e {0}
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:23.4961140Z ##[endgroup]
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:23.5090715Z == host tests (plain) ==
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:25.9514055Z RUN  parse_fc_basic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:25.9514614Z PASS parse_fc_basic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:25.9514984Z RUN  parse_short_rejected
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:25.9515365Z PASS parse_short_rejected
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:25.9515761Z RUN  beacon_minimal_complete
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:25.9516148Z PASS beacon_minimal_complete
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:25.9517247Z RUN  beacon_typical_fields
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:25.9517661Z PASS beacon_typical_fields
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:25.9518019Z RUN  ssid_lengths
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:25.9518342Z PASS ssid_lengths
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:25.9518727Z RUN  ssid_all_zero_is_hidden
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:25.9519175Z PASS ssid_all_zero_is_hidden
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:25.9519573Z RUN  duplicate_ssid_first_wins
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:25.9519944Z PASS duplicate_ssid_first_wins
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:25.9520417Z RUN  ds_param_validation
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:25.9520749Z PASS ds_param_validation
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:25.9521056Z RUN  trailing_byte_in_complete_body
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:25.9521424Z PASS trailing_byte_in_complete_body
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:25.9522183Z RUN  ie_body_overrun_complete_frame
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:25.9522547Z PASS ie_body_overrun_complete_frame
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:25.9522886Z RUN  capture_cut_inside_ie_body
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:25.9523214Z PASS capture_cut_inside_ie_body
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:25.9523547Z RUN  capture_cut_at_ie_boundary
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:25.9523896Z PASS capture_cut_at_ie_boundary
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:25.9524207Z RUN  fcs_never_walked_as_ie_513
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:25.9524512Z PASS fcs_never_walked_as_ie_513
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:25.9524826Z RUN  fcs_never_walked_as_ie_514
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:25.9525139Z PASS fcs_never_walked_as_ie_514
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:25.9525447Z RUN  capture_cut_inside_mac_body
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:25.9525781Z PASS capture_cut_inside_mac_body
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:25.9526128Z RUN  deep_parse_rejects_protocol_version_1
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:25.9526524Z PASS deep_parse_rejects_protocol_version_1
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:25.9526890Z RUN  deep_parse_rejects_order_bit
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:25.9527223Z PASS deep_parse_rejects_order_bit
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:25.9527586Z RUN  deep_parse_rejects_more_fragments
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:25.9527978Z PASS deep_parse_rejects_more_fragments
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:25.9528349Z RUN  deep_parse_rejects_short_fixed_body
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:25.9528727Z PASS deep_parse_rejects_short_fixed_body
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:25.9529076Z RUN  probe_req_parse_and_truncation
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:25.9529423Z PASS probe_req_parse_and_truncation
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:25.9529724Z 20/20 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:26.7088512Z RUN  rx_good_frame_flow
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:26.7088985Z PASS rx_good_frame_flow
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:26.7089289Z RUN  rx_timestamp_copy_delay_and_slot_reuse
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:26.7089623Z PASS rx_timestamp_copy_delay_and_slot_reuse
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:26.7089921Z RUN  rx_packet_pool_memory_budget
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:26.7090203Z PASS rx_packet_pool_memory_budget
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:26.7090524Z RUN  rx_drop_accounting
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:26.7090766Z PASS rx_drop_accounting
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:26.7091003Z RUN  rx_state_errors_never_leak_slots
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:26.7091291Z PASS rx_state_errors_never_leak_slots
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:26.7091570Z RUN  rx_misc_whitelist_no_payload_access
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:26.7092248Z PASS rx_misc_whitelist_no_payload_access
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:26.7092571Z RUN  rx_misc_defensive_even_with_bogus_payload_len
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:26.7092920Z PASS rx_misc_defensive_even_with_bogus_payload_len
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:26.7093253Z RUN  rx_zero_payload_mgmt_queued_and_counted
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:26.7093620Z PASS rx_zero_payload_mgmt_queued_and_counted
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:26.7093917Z RUN  rx_oversized_truncated_at_bound
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:26.7094187Z PASS rx_oversized_truncated_at_bound
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:26.7094451Z RUN  rx_parse_length_contract
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:26.7094703Z PASS rx_parse_length_contract
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:26.7094971Z RUN  rx_capture_view_fcs_and_body_truncation
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:26.7095615Z PASS rx_capture_view_fcs_and_body_truncation
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:26.7095882Z 11/11 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:27.3994394Z RUN  hostile_misc_null_payload_never_read
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:27.3995324Z PASS hostile_misc_null_payload_never_read
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:27.3995755Z RUN  hostile_unknown_type_never_read
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:27.3996147Z PASS hostile_unknown_type_never_read
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:27.3996530Z 2/2 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:28.1176816Z RUN  ap_insert_change_unchanged
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:28.1177472Z PASS ap_insert_change_unchanged
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:28.8248798Z RUN  ap_eviction_and_reappear
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:28.8249462Z PASS ap_eviction_and_reappear
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:28.8250006Z RUN  ap_incomplete_observation_skipped
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:28.8250671Z PASS ap_incomplete_observation_skipped
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:28.8251484Z RUN  ap_hidden_ssid_keeps_known_name
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:28.8252342Z PASS ap_hidden_ssid_keeps_known_name
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:28.8252773Z RUN  ap_absent_ds_keeps_cached_channel
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:28.8253163Z PASS ap_absent_ds_keeps_cached_channel
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:28.8253561Z RUN  ap_complete_observation_negative_evidence
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:28.8254002Z PASS ap_complete_observation_negative_evidence
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:28.8254376Z 6/6 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:28.8254633Z RUN  hopper_build_from_country
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:28.8254959Z PASS hopper_build_from_country
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:28.8255278Z RUN  hopper_err_classify
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:28.8255599Z PASS hopper_err_classify
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:28.8255924Z RUN  hopper_bounded_failure_policy
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:28.8256277Z PASS hopper_bounded_failure_policy
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:28.8256617Z RUN  hopper_log_throttle
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:28.8256913Z PASS hopper_log_throttle
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:28.8257676Z 4/4 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:29.6139524Z RUN  world_create_and_merge
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:29.6140102Z PASS world_create_and_merge
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:29.6140450Z RUN  world_hidden_never_clears_name
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:29.6140927Z PASS world_hidden_never_clears_name
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:29.6141512Z RUN  world_embedded_nul_and_raw_bytes
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:29.6142710Z PASS world_embedded_nul_and_raw_bytes
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:29.6143322Z RUN  world_truncated_observation_partial_update
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:29.6143780Z PASS world_truncated_observation_partial_update
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:29.6144190Z RUN  world_truncated_ds_ie_still_applies
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:29.6144589Z PASS world_truncated_ds_ie_still_applies
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:29.6211491Z RUN  world_complete_observation_is_authoritative
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:29.6212241Z PASS world_complete_observation_is_authoritative
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:29.6212567Z RUN  world_invalid_bssid_rejected
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:29.6212831Z PASS world_invalid_bssid_rejected
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:29.6213111Z RUN  world_stale_timestamp_ignored
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:29.6213374Z PASS world_stale_timestamp_ignored
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:29.6213633Z RUN  world_ttl_expiry_edges
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:29.6213873Z PASS world_ttl_expiry_edges
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:29.6214122Z RUN  world_maintenance_without_traffic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:29.6214418Z PASS world_maintenance_without_traffic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:29.6214696Z RUN  world_capacity_evicts_oldest
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:29.6214948Z PASS world_capacity_evicts_oldest
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:29.6215381Z RUN  world_eviction_tie_breaks_to_lowest_slot
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:29.6215693Z PASS world_eviction_tie_breaks_to_lowest_slot
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:29.6216015Z RUN  world_full_table_sweeps_expired_before_evicting
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:29.6216355Z PASS world_full_table_sweeps_expired_before_evicting
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:29.6216663Z RUN  world_loop_churn_bounded
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:29.6217510Z PASS world_loop_churn_bounded
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:29.6218286Z RUN  world_page_export_bounds
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:29.6218825Z PASS world_page_export_bounds
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:29.6219342Z RUN  world_parser_to_world_end_to_end
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:29.6219870Z PASS world_parser_to_world_end_to_end
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:29.6220357Z 16/16 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:30.3380714Z RUN  data_addrs_four_ds_combinations
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:30.3381424Z PASS data_addrs_four_ds_combinations
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:30.3382990Z RUN  data_addrs_header_length_math
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:30.3383657Z PASS data_addrs_header_length_math
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:30.3384185Z RUN  data_addrs_short_headers_rejected
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:30.3384753Z PASS data_addrs_short_headers_rejected
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:30.3385112Z RUN  data_addrs_protocol_guards
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:30.3385441Z PASS data_addrs_protocol_guards
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:30.3385803Z RUN  data_addrs_protected_frame_header_visible
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:30.3386235Z PASS data_addrs_protected_frame_header_visible
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:30.3386710Z RUN  data_addrs_broadcast_multicast_parsed_but_unfiltered
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:30.3387219Z PASS data_addrs_broadcast_multicast_parsed_but_unfiltered
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:30.3387628Z 6/6 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:31.1564936Z RUN  sta_uplink_discovers_sta_and_provisional_ap
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:31.1565584Z PASS sta_uplink_discovers_sta_and_provisional_ap
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:31.1566103Z RUN  sta_downlink_rssi_belongs_to_ap
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:31.1574809Z PASS sta_downlink_rssi_belongs_to_ap
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:31.1575514Z RUN  sta_up_and_down_same_sta_single_record
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:31.1576072Z PASS sta_up_and_down_same_sta_single_record
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:31.1576606Z RUN  sta_beacon_confirms_provisional_ap
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:31.1577113Z PASS sta_beacon_confirms_provisional_ap
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:31.1577626Z RUN  sta_broadcast_and_invalid_destinations
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:31.1578148Z PASS sta_broadcast_and_invalid_destinations
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:31.1578651Z RUN  sta_probe_discovers_sta_only
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:31.1579123Z PASS sta_probe_discovers_sta_only
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:31.1579565Z RUN  sta_mgmt_tx_records_sta
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:31.1579985Z PASS sta_mgmt_tx_records_sta
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:31.1580406Z RUN  sta_uplink_switches_to_newer_ap
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:31.1580878Z PASS sta_uplink_switches_to_newer_ap
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:31.1581365Z RUN  sta_weaker_downlink_never_steals_binding
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:31.1582135Z PASS sta_weaker_downlink_never_steals_binding
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:31.1582654Z RUN  sta_equal_strength_freshness_wins
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:31.1583146Z PASS sta_equal_strength_freshness_wins
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:31.1583630Z RUN  sta_uplink_upgrades_downlink_evidence
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:31.1584149Z PASS sta_uplink_upgrades_downlink_evidence
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:31.1584621Z RUN  sta_relation_ttl_before_sta_ttl
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:31.1585063Z PASS sta_relation_ttl_before_sta_ttl
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:31.1585512Z RUN  sta_sta_ttl_removes_record
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:31.1585936Z PASS sta_sta_ttl_removes_record
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:31.1586390Z RUN  sta_ap_expiry_unbinds_but_keeps_sta
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:31.1586899Z PASS sta_ap_expiry_unbinds_but_keeps_sta
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:31.1587380Z RUN  sta_stale_data_ignored
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:31.1587643Z PASS sta_stale_data_ignored
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:31.1587915Z RUN  sta_ap_slot_reuse_never_dangles
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:31.1588221Z PASS sta_ap_slot_reuse_never_dangles
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:31.1588684Z RUN  sta_weak_creators_never_evict
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:31.1588998Z PASS sta_weak_creators_never_evict
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:31.1589304Z RUN  sta_data_ambiguous_and_wds_counted
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:31.1589629Z PASS sta_data_ambiguous_and_wds_counted
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:31.1589939Z RUN  sta_parser_to_world_data_end_to_end
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:31.1590271Z PASS sta_parser_to_world_data_end_to_end
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:31.1590589Z RUN  sta_relation_churn_invariants
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:31.1590873Z PASS sta_relation_churn_invariants
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:31.1591143Z 20/20 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:32.0498138Z RUN  sec_rsn_psk
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:32.0498624Z PASS sec_rsn_psk
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:32.0499050Z RUN  sec_rsn_enterprise_sae_owe_transition
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:32.0499619Z PASS sec_rsn_enterprise_sae_owe_transition
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:32.0500136Z RUN  sec_wpa_vendor_psk
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:32.0500598Z PASS sec_wpa_vendor_psk
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:32.0501147Z RUN  sec_wpa_and_rsn_distinction
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:32.0501956Z PASS sec_wpa_and_rsn_distinction
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:32.0502492Z RUN  sec_unknown_suites_kept_unknown
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:32.0502929Z PASS sec_unknown_suites_kept_unknown
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:32.0503758Z RUN  sec_count_overflow_malformed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:32.0504232Z PASS sec_count_overflow_malformed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:32.0504574Z RUN  sec_bad_version_and_short_bodies
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:32.0505058Z PASS sec_bad_version_and_short_bodies
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:32.0505371Z RUN  sec_optional_tails
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:32.0505646Z PASS sec_optional_tails
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:32.0505918Z RUN  sec_long_beacon_cut_positions
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:32.0506234Z PASS sec_long_beacon_cut_positions
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:32.0506543Z RUN  sec_world_open_and_privacy
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:32.0506895Z PASS sec_world_open_and_privacy
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:32.0507242Z RUN  sec_world_valid_then_malformed_no_downgrade
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:32.0507646Z PASS sec_world_valid_then_malformed_no_downgrade
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:32.0508024Z RUN  sec_world_truncated_rsn_positive_evidence
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:32.0508381Z PASS sec_world_truncated_rsn_positive_evidence
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:32.0508713Z RUN  sec_world_security_names
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:32.0508999Z PASS sec_world_security_names
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:32.0509325Z RUN  sec_ie_commit_is_atomic_and_order_independent
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:32.0509706Z PASS sec_ie_commit_is_atomic_and_order_independent
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:32.0510126Z RUN  sec_world_partial_protocol_merge_preserves_other_protocol
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:32.0510592Z PASS sec_world_partial_protocol_merge_preserves_other_protocol
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:32.0510964Z 15/15 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:32.7547968Z RUN  mgmt_auth_request_vs_ap_response
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:32.7548453Z PASS mgmt_auth_request_vs_ap_response
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:32.7548823Z RUN  mgmt_auth_fixed_body_and_status
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:32.7549172Z PASS mgmt_auth_fixed_body_and_status
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:32.7549614Z RUN  mgmt_assoc_request_and_response
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:32.7550187Z PASS mgmt_assoc_request_and_response
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:32.7550769Z RUN  mgmt_invalid_or_ambiguous_rejected
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:32.7551369Z PASS mgmt_invalid_or_ambiguous_rejected
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:32.7552120Z 4/4 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:33.5467233Z RUN  eapol_plain_qos_order_direction
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:33.5467985Z PASS eapol_plain_qos_order_direction
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:33.5468824Z RUN  eapol_strict_llc_snap
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:33.5469460Z PASS eapol_strict_llc_snap
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:33.5469849Z RUN  eapol_null_protected
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:33.5470239Z PASS eapol_null_protected
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:33.5470655Z RUN  eapol_unsupported_layouts_fragments
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:33.5471215Z PASS eapol_unsupported_layouts_fragments
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:33.5472117Z RUN  eapol_versions_lengths_padding_short
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:33.5472779Z PASS eapol_versions_lengths_padding_short
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:33.5473333Z RUN  eapol_key_bounds_classification
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:33.5473902Z PASS eapol_key_bounds_classification
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:33.5474458Z RUN  eapol_capture_truncation
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:33.5474966Z PASS eapol_capture_truncation
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:33.5475500Z RUN  eapol_stats_semantics
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:33.5475962Z PASS eapol_stats_semantics
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:33.5476377Z 8/8 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:34.3589491Z RUN  pcap_global_header_golden
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:34.3590151Z PASS pcap_global_header_golden
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:34.3590673Z RUN  pcap_global_header_short_atomic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:34.3591306Z PASS pcap_global_header_short_atomic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:34.3592140Z RUN  pcap_channel_radiotap_golden
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:34.3592699Z PASS pcap_channel_radiotap_golden
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:34.3593232Z RUN  pcap_unknown_channel_omitted
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:34.3593753Z PASS pcap_unknown_channel_omitted
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:34.3594278Z RUN  pcap_timestamp_boundary_payload
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:34.3594826Z PASS pcap_timestamp_boundary_payload
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:34.3595241Z RUN  pcap_large_monotonic_and_range
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:34.3595597Z PASS pcap_large_monotonic_and_range
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:34.3595955Z RUN  pcap_timestamp_before_anchor_atomic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:34.3596344Z PASS pcap_timestamp_before_anchor_atomic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:34.3596707Z RUN  pcap_empty_short_mac
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:34.3597017Z PASS pcap_empty_short_mac
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:34.3597345Z RUN  pcap_invalid_and_contradictory_lengths
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:34.3598009Z PASS pcap_invalid_and_contradictory_lengths
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:34.3598390Z RUN  pcap_capacity_failure_atomic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:34.3598878Z PASS pcap_capacity_failure_atomic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:34.3599222Z RUN  pcap_fcs_and_capture_truncation
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:34.3599580Z PASS pcap_fcs_and_capture_truncation
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:34.3599927Z RUN  pcap_512_bound_max_record
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:34.3600247Z PASS pcap_512_bound_max_record
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:34.3600586Z RUN  pcap_reference_generate_synthetic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:34.3600919Z PASS pcap_reference_generate_synthetic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:35.2808327Z 13/13 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:35.2808852Z RUN  submit_copy_and_stop_sync
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:35.2810033Z PASS submit_copy_and_stop_sync
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:35.2810573Z RUN  queue_full_fifo_and_drain
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:35.2811069Z PASS queue_full_fifo_and_drain
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:35.2811392Z RUN  valid_mgmt_control_data
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:35.2812576Z     FAIL valid_mgmt_control_data: test_sd_logger.c:433: pcap->length == PCAP_SERIALIZER_FILE_HEADER_LEN + 3u * (PCAP_SERIALIZER_RECORD_HEADER_LEN + 15u + 24u)
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:35.2813506Z RUN  slow_writer_not_producer_lock
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:40.2813818Z     FAIL slow_writer_not_producer_lock: test_sd_logger.c:485: !sd_logger_core_try_submit(&s_core, &overflow)
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:40.2815107Z RUN  partial_write_offset
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:40.2815511Z PASS partial_write_offset
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:40.2815899Z RUN  partial_write_error_cleanup
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:40.2816504Z PASS partial_write_error_cleanup
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:40.2817083Z RUN  enospc_and_header_flush
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:40.2817783Z     FAIL enospc_and_header_flush: test_sd_logger.c:572: stats.storage_full_errors == 1u
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:40.2818498Z RUN  filename_conflict_restart
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:40.2818896Z PASS filename_conflict_restart
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:40.2819323Z RUN  rotation_session_limit
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:40.2820047Z PASS rotation_session_limit
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:40.2820872Z RUN  age_rotation_filtering
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:40.2821545Z PASS age_rotation_filtering
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:40.2822488Z RUN  pre_session_rx_timestamp
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:40.2822872Z PASS pre_session_rx_timestamp
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:40.2823242Z RUN  open_close_error_recovery
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:40.2823616Z PASS open_close_error_recovery
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:40.2824120Z 9/12 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:40.2824564Z SUITE FAILED: test_sd_logger (plain)
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:40.2825078Z == host tests (ASan+UBSan) ==
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:42.4173620Z RUN  parse_fc_basic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:42.4182682Z PASS parse_fc_basic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:42.4185465Z RUN  parse_short_rejected
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:42.4185903Z PASS parse_short_rejected
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:42.4186311Z RUN  beacon_minimal_complete
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:42.4186645Z PASS beacon_minimal_complete
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:42.4186918Z RUN  beacon_typical_fields
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:42.4296068Z PASS beacon_typical_fields
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:42.4296813Z RUN  ssid_lengths
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:42.4297595Z PASS ssid_lengths
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:42.4302069Z RUN  ssid_all_zero_is_hidden
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:42.4304208Z PASS ssid_all_zero_is_hidden
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:42.4304720Z RUN  duplicate_ssid_first_wins
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:42.4305261Z PASS duplicate_ssid_first_wins
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:42.4305753Z RUN  ds_param_validation
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:42.4306089Z PASS ds_param_validation
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:42.4306400Z RUN  trailing_byte_in_complete_body
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:42.4306760Z PASS trailing_byte_in_complete_body
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:42.4307104Z RUN  ie_body_overrun_complete_frame
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:42.4307445Z PASS ie_body_overrun_complete_frame
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:42.4307790Z RUN  capture_cut_inside_ie_body
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:42.4308111Z PASS capture_cut_inside_ie_body
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:42.4308429Z RUN  capture_cut_at_ie_boundary
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:42.4308752Z PASS capture_cut_at_ie_boundary
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:42.4309065Z RUN  fcs_never_walked_as_ie_513
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:42.4309380Z PASS fcs_never_walked_as_ie_513
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:42.4309708Z RUN  fcs_never_walked_as_ie_514
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:42.4310024Z PASS fcs_never_walked_as_ie_514
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:42.4310659Z RUN  capture_cut_inside_mac_body
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:42.4310993Z PASS capture_cut_inside_mac_body
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:42.4311472Z RUN  deep_parse_rejects_protocol_version_1
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:42.4312242Z PASS deep_parse_rejects_protocol_version_1
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:42.4312860Z RUN  deep_parse_rejects_order_bit
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:42.4313203Z PASS deep_parse_rejects_order_bit
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:42.4313547Z RUN  deep_parse_rejects_more_fragments
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:42.4313852Z PASS deep_parse_rejects_more_fragments
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:42.4314137Z RUN  deep_parse_rejects_short_fixed_body
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:42.4314417Z PASS deep_parse_rejects_short_fixed_body
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:42.4314686Z RUN  probe_req_parse_and_truncation
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:42.4314940Z PASS probe_req_parse_and_truncation
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:42.4315181Z 20/20 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:44.1571225Z RUN  rx_good_frame_flow
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:44.1583098Z PASS rx_good_frame_flow
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:44.1602747Z RUN  rx_timestamp_copy_delay_and_slot_reuse
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:44.1606736Z PASS rx_timestamp_copy_delay_and_slot_reuse
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:44.1607507Z RUN  rx_packet_pool_memory_budget
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:44.1608149Z PASS rx_packet_pool_memory_budget
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:44.1608741Z RUN  rx_drop_accounting
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:44.1609264Z PASS rx_drop_accounting
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:44.1609803Z RUN  rx_state_errors_never_leak_slots
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:44.1610412Z PASS rx_state_errors_never_leak_slots
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:44.1611045Z RUN  rx_misc_whitelist_no_payload_access
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:44.1611990Z PASS rx_misc_whitelist_no_payload_access
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:44.1612807Z RUN  rx_misc_defensive_even_with_bogus_payload_len
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:44.1641459Z PASS rx_misc_defensive_even_with_bogus_payload_len
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:44.1683022Z RUN  rx_zero_payload_mgmt_queued_and_counted
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:44.1712243Z PASS rx_zero_payload_mgmt_queued_and_counted
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:44.1712990Z RUN  rx_oversized_truncated_at_bound
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:44.1742376Z PASS rx_oversized_truncated_at_bound
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:44.1772309Z RUN  rx_parse_length_contract
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:44.1782683Z PASS rx_parse_length_contract
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:44.1783573Z RUN  rx_capture_view_fcs_and_body_truncation
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:44.1784413Z PASS rx_capture_view_fcs_and_body_truncation
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:44.1785225Z 11/11 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:45.7549947Z RUN  hostile_misc_null_payload_never_read
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:45.7550941Z PASS hostile_misc_null_payload_never_read
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:45.7551944Z RUN  hostile_unknown_type_never_read
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:45.7552485Z PASS hostile_unknown_type_never_read
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:45.7553392Z 2/2 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:47.3781517Z RUN  ap_insert_change_unchanged
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:47.3783503Z PASS ap_insert_change_unchanged
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:47.3784173Z RUN  ap_eviction_and_reappear
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:47.3785685Z PASS ap_eviction_and_reappear
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:47.3786226Z RUN  ap_incomplete_observation_skipped
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:47.3786782Z PASS ap_incomplete_observation_skipped
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:47.3787345Z RUN  ap_hidden_ssid_keeps_known_name
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:47.3787851Z PASS ap_hidden_ssid_keeps_known_name
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:47.3788368Z RUN  ap_absent_ds_keeps_cached_channel
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:47.3788877Z PASS ap_absent_ds_keeps_cached_channel
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:47.3789381Z RUN  ap_complete_observation_negative_evidence
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:47.3789964Z PASS ap_complete_observation_negative_evidence
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:47.3790491Z 6/6 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:49.0130803Z RUN  hopper_build_from_country
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:49.0134846Z PASS hopper_build_from_country
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:49.0135369Z RUN  hopper_err_classify
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:49.0135787Z PASS hopper_err_classify
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:49.0136203Z RUN  hopper_bounded_failure_policy
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:49.0136673Z PASS hopper_bounded_failure_policy
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:49.0137109Z RUN  hopper_log_throttle
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:49.0137510Z PASS hopper_log_throttle
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:49.0137898Z 4/4 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:50.8018810Z RUN  world_create_and_merge
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:50.8032486Z PASS world_create_and_merge
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:50.8052768Z RUN  world_hidden_never_clears_name
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:50.8072254Z PASS world_hidden_never_clears_name
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:50.8092408Z RUN  world_embedded_nul_and_raw_bytes
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:50.8122316Z PASS world_embedded_nul_and_raw_bytes
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:50.8142420Z RUN  world_truncated_observation_partial_update
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:50.8143274Z PASS world_truncated_observation_partial_update
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:50.8143921Z RUN  world_truncated_ds_ie_still_applies
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:50.8144516Z PASS world_truncated_ds_ie_still_applies
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:50.8145149Z RUN  world_complete_observation_is_authoritative
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:50.8145827Z PASS world_complete_observation_is_authoritative
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:50.8146448Z RUN  world_invalid_bssid_rejected
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:50.8146975Z PASS world_invalid_bssid_rejected
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:50.8147401Z RUN  world_stale_timestamp_ignored
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:50.8147738Z PASS world_stale_timestamp_ignored
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:50.8148079Z RUN  world_ttl_expiry_edges
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:50.8148386Z PASS world_ttl_expiry_edges
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:50.8148703Z RUN  world_maintenance_without_traffic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:50.8149077Z PASS world_maintenance_without_traffic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:50.8149437Z RUN  world_capacity_evicts_oldest
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:50.8149772Z PASS world_capacity_evicts_oldest
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:50.8150124Z RUN  world_eviction_tie_breaks_to_lowest_slot
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:50.8150528Z PASS world_eviction_tie_breaks_to_lowest_slot
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:50.8150955Z RUN  world_full_table_sweeps_expired_before_evicting
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:50.8151428Z PASS world_full_table_sweeps_expired_before_evicting
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:50.8152079Z RUN  world_loop_churn_bounded
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:50.8164260Z PASS world_loop_churn_bounded
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:50.8183039Z RUN  world_page_export_bounds
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:50.8192465Z PASS world_page_export_bounds
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:50.8193531Z RUN  world_parser_to_world_end_to_end
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:50.8195664Z PASS world_parser_to_world_end_to_end
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:50.8196379Z 16/16 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:52.4504536Z RUN  data_addrs_four_ds_combinations
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:52.4509921Z PASS data_addrs_four_ds_combinations
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:52.4510648Z RUN  data_addrs_header_length_math
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:52.4511438Z PASS data_addrs_header_length_math
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:52.4513143Z RUN  data_addrs_short_headers_rejected
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:52.4513928Z PASS data_addrs_short_headers_rejected
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:52.4514672Z RUN  data_addrs_protocol_guards
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:52.4515383Z PASS data_addrs_protocol_guards
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:52.4516161Z RUN  data_addrs_protected_frame_header_visible
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:52.4516713Z PASS data_addrs_protected_frame_header_visible
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:52.4517548Z RUN  data_addrs_broadcast_multicast_parsed_but_unfiltered
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:52.4518203Z PASS data_addrs_broadcast_multicast_parsed_but_unfiltered
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:52.4518969Z 6/6 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:54.3319010Z RUN  sta_uplink_discovers_sta_and_provisional_ap
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:54.3320972Z PASS sta_uplink_discovers_sta_and_provisional_ap
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:54.3321564Z RUN  sta_downlink_rssi_belongs_to_ap
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:54.3322954Z PASS sta_downlink_rssi_belongs_to_ap
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:54.3323504Z RUN  sta_up_and_down_same_sta_single_record
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:54.3324059Z PASS sta_up_and_down_same_sta_single_record
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:54.3324631Z RUN  sta_beacon_confirms_provisional_ap
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:54.3325066Z PASS sta_beacon_confirms_provisional_ap
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:54.3325407Z RUN  sta_broadcast_and_invalid_destinations
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:54.3325876Z PASS sta_broadcast_and_invalid_destinations
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:54.3326277Z RUN  sta_probe_discovers_sta_only
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:54.3326590Z PASS sta_probe_discovers_sta_only
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:54.3326933Z RUN  sta_mgmt_tx_records_sta
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:54.3327322Z PASS sta_mgmt_tx_records_sta
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:54.3327627Z RUN  sta_uplink_switches_to_newer_ap
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:54.3327956Z PASS sta_uplink_switches_to_newer_ap
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:54.3328763Z RUN  sta_weaker_downlink_never_steals_binding
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:54.3329255Z PASS sta_weaker_downlink_never_steals_binding
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:54.3329903Z RUN  sta_equal_strength_freshness_wins
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:54.3330221Z PASS sta_equal_strength_freshness_wins
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:54.3330616Z RUN  sta_uplink_upgrades_downlink_evidence
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:54.3331012Z PASS sta_uplink_upgrades_downlink_evidence
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:54.3331332Z RUN  sta_relation_ttl_before_sta_ttl
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:54.3331839Z PASS sta_relation_ttl_before_sta_ttl
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:54.3332345Z RUN  sta_sta_ttl_removes_record
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:54.3332779Z PASS sta_sta_ttl_removes_record
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:54.3333242Z RUN  sta_ap_expiry_unbinds_but_keeps_sta
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:54.3333713Z PASS sta_ap_expiry_unbinds_but_keeps_sta
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:54.3334019Z RUN  sta_stale_data_ignored
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:54.3334418Z PASS sta_stale_data_ignored
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:54.3334685Z RUN  sta_ap_slot_reuse_never_dangles
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:54.3334992Z PASS sta_ap_slot_reuse_never_dangles
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:54.3335287Z RUN  sta_weak_creators_never_evict
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:54.3335720Z PASS sta_weak_creators_never_evict
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:54.3336020Z RUN  sta_data_ambiguous_and_wds_counted
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:54.3336326Z PASS sta_data_ambiguous_and_wds_counted
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:54.3336769Z RUN  sta_parser_to_world_data_end_to_end
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:54.3337282Z PASS sta_parser_to_world_data_end_to_end
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:54.3337755Z RUN  sta_relation_churn_invariants
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:54.3338213Z PASS sta_relation_churn_invariants
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:54.3338627Z 20/20 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:56.3221561Z RUN  sec_rsn_psk
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:56.3223212Z PASS sec_rsn_psk
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:56.3223692Z RUN  sec_rsn_enterprise_sae_owe_transition
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:56.3224668Z PASS sec_rsn_enterprise_sae_owe_transition
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:56.3225151Z RUN  sec_wpa_vendor_psk
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:56.3225538Z PASS sec_wpa_vendor_psk
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:56.3225936Z RUN  sec_wpa_and_rsn_distinction
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:56.3226436Z PASS sec_wpa_and_rsn_distinction
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:56.3226914Z RUN  sec_unknown_suites_kept_unknown
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:56.3227431Z PASS sec_unknown_suites_kept_unknown
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:56.3227921Z RUN  sec_count_overflow_malformed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:56.3228357Z PASS sec_count_overflow_malformed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:56.3228788Z RUN  sec_bad_version_and_short_bodies
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:56.3229240Z PASS sec_bad_version_and_short_bodies
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:56.3229610Z RUN  sec_optional_tails
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:56.3230150Z PASS sec_optional_tails
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:56.3230692Z RUN  sec_long_beacon_cut_positions
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:56.3231185Z PASS sec_long_beacon_cut_positions
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:56.3231530Z RUN  sec_world_open_and_privacy
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:56.3232127Z PASS sec_world_open_and_privacy
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:56.3232643Z RUN  sec_world_valid_then_malformed_no_downgrade
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:56.3233141Z PASS sec_world_valid_then_malformed_no_downgrade
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:56.3233755Z RUN  sec_world_truncated_rsn_positive_evidence
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:56.3234355Z PASS sec_world_truncated_rsn_positive_evidence
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:56.3234890Z RUN  sec_world_security_names
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:56.3235317Z PASS sec_world_security_names
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:56.3235848Z RUN  sec_ie_commit_is_atomic_and_order_independent
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:56.3236222Z PASS sec_ie_commit_is_atomic_and_order_independent
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:56.3236583Z RUN  sec_world_partial_protocol_merge_preserves_other_protocol
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:56.3237131Z PASS sec_world_partial_protocol_merge_preserves_other_protocol
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:56.3237461Z 15/15 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:57.9127043Z RUN  mgmt_auth_request_vs_ap_response
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:57.9127852Z PASS mgmt_auth_request_vs_ap_response
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:57.9128361Z RUN  mgmt_auth_fixed_body_and_status
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:57.9128826Z PASS mgmt_auth_fixed_body_and_status
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:57.9129273Z RUN  mgmt_assoc_request_and_response
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:57.9129766Z PASS mgmt_assoc_request_and_response
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:57.9130617Z RUN  mgmt_invalid_or_ambiguous_rejected
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:57.9131367Z PASS mgmt_invalid_or_ambiguous_rejected
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:57.9132492Z 4/4 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:59.7015469Z RUN  eapol_plain_qos_order_direction
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:59.7017127Z PASS eapol_plain_qos_order_direction
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:59.7017752Z RUN  eapol_strict_llc_snap
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:59.7018293Z PASS eapol_strict_llc_snap
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:59.7018825Z RUN  eapol_null_protected
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:59.7019287Z PASS eapol_null_protected
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:59.7019721Z RUN  eapol_unsupported_layouts_fragments
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:59.7020474Z PASS eapol_unsupported_layouts_fragments
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:59.7021274Z RUN  eapol_versions_lengths_padding_short
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:59.7022462Z PASS eapol_versions_lengths_padding_short
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:59.7023313Z RUN  eapol_key_bounds_classification
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:59.7023733Z PASS eapol_key_bounds_classification
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:59.7024132Z RUN  eapol_capture_truncation
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:59.7024519Z PASS eapol_capture_truncation
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:59.7024917Z RUN  eapol_stats_semantics
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:59.7025352Z PASS eapol_stats_semantics
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:00:59.7025710Z 8/8 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:01.5698597Z RUN  pcap_global_header_golden
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:01.5699529Z PASS pcap_global_header_golden
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:01.5700148Z RUN  pcap_global_header_short_atomic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:01.5700781Z PASS pcap_global_header_short_atomic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:01.5701393Z RUN  pcap_channel_radiotap_golden
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:01.5701882Z PASS pcap_channel_radiotap_golden
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:01.5702865Z RUN  pcap_unknown_channel_omitted
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:01.5703313Z PASS pcap_unknown_channel_omitted
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:01.5703967Z RUN  pcap_timestamp_boundary_payload
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:01.5704428Z PASS pcap_timestamp_boundary_payload
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:01.5705086Z RUN  pcap_large_monotonic_and_range
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:01.5705529Z PASS pcap_large_monotonic_and_range
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:01.5706147Z RUN  pcap_timestamp_before_anchor_atomic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:01.5706496Z PASS pcap_timestamp_before_anchor_atomic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:01.5706855Z RUN  pcap_empty_short_mac
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:01.5707278Z PASS pcap_empty_short_mac
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:01.5707711Z RUN  pcap_invalid_and_contradictory_lengths
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:01.5708385Z PASS pcap_invalid_and_contradictory_lengths
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:01.5708882Z RUN  pcap_capacity_failure_atomic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:01.5709325Z PASS pcap_capacity_failure_atomic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:01.5709780Z RUN  pcap_fcs_and_capture_truncation
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:01.5710243Z PASS pcap_fcs_and_capture_truncation
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:01.5710705Z RUN  pcap_512_bound_max_record
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:01.5711111Z PASS pcap_512_bound_max_record
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:01.5711532Z RUN  pcap_reference_generate_synthetic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:01.5712393Z PASS pcap_reference_generate_synthetic
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:01.5712659Z 13/13 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:03.3860938Z RUN  submit_copy_and_stop_sync
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:03.3865616Z PASS submit_copy_and_stop_sync
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:03.3866082Z RUN  queue_full_fifo_and_drain
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:03.3866524Z PASS queue_full_fifo_and_drain
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:03.3866926Z RUN  valid_mgmt_control_data
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:03.3867999Z     FAIL valid_mgmt_control_data: test_sd_logger.c:433: pcap->length == PCAP_SERIALIZER_FILE_HEADER_LEN + 3u * (PCAP_SERIALIZER_RECORD_HEADER_LEN + 15u + 24u)
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:03.3869147Z RUN  slow_writer_not_producer_lock
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:08.3873835Z     FAIL slow_writer_not_producer_lock: test_sd_logger.c:485: !sd_logger_core_try_submit(&s_core, &overflow)
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:08.3874912Z RUN  partial_write_offset
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:08.3875545Z PASS partial_write_offset
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:08.3876138Z RUN  partial_write_error_cleanup
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:08.3876788Z PASS partial_write_error_cleanup
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:08.3877425Z RUN  enospc_and_header_flush
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:08.3878394Z     FAIL enospc_and_header_flush: test_sd_logger.c:572: stats.storage_full_errors == 1u
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:08.3879487Z RUN  filename_conflict_restart
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:08.3880114Z PASS filename_conflict_restart
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:08.3881226Z RUN  rotation_session_limit
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:08.3882097Z PASS rotation_session_limit
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:08.3882903Z RUN  age_rotation_filtering
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:08.3883344Z PASS age_rotation_filtering
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:08.3883651Z RUN  pre_session_rx_timestamp
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:08.3883976Z PASS pre_session_rx_timestamp
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:08.3884291Z RUN  open_close_error_recovery
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:08.3884608Z PASS open_close_error_recovery
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:08.3884903Z 9/12 passed
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:08.3913489Z SUITE FAILED: test_sd_logger (asan)
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:08.3914105Z HOST TESTS FAILED
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T11:01:08.3936218Z ##[error]Process completed with exit code 1.
+Host regression tests	Post Checkout	﻿2026-09-24T11:01:08.4090715Z Post job cleanup.
+Host regression tests	Post Checkout	2026-09-24T11:01:08.4995336Z [command]/usr/bin/git version
+Host regression tests	Post Checkout	2026-09-24T11:01:08.5042264Z git version 2.55.0
+Host regression tests	Post Checkout	2026-09-24T11:01:08.5086574Z Temporarily overriding HOME='/home/runner/work/_temp/5b4e2fa0-7f2d-47da-8b70-7cb0c52a55c2' before making global git config changes
+Host regression tests	Post Checkout	2026-09-24T11:01:08.5087727Z Adding repository directory to the temporary git global config as a safe directory
+Host regression tests	Post Checkout	2026-09-24T11:01:08.5093900Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/esp32c6-Pwnagotchi/esp32c6-Pwnagotchi
+Host regression tests	Post Checkout	2026-09-24T11:01:08.5134634Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+Host regression tests	Post Checkout	2026-09-24T11:01:08.5170318Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Host regression tests	Post Checkout	2026-09-24T11:01:08.5426523Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Host regression tests	Post Checkout	2026-09-24T11:01:08.5455161Z http.https://github.com/.extraheader
+Host regression tests	Post Checkout	2026-09-24T11:01:08.5466832Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+Host regression tests	Post Checkout	2026-09-24T11:01:08.5503092Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Host regression tests	Post Checkout	2026-09-24T11:01:08.5761338Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+Host regression tests	Post Checkout	2026-09-24T11:01:08.5812392Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+Host regression tests	Complete job	﻿2026-09-24T11:01:08.6276537Z Cleaning up orphan processes
+Host regression tests	Complete job	2026-09-24T11:01:08.6721140Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

@@ -1,0 +1,282 @@
+Host regression tests	Set up job	﻿2026-09-24T10:55:45.7766542Z Current runner version: '2.337.0'
+Host regression tests	Set up job	2026-09-24T10:55:45.7792340Z ##[group]Runner Image Provisioner
+Host regression tests	Set up job	2026-09-24T10:55:45.7793578Z Hosted Compute Agent
+Host regression tests	Set up job	2026-09-24T10:55:45.7794178Z Version: 20260828.587
+Host regression tests	Set up job	2026-09-24T10:55:45.7794910Z Commit: abac92662cab4cc7352de4f9f9d2e2419aad9c29
+Host regression tests	Set up job	2026-09-24T10:55:45.7795649Z Build Date: 2026-08-28T16:44:25Z
+Host regression tests	Set up job	2026-09-24T10:55:45.7796382Z Worker ID: {3ed63e60-98d0-40b8-92ca-fecc536d4e0c}
+Host regression tests	Set up job	2026-09-24T10:55:45.7797158Z Azure Region: westus
+Host regression tests	Set up job	2026-09-24T10:55:45.7797756Z ##[endgroup]
+Host regression tests	Set up job	2026-09-24T10:55:45.7799471Z ##[group]Operating System
+Host regression tests	Set up job	2026-09-24T10:55:45.7800127Z Ubuntu
+Host regression tests	Set up job	2026-09-24T10:55:45.7800736Z 24.04.5
+Host regression tests	Set up job	2026-09-24T10:55:45.7801387Z LTS
+Host regression tests	Set up job	2026-09-24T10:55:45.7801922Z ##[endgroup]
+Host regression tests	Set up job	2026-09-24T10:55:45.7802540Z ##[group]Runner Image
+Host regression tests	Set up job	2026-09-24T10:55:45.7803346Z Image: ubuntu-24.04
+Host regression tests	Set up job	2026-09-24T10:55:45.7803939Z Version: 20260907.300.1
+Host regression tests	Set up job	2026-09-24T10:55:45.7805141Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260907.300/images/ubuntu/Ubuntu2404-Readme.md
+Host regression tests	Set up job	2026-09-24T10:55:45.7806926Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260907.300
+Host regression tests	Set up job	2026-09-24T10:55:45.7807896Z ##[endgroup]
+Host regression tests	Set up job	2026-09-24T10:55:45.7809259Z ##[group]GITHUB_TOKEN Permissions
+Host regression tests	Set up job	2026-09-24T10:55:45.7811126Z Contents: read
+Host regression tests	Set up job	2026-09-24T10:55:45.7812242Z Metadata: read
+Host regression tests	Set up job	2026-09-24T10:55:45.7812864Z Packages: read
+Host regression tests	Set up job	2026-09-24T10:55:45.7813625Z ##[endgroup]
+Host regression tests	Set up job	2026-09-24T10:55:45.7815850Z Secret source: Actions
+Host regression tests	Set up job	2026-09-24T10:55:45.7816797Z Cache mode: write
+Host regression tests	Set up job	2026-09-24T10:55:45.7817579Z Prepare workflow directory
+Host regression tests	Set up job	2026-09-24T10:55:45.8159416Z Prepare all required actions
+Host regression tests	Set up job	2026-09-24T10:55:45.8209510Z Getting action download info
+Host regression tests	Set up job	2026-09-24T10:55:46.1858782Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+Host regression tests	Set up job	2026-09-24T10:55:46.3017312Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+Host regression tests	Set up job	2026-09-24T10:55:46.5130854Z Complete job name: Host regression tests
+Host regression tests	Checkout	﻿2026-09-24T10:55:46.5902108Z ##[group]Run actions/checkout@v4
+Host regression tests	Checkout	2026-09-24T10:55:46.5903248Z with:
+Host regression tests	Checkout	2026-09-24T10:55:46.5903763Z   repository: yuanwil1y/esp32c6-Pwnagotchi
+Host regression tests	Checkout	2026-09-24T10:55:46.5907510Z   token: ***
+Host regression tests	Checkout	2026-09-24T10:55:46.5907957Z   ssh-strict: true
+Host regression tests	Checkout	2026-09-24T10:55:46.5908403Z   ssh-user: git
+Host regression tests	Checkout	2026-09-24T10:55:46.5908855Z   persist-credentials: true
+Host regression tests	Checkout	2026-09-24T10:55:46.5909343Z   clean: true
+Host regression tests	Checkout	2026-09-24T10:55:46.5909798Z   sparse-checkout-cone-mode: true
+Host regression tests	Checkout	2026-09-24T10:55:46.5910327Z   fetch-depth: 1
+Host regression tests	Checkout	2026-09-24T10:55:46.5910769Z   fetch-tags: false
+Host regression tests	Checkout	2026-09-24T10:55:46.5911227Z   show-progress: true
+Host regression tests	Checkout	2026-09-24T10:55:46.5911682Z   lfs: false
+Host regression tests	Checkout	2026-09-24T10:55:46.5912104Z   submodules: false
+Host regression tests	Checkout	2026-09-24T10:55:46.5912570Z   set-safe-directory: true
+Host regression tests	Checkout	2026-09-24T10:55:46.5913224Z   allow-unsafe-pr-checkout: false
+Host regression tests	Checkout	2026-09-24T10:55:46.5914030Z ##[endgroup]
+Host regression tests	Checkout	2026-09-24T10:55:46.6917536Z Syncing repository: yuanwil1y/esp32c6-Pwnagotchi
+Host regression tests	Checkout	2026-09-24T10:55:46.6920202Z ##[group]Getting Git version info
+Host regression tests	Checkout	2026-09-24T10:55:46.6921604Z Working directory is '/home/runner/work/esp32c6-Pwnagotchi/esp32c6-Pwnagotchi'
+Host regression tests	Checkout	2026-09-24T10:55:46.6924278Z [command]/usr/bin/git version
+Host regression tests	Checkout	2026-09-24T10:55:46.7011745Z git version 2.55.0
+Host regression tests	Checkout	2026-09-24T10:55:46.7040240Z ##[endgroup]
+Host regression tests	Checkout	2026-09-24T10:55:46.7056785Z Temporarily overriding HOME='/home/runner/work/_temp/b6c8ff40-2597-4762-abce-d6a775caf6e7' before making global git config changes
+Host regression tests	Checkout	2026-09-24T10:55:46.7059642Z Adding repository directory to the temporary git global config as a safe directory
+Host regression tests	Checkout	2026-09-24T10:55:46.7062652Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/esp32c6-Pwnagotchi/esp32c6-Pwnagotchi
+Host regression tests	Checkout	2026-09-24T10:55:46.7117833Z Deleting the contents of '/home/runner/work/esp32c6-Pwnagotchi/esp32c6-Pwnagotchi'
+Host regression tests	Checkout	2026-09-24T10:55:46.7122586Z ##[group]Initializing the repository
+Host regression tests	Checkout	2026-09-24T10:55:46.7127085Z [command]/usr/bin/git init /home/runner/work/esp32c6-Pwnagotchi/esp32c6-Pwnagotchi
+Host regression tests	Checkout	2026-09-24T10:55:46.7240147Z hint: Using 'master' as the name for the initial branch. This default branch name
+Host regression tests	Checkout	2026-09-24T10:55:46.7242352Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+Host regression tests	Checkout	2026-09-24T10:55:46.7244936Z hint: to use in all of your new repositories, which will suppress this warning,
+Host regression tests	Checkout	2026-09-24T10:55:46.7246193Z hint: call:
+Host regression tests	Checkout	2026-09-24T10:55:46.7246858Z hint:
+Host regression tests	Checkout	2026-09-24T10:55:46.7247695Z hint: 	git config --global init.defaultBranch <name>
+Host regression tests	Checkout	2026-09-24T10:55:46.7248711Z hint:
+Host regression tests	Checkout	2026-09-24T10:55:46.7249656Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+Host regression tests	Checkout	2026-09-24T10:55:46.7251159Z hint: 'development'. The just-created branch can be renamed via this command:
+Host regression tests	Checkout	2026-09-24T10:55:46.7252372Z hint:
+Host regression tests	Checkout	2026-09-24T10:55:46.7253237Z hint: 	git branch -m <name>
+Host regression tests	Checkout	2026-09-24T10:55:46.7254071Z hint:
+Host regression tests	Checkout	2026-09-24T10:55:46.7255156Z hint: Disable this message with "git config set advice.defaultBranchName false"
+Host regression tests	Checkout	2026-09-24T10:55:46.7257198Z Initialized empty Git repository in /home/runner/work/esp32c6-Pwnagotchi/esp32c6-Pwnagotchi/.git/
+Host regression tests	Checkout	2026-09-24T10:55:46.7260471Z [command]/usr/bin/git remote add origin https://github.com/yuanwil1y/esp32c6-Pwnagotchi
+Host regression tests	Checkout	2026-09-24T10:55:46.7305210Z ##[endgroup]
+Host regression tests	Checkout	2026-09-24T10:55:46.7306627Z ##[group]Disabling automatic garbage collection
+Host regression tests	Checkout	2026-09-24T10:55:46.7308936Z [command]/usr/bin/git config --local gc.auto 0
+Host regression tests	Checkout	2026-09-24T10:55:46.7342040Z ##[endgroup]
+Host regression tests	Checkout	2026-09-24T10:55:46.7343532Z ##[group]Setting up auth
+Host regression tests	Checkout	2026-09-24T10:55:46.7349537Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+Host regression tests	Checkout	2026-09-24T10:55:46.7383701Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Host regression tests	Checkout	2026-09-24T10:55:46.7772213Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Host regression tests	Checkout	2026-09-24T10:55:46.7817994Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Host regression tests	Checkout	2026-09-24T10:55:46.8081671Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+Host regression tests	Checkout	2026-09-24T10:55:46.8125433Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+Host regression tests	Checkout	2026-09-24T10:55:46.8355091Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+Host regression tests	Checkout	2026-09-24T10:55:46.8397049Z ##[endgroup]
+Host regression tests	Checkout	2026-09-24T10:55:46.8398089Z ##[group]Fetching the repository
+Host regression tests	Checkout	2026-09-24T10:55:46.8412352Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +59e83b9460661f2c596fd595dc3a146eda44da30:refs/remotes/origin/phase3c-sd-logger
+Host regression tests	Checkout	2026-09-24T10:55:47.4153284Z From https://github.com/yuanwil1y/esp32c6-Pwnagotchi
+Host regression tests	Checkout	2026-09-24T10:55:47.4154936Z  * [new ref]         59e83b9460661f2c596fd595dc3a146eda44da30 -> origin/phase3c-sd-logger
+Host regression tests	Checkout	2026-09-24T10:55:47.4158287Z ##[endgroup]
+Host regression tests	Checkout	2026-09-24T10:55:47.4159268Z ##[group]Determining the checkout info
+Host regression tests	Checkout	2026-09-24T10:55:47.4160967Z ##[endgroup]
+Host regression tests	Checkout	2026-09-24T10:55:47.4167092Z [command]/usr/bin/git sparse-checkout disable
+Host regression tests	Checkout	2026-09-24T10:55:47.4222267Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+Host regression tests	Checkout	2026-09-24T10:55:47.4255706Z ##[group]Checking out the ref
+Host regression tests	Checkout	2026-09-24T10:55:47.4260290Z [command]/usr/bin/git checkout --progress --force -B phase3c-sd-logger refs/remotes/origin/phase3c-sd-logger
+Host regression tests	Checkout	2026-09-24T10:55:47.4433678Z Switched to a new branch 'phase3c-sd-logger'
+Host regression tests	Checkout	2026-09-24T10:55:47.4435394Z branch 'phase3c-sd-logger' set up to track 'origin/phase3c-sd-logger'.
+Host regression tests	Checkout	2026-09-24T10:55:47.4447246Z ##[endgroup]
+Host regression tests	Checkout	2026-09-24T10:55:47.4468569Z [command]/usr/bin/git log -1 --format=%H
+Host regression tests	Checkout	2026-09-24T10:55:47.4498448Z 59e83b9460661f2c596fd595dc3a146eda44da30
+Host regression tests	Run host tests (plain + ASan/UBSan)	﻿2026-09-24T10:55:47.4750706Z ##[group]Run bash tests/host/run.sh
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:47.4751520Z ^[[36;1mbash tests/host/run.sh^[[0m
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:47.4792174Z shell: /usr/bin/bash -e {0}
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:47.4793247Z ##[endgroup]
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:47.4913789Z == host tests (plain) ==
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:48.2560366Z ../../components/storage/sd_logger_core.c:105:13: error: ‘set_state’ defined but not used [-Werror=unused-function]
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:48.2564180Z   105 | static void set_state(sd_logger_core_t *core, sd_logger_state_t state,
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:48.2565565Z       |             ^~~~~~~~~
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:48.3705079Z cc1: all warnings being treated as errors
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:48.3727186Z BUILD FAILED: test_parser (plain)
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:48.9738917Z ../../components/storage/sd_logger_core.c:105:13: error: ‘set_state’ defined but not used [-Werror=unused-function]
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:48.9740713Z   105 | static void set_state(sd_logger_core_t *core, sd_logger_state_t state,
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:49.0879190Z       |             ^~~~~~~~~
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:49.0880609Z cc1: all warnings being treated as errors
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:49.0899756Z BUILD FAILED: test_rx_path (plain)
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:49.6369938Z ../../components/storage/sd_logger_core.c:105:13: error: ‘set_state’ defined but not used [-Werror=unused-function]
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:49.6371156Z   105 | static void set_state(sd_logger_core_t *core, sd_logger_state_t state,
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:49.6371836Z       |             ^~~~~~~~~
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:49.7500744Z cc1: all warnings being treated as errors
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:49.7518905Z BUILD FAILED: test_rx_hostile (plain)
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:50.3314394Z ../../components/storage/sd_logger_core.c:105:13: error: ‘set_state’ defined but not used [-Werror=unused-function]
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:50.3315794Z   105 | static void set_state(sd_logger_core_t *core, sd_logger_state_t state,
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:50.3316517Z       |             ^~~~~~~~~
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:50.4446794Z cc1: all warnings being treated as errors
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:50.4464931Z BUILD FAILED: test_obs_cache (plain)
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:51.0096502Z ../../components/storage/sd_logger_core.c:105:13: error: ‘set_state’ defined but not used [-Werror=unused-function]
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:51.0098297Z   105 | static void set_state(sd_logger_core_t *core, sd_logger_state_t state,
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:51.0099164Z       |             ^~~~~~~~~
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:51.1231405Z cc1: all warnings being treated as errors
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:51.1250537Z BUILD FAILED: test_hopper (plain)
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:51.7730807Z ../../components/storage/sd_logger_core.c:105:13: error: ‘set_state’ defined but not used [-Werror=unused-function]
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:51.7732127Z   105 | static void set_state(sd_logger_core_t *core, sd_logger_state_t state,
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:51.7732876Z       |             ^~~~~~~~~
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:51.8851363Z cc1: all warnings being treated as errors
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:51.8874932Z BUILD FAILED: test_world (plain)
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:52.4660070Z ../../components/storage/sd_logger_core.c:105:13: error: ‘set_state’ defined but not used [-Werror=unused-function]
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:52.4661546Z   105 | static void set_state(sd_logger_core_t *core, sd_logger_state_t state,
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:52.4662339Z       |             ^~~~~~~~~
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:52.5788765Z cc1: all warnings being treated as errors
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:52.5808379Z BUILD FAILED: test_data_addrs (plain)
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:53.2567292Z ../../components/storage/sd_logger_core.c:105:13: error: ‘set_state’ defined but not used [-Werror=unused-function]
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:53.2568233Z   105 | static void set_state(sd_logger_core_t *core, sd_logger_state_t state,
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:53.2568855Z       |             ^~~~~~~~~
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:53.3692028Z cc1: all warnings being treated as errors
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:53.3714189Z BUILD FAILED: test_world_sta (plain)
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:54.0661068Z ../../components/storage/sd_logger_core.c:105:13: error: ‘set_state’ defined but not used [-Werror=unused-function]
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:54.0662618Z   105 | static void set_state(sd_logger_core_t *core, sd_logger_state_t state,
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:54.0664666Z       |             ^~~~~~~~~
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:54.1793209Z cc1: all warnings being treated as errors
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:54.1812444Z BUILD FAILED: test_security (plain)
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:54.7477414Z ../../components/storage/sd_logger_core.c:105:13: error: ‘set_state’ defined but not used [-Werror=unused-function]
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:54.7478702Z   105 | static void set_state(sd_logger_core_t *core, sd_logger_state_t state,
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:54.7479446Z       |             ^~~~~~~~~
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:54.8602721Z cc1: all warnings being treated as errors
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:54.8621528Z BUILD FAILED: test_mgmt_tx (plain)
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:55.4995111Z ../../components/storage/sd_logger_core.c:105:13: error: ‘set_state’ defined but not used [-Werror=unused-function]
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:55.4996366Z   105 | static void set_state(sd_logger_core_t *core, sd_logger_state_t state,
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:55.4997075Z       |             ^~~~~~~~~
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:55.6111929Z cc1: all warnings being treated as errors
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:55.6130373Z BUILD FAILED: test_eapol (plain)
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:56.2667016Z ../../components/storage/sd_logger_core.c:105:13: error: ‘set_state’ defined but not used [-Werror=unused-function]
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:56.2667961Z   105 | static void set_state(sd_logger_core_t *core, sd_logger_state_t state,
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:56.2668464Z       |             ^~~~~~~~~
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:56.3781240Z cc1: all warnings being treated as errors
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:56.3802454Z BUILD FAILED: test_pcap (plain)
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:56.4043901Z test_sd_logger.c: In function ‘mock_write’:
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:56.4045121Z test_sd_logger.c:128:13: error: ‘mock_io_t’ has no member named ‘block_write’
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:56.4046045Z   128 |     if (mock->block_write) {
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:56.4046697Z       |             ^~
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:56.4047563Z test_sd_logger.c:134:13: error: ‘mock_io_t’ has no member named ‘block_write’
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:56.4048326Z   134 |         mock->block_write = false;
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:56.4048819Z       |             ^~
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:56.4069218Z test_sd_logger.c: In function ‘test_slow_writer_does_not_hold_producer_lock’:
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:56.4070679Z test_sd_logger.c:455:11: error: ‘mock_io_t’ has no member named ‘block_write’
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:56.4071703Z   455 |     s_mock.block_write = true;
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:56.4072201Z       |           ^
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:56.9377361Z ../../components/storage/sd_logger_core.c:105:13: error: ‘set_state’ defined but not used [-Werror=unused-function]
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:56.9378731Z   105 | static void set_state(sd_logger_core_t *core, sd_logger_state_t state,
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:56.9379547Z       |             ^~~~~~~~~
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:57.0504219Z cc1: all warnings being treated as errors
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:57.0523907Z BUILD FAILED: test_sd_logger (plain)
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:57.0524489Z == host tests (ASan+UBSan) ==
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:58.4710088Z ../../components/storage/sd_logger_core.c:105:13: error: ‘set_state’ defined but not used [-Werror=unused-function]
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:58.4710999Z   105 | static void set_state(sd_logger_core_t *core, sd_logger_state_t state,
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:58.4711561Z       |             ^~~~~~~~~
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:58.7676576Z cc1: all warnings being treated as errors
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:55:58.7700170Z BUILD FAILED: test_parser (asan)
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:00.0988671Z ../../components/storage/sd_logger_core.c:105:13: error: ‘set_state’ defined but not used [-Werror=unused-function]
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:00.0990239Z   105 | static void set_state(sd_logger_core_t *core, sd_logger_state_t state,
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:00.0991113Z       |             ^~~~~~~~~
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:00.3926949Z cc1: all warnings being treated as errors
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:00.3955006Z BUILD FAILED: test_rx_path (asan)
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:01.5832744Z ../../components/storage/sd_logger_core.c:105:13: error: ‘set_state’ defined but not used [-Werror=unused-function]
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:01.5834071Z   105 | static void set_state(sd_logger_core_t *core, sd_logger_state_t state,
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:01.5899243Z       |             ^~~~~~~~~
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:01.8801795Z cc1: all warnings being treated as errors
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:01.8828109Z BUILD FAILED: test_rx_hostile (asan)
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:03.1277762Z ../../components/storage/sd_logger_core.c:105:13: error: ‘set_state’ defined but not used [-Werror=unused-function]
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:03.1279644Z   105 | static void set_state(sd_logger_core_t *core, sd_logger_state_t state,
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:03.1280372Z       |             ^~~~~~~~~
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:03.4233502Z cc1: all warnings being treated as errors
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:03.4256740Z BUILD FAILED: test_obs_cache (asan)
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:04.6226668Z ../../components/storage/sd_logger_core.c:105:13: error: ‘set_state’ defined but not used [-Werror=unused-function]
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:04.6227896Z   105 | static void set_state(sd_logger_core_t *core, sd_logger_state_t state,
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:04.6228591Z       |             ^~~~~~~~~
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:04.9201406Z cc1: all warnings being treated as errors
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:04.9225914Z BUILD FAILED: test_hopper (asan)
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:06.3232197Z ../../components/storage/sd_logger_core.c:105:13: error: ‘set_state’ defined but not used [-Werror=unused-function]
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:06.3233710Z   105 | static void set_state(sd_logger_core_t *core, sd_logger_state_t state,
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:06.3234345Z       |             ^~~~~~~~~
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:06.6177989Z cc1: all warnings being treated as errors
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:06.6200268Z BUILD FAILED: test_world (asan)
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:07.8766606Z ../../components/storage/sd_logger_core.c:105:13: error: ‘set_state’ defined but not used [-Werror=unused-function]
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:07.8767820Z   105 | static void set_state(sd_logger_core_t *core, sd_logger_state_t state,
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:07.8768514Z       |             ^~~~~~~~~
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:08.1738186Z cc1: all warnings being treated as errors
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:08.1762675Z BUILD FAILED: test_data_addrs (asan)
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:09.6878657Z ../../components/storage/sd_logger_core.c:105:13: error: ‘set_state’ defined but not used [-Werror=unused-function]
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:09.6879932Z   105 | static void set_state(sd_logger_core_t *core, sd_logger_state_t state,
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:09.6880687Z       |             ^~~~~~~~~
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:09.9838542Z cc1: all warnings being treated as errors
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:09.9861706Z BUILD FAILED: test_world_sta (asan)
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:11.6097670Z ../../components/storage/sd_logger_core.c:105:13: error: ‘set_state’ defined but not used [-Werror=unused-function]
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:11.6098669Z   105 | static void set_state(sd_logger_core_t *core, sd_logger_state_t state,
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:11.6099222Z       |             ^~~~~~~~~
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:11.9069652Z cc1: all warnings being treated as errors
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:11.9093003Z BUILD FAILED: test_security (asan)
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:13.1250222Z ../../components/storage/sd_logger_core.c:105:13: error: ‘set_state’ defined but not used [-Werror=unused-function]
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:13.1251276Z   105 | static void set_state(sd_logger_core_t *core, sd_logger_state_t state,
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:13.1251867Z       |             ^~~~~~~~~
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:13.4192599Z cc1: all warnings being treated as errors
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:13.4215851Z BUILD FAILED: test_mgmt_tx (asan)
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:14.8291416Z ../../components/storage/sd_logger_core.c:105:13: error: ‘set_state’ defined but not used [-Werror=unused-function]
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:14.8292664Z   105 | static void set_state(sd_logger_core_t *core, sd_logger_state_t state,
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:14.8293598Z       |             ^~~~~~~~~
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:15.1232900Z cc1: all warnings being treated as errors
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:15.1256528Z BUILD FAILED: test_eapol (asan)
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:16.6022524Z ../../components/storage/sd_logger_core.c:105:13: error: ‘set_state’ defined but not used [-Werror=unused-function]
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:16.6024025Z   105 | static void set_state(sd_logger_core_t *core, sd_logger_state_t state,
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:16.6024726Z       |             ^~~~~~~~~
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:16.8989481Z cc1: all warnings being treated as errors
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:16.9013826Z BUILD FAILED: test_pcap (asan)
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:16.9177593Z test_sd_logger.c: In function ‘mock_write’:
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:16.9178618Z test_sd_logger.c:128:13: error: ‘mock_io_t’ has no member named ‘block_write’
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:16.9179779Z   128 |     if (mock->block_write) {
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:16.9180244Z       |             ^~
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:16.9181003Z test_sd_logger.c:134:13: error: ‘mock_io_t’ has no member named ‘block_write’
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:16.9181743Z   134 |         mock->block_write = false;
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:16.9182225Z       |             ^~
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:16.9203238Z test_sd_logger.c: In function ‘test_slow_writer_does_not_hold_producer_lock’:
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:16.9205251Z test_sd_logger.c:455:11: error: ‘mock_io_t’ has no member named ‘block_write’
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:16.9206068Z   455 |     s_mock.block_write = true;
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:16.9206558Z       |           ^
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:18.0830093Z ../../components/storage/sd_logger_core.c:105:13: error: ‘set_state’ defined but not used [-Werror=unused-function]
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:18.0831141Z   105 | static void set_state(sd_logger_core_t *core, sd_logger_state_t state,
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:18.0831709Z       |             ^~~~~~~~~
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:18.3837729Z cc1: all warnings being treated as errors
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:18.3860794Z BUILD FAILED: test_sd_logger (asan)
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:18.3861263Z HOST TESTS FAILED
+Host regression tests	Run host tests (plain + ASan/UBSan)	2026-09-24T10:56:18.3881153Z ##[error]Process completed with exit code 1.
+Host regression tests	Post Checkout	﻿2026-09-24T10:56:18.4039513Z Post job cleanup.
+Host regression tests	Post Checkout	2026-09-24T10:56:18.4908494Z [command]/usr/bin/git version
+Host regression tests	Post Checkout	2026-09-24T10:56:18.4954130Z git version 2.55.0
+Host regression tests	Post Checkout	2026-09-24T10:56:18.4992041Z Temporarily overriding HOME='/home/runner/work/_temp/3510ecc6-415c-4024-998e-8b8a041b38e3' before making global git config changes
+Host regression tests	Post Checkout	2026-09-24T10:56:18.4993515Z Adding repository directory to the temporary git global config as a safe directory
+Host regression tests	Post Checkout	2026-09-24T10:56:18.4998413Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/esp32c6-Pwnagotchi/esp32c6-Pwnagotchi
+Host regression tests	Post Checkout	2026-09-24T10:56:18.5038799Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+Host regression tests	Post Checkout	2026-09-24T10:56:18.5076395Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Host regression tests	Post Checkout	2026-09-24T10:56:18.5340649Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Host regression tests	Post Checkout	2026-09-24T10:56:18.5361732Z http.https://github.com/.extraheader
+Host regression tests	Post Checkout	2026-09-24T10:56:18.5372359Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+Host regression tests	Post Checkout	2026-09-24T10:56:18.5409077Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Host regression tests	Post Checkout	2026-09-24T10:56:18.5703449Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+Host regression tests	Post Checkout	2026-09-24T10:56:18.5746556Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+Host regression tests	Complete job	﻿2026-09-24T10:56:18.6143984Z Cleaning up orphan processes
+Host regression tests	Complete job	2026-09-24T10:56:18.6455006Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
