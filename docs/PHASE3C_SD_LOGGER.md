@@ -546,8 +546,24 @@ follow-up entry below.
   valid data chunk; the host `.part` remains zero bytes. The target app had
   tried to enqueue each roughly 700-byte ASCII frame in one USB Serial/JTAG
   write, larger than the configured 256-byte TX ring. The corrective firmware
-  change sends 128-byte bounded slices; it must pass CI and be app-only flashed
-  before retrying. No SD file was created, changed, or deleted by readback.
+  change sends 128-byte bounded slices. No SD file was created, changed, or
+  deleted by readback.
+- Follow-up commit `cf8708bf60495b6e538830dbe5aec37c2898ecbf` passed GitHub
+  Actions run
+  [36013635332](https://github.com/yuanwil1y/esp32c6-Pwnagotchi/actions/runs/36013635332).
+  The plain and ASan/UBSan host suites passed (13/13 and 12/12 C tests plus
+  eight serial receiver tests); TShark/capinfos independently validated the
+  11-frame reference PCAP and the one-frame logger state-machine fixture; the
+  ESP-IDF v5.4 ESP32-C6 build passed. The device app is 1,199,120 B
+  (`0x124c10`), linker `.bss` remains 65,936 B, and the app artifact SHA-256
+  is `D371BEE0950D1AB08A2A14B420CD5C353CA67457FCD786C1F409FBA456EAA19B`.
+  The passing job logs are retained at
+  `docs/logs/github-actions-36013635332.txt`.
+- The bounded-write app has not yet been flashed. After it is flashed, resume
+  the zero-byte local `.part` for `9D808161AA2EF8C5`, complete the serial
+  transfer, and independently inspect the retrieved PCAP before changing the
+  hardware acceptance status. No SD file is created, changed, or deleted by
+  the readback path.
 - Hardware PCAP readback is still **PENDING**. The last recorded logger state
   was `ERROR` after 1,594 records; its I/O-stage cause cannot be retroactively
   recovered from that firmware. After the bounded-write fix, acceptance still
