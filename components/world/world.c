@@ -79,11 +79,6 @@ static uint16_t ap_index(const world_t *w, const world_ap_t *ap)
     return (uint16_t)(ap - w->ap);
 }
 
-static uint16_t sta_index(const world_t *w, const world_sta_t *sta)
-{
-    return (uint16_t)(sta - w->sta);
-}
-
 /* True when `ap` is past its observation TTL at `now_ms`. */
 static bool ap_expired_at(const world_ap_t *ap, uint64_t now_ms)
 {
