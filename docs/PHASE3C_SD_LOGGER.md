@@ -466,3 +466,43 @@ The firmware does not request Wi-Fi reassociation, deauthentication, active
 scanning, or transmit packets. This phase does not implement PCAPNG, handshake
 reassembly, M1–M4 completion, password testing/recovery, Agent behavior, or a
 new UI menu. Phase 3 overall acceptance is not claimed.
+
+## USB Serial/JTAG readback follow-up
+
+Because the user does not have an SD reader, a follow-up adds a read-only path
+to retrieve an already stopped or failed session over the existing USB
+Serial/JTAG console. It does not add an SD task, alter the recording path, or
+write to the card. The logger task remains the only owner of SD files and
+performs `stat`/open/read/close for export. Export is refused unless the live
+logger state is `STOPPED` or `ERROR`; start/stop requests are refused while an
+export request owns the reader. The old session remains in its original file
+and is selected only by its 16-hex session ID.
+
+Commands:
+
+```text
+capture-status
+capture-export-info 9D808161AA2EF8C5
+capture-export 9D808161AA2EF8C5 pcap 0 0
+capture-export 9D808161AA2EF8C5 summary 0 0
+```
+
+The `capture-export-info` response lists PCAP segments and exact byte lengths.
+The data command accepts a file kind, segment index, and decimal byte offset.
+USB output is ASCII lines with 512-byte maximum Base64 chunks, original file
+offsets, and CRC-32. The host receiver verifies each chunk, retries from the
+first missing offset, fsyncs a local `.part` file, and renames it only after
+the device confirms the file end. Existing local output files are never
+overwritten; an interrupted `.part` file can be resumed. Install `pyserial`
+once with `python -m pip install pyserial`, then run from the repository root:
+
+```text
+python tools/capture_serial_export.py COM3 --session 9D808161AA2EF8C5 --output-dir D:\pwn\capture-export
+```
+
+The receiver does not upload the resulting PCAP or summary. The output can be
+independently checked with TShark after retrieval. This serial path is only a
+transport for the existing SD bytes: until it successfully transfers the
+session and an independent reader checks it, the SD recording acceptance stays
+**PENDING**. The implementation and its CI result are recorded in the final
+follow-up entry below.

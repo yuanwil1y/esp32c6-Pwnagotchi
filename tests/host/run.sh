@@ -14,9 +14,9 @@ cd "$(dirname "$0")"
 CC=${CC:-cc}
 CFLAGS="-std=c11 -Wall -Wextra -Werror -O1 -g"
 INC="-I../../components/radio/include -I../../components/world/include -I../../components/storage/include -I."
-PROD="../../components/radio/ieee80211_parser.c ../../components/radio/rx_path.c ../../components/radio/eapol_parser.c ../../components/radio/pcap_serializer.c ../../components/radio/obs_cache.c ../../components/radio/hopper_policy.c ../../components/world/world.c ../../components/storage/sd_logger_core.c"
+PROD="../../components/radio/ieee80211_parser.c ../../components/radio/rx_path.c ../../components/radio/eapol_parser.c ../../components/radio/pcap_serializer.c ../../components/radio/obs_cache.c ../../components/radio/hopper_policy.c ../../components/world/world.c ../../components/storage/sd_logger_core.c ../../components/storage/capture_serial_protocol.c"
 COMMON="runner.c mock_io.c"
-SUITES="test_parser test_rx_path test_rx_hostile test_obs_cache test_hopper test_world test_data_addrs test_world_sta test_security test_mgmt_tx test_eapol test_pcap test_sd_logger"
+SUITES="test_parser test_rx_path test_rx_hostile test_obs_cache test_hopper test_world test_data_addrs test_world_sta test_security test_mgmt_tx test_eapol test_pcap test_sd_logger test_capture_serial_protocol"
 
 mkdir -p build
 
@@ -50,6 +50,9 @@ run_suite plain ""
 
 echo "== host tests (ASan+UBSan) =="
 run_suite asan "-fsanitize=address,undefined -fno-sanitize-recover=all"
+
+echo "== capture export host protocol tests =="
+python3 test_capture_serial_export.py || overall=1
 
 if [ "$overall" -ne 0 ]; then
     echo "HOST TESTS FAILED"
