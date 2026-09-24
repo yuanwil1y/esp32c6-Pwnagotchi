@@ -19,9 +19,10 @@ transmissions, deauthentication, hopping changes, or Agent/UI restructuring.
   and the ESP-IDF v5.4 / ESP32-C6 build. The Phase 2.5 document records the
   one-minute hardware smoke test as pending; it is not promoted to PASS here.
 - Phase 3A start SHA: `fac52dd251d6f8c48b866a84381db0a2352ae2e5`.
-- Phase 3A CI result: **PENDING** until GitHub Actions runs against the final
-  code SHA. The final SHA, commands, job results, and run link will be filled
-  from that actual run. The Actions run retains the unedited job logs.
+- Phase 3A CI result: final implementation source SHA
+  `5336ac7666371e198b8bb0be9e65deda38b1bcf2` passed GitHub Actions run
+  [35972440421](https://github.com/yuanwil1y/esp32c6-Pwnagotchi/actions/runs/35972440421).
+  The run retains the original job logs and uploaded firmware/flash artifacts.
 - Hardware passive observation: **PENDING**. No authorized AP/client natural
   connection capture was performed in this stage; no hardware result is
   inferred from offline fixtures or CI.
@@ -142,18 +143,24 @@ versions/types/lengths/padding, descriptor and Key Data boundaries, unknown
 descriptors, capture truncation, timestamps beyond 32-bit microseconds, queue
 delay, pool-slot reuse, and pool conservation.
 
-The test/build command is run by the repository GitHub Actions workflow (the
-desktop was intentionally not used to install or run a local toolchain):
+The repository GitHub Actions workflow ran the commands below against the
+implementation source SHA above. No local compilation was performed:
 
 ```text
-bash tests/host/run.sh                 PENDING final GitHub Actions run
-ESP-IDF v5.4 / target esp32c6 build   PENDING final GitHub Actions run
+bash tests/host/run.sh                 PASS: plain and ASan/UBSan, 112/112 each
+ESP-IDF v5.4 / target esp32c6 build   PASS; firmware.zip and flash artifacts uploaded
 ```
 
-Final code SHA: **PENDING**
-GitHub Actions run: **PENDING**
-Host plain / ASan+UBSan: **PENDING**
-ESP-IDF build: **PENDING**
+The final run contains 11 host suites (including `test_eapol`): 112 cases
+passed in plain mode and the same 112 passed under ASan/UBSan. The initial
+implementation run [35971737017](https://github.com/yuanwil1y/esp32c6-Pwnagotchi/actions/runs/35971737017)
+found a host compile failure under `-Werror=type-limits`; that diagnostic was
+fixed in `72f1b9b`. Intermediate run
+[35972070384](https://github.com/yuanwil1y/esp32c6-Pwnagotchi/actions/runs/35972070384)
+passed both host modes and the ESP-IDF build. A later bounded-view truncation
+fix was then included and revalidated by final run 35972440421. The failed
+attempt's original log remains available from its Actions run; it is not
+represented as a pass.
 
 ## Memory and hardware status
 
@@ -174,7 +181,7 @@ ESP-IDF build: **PENDING**
 
 ## Final result
 
-**Phase 3A software: PENDING final GitHub Actions run.**
+**Phase 3A software: PASS at implementation SHA `5336ac7666371e198b8bb0be9e65deda38b1bcf2`; GitHub Actions run 35972440421.**
 **Phase 3A hardware: PENDING authorized passive capture.**
 
 No Phase 3B work has started. No merge or release was performed.
