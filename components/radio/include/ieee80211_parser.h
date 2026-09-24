@@ -414,9 +414,9 @@ typedef enum {
 /*
  * Bounds-checked extraction of the data frame address fields. The minimum
  * header length is computed FROM the Frame Control: 24 bytes + 6 (both DS
- * bits: addr4) + 2 (QoS subtype) + 4 (order bit: HT control). Protected
- * bodies are irrelevant: the MAC header stays plaintext and no body byte
- * is ever read here.
+ * bits: addr4) + 2 (QoS subtype) + 4 (QoS subtype with Order bit: HT
+ * control). Protected bodies are irrelevant: the MAC header stays plaintext
+ * and no body byte is ever read here.
  *
  * Returns true when the header was fully present and structurally valid
  * (status OK, WDS or AMBIGUOUS - all three carry verified addresses);
