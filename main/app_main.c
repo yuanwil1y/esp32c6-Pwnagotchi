@@ -41,7 +41,7 @@ static void phase3c_console_startup_task(void *arg)
     (void)arg;
     const esp_err_t result = sd_logger_console_start();
     if (result != ESP_OK) {
-        ESP_LOGW(TAG, "capture UART commands unavailable: %s",
+        ESP_LOGW(TAG, "capture USB Serial/JTAG commands unavailable: %s",
                  esp_err_to_name(result));
     }
     ESP_LOGI(TAG, "console_startup_stack_hwm=%u",

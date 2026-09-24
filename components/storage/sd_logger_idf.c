@@ -9,7 +9,7 @@
 #include <unistd.h>
 
 #include "board_sd.h"
-#include "esp_console.h"
+#include "driver/usb_serial_jtag.h"
 #include "esp_heap_caps.h"
 #include "esp_random.h"
 #include "esp_log.h"
@@ -25,6 +25,8 @@
 #define SD_LOGGER_IDLE_WAIT_MS     100u
 #define SD_LOGGER_REPORT_PERIOD_MS 3000u
 #define SD_LOGGER_STOP_WAIT_MS     5000u
+#define SD_LOGGER_CONSOLE_STACK    4096u
+#define SD_LOGGER_CONSOLE_LINE_MAX 160u
 #define SD_LOGGER_EVENT_DONE       (1u << 0)
 #define SD_LOGGER_DIR              BOARD_SD_MOUNT_POINT "/capture"
 
@@ -32,10 +34,10 @@ static const char *TAG = "SDLOG";
 static sd_logger_core_t s_core;
 static portMUX_TYPE s_mux = portMUX_INITIALIZER_UNLOCKED;
 static TaskHandle_t s_task;
+static TaskHandle_t s_console_task;
 static EventGroupHandle_t s_events;
 static bool s_initialized;
 static char s_firmware_sha[SD_LOGGER_FW_SHA_MAX + 1u];
-static esp_console_repl_t *s_repl;
 
 static void sync_lock(void *ctx)
 {
@@ -372,49 +374,80 @@ void sd_logger_get_stats(sd_logger_stats_t *out)
     sd_logger_core_get_stats(&s_core, out);
 }
 
+/* The IDF stdio USB Serial/JTAG driver is installed during startup on some
+ * configurations, so esp_console_new_repl_usb_serial_jtag() can reject its
+ * second install with ESP_ERR_INVALID_STATE. Keep this tiny command reader on
+ * the existing driver and avoid taking any ownership of the logger's buffers
+ * or file handle. Console I/O is bounded and isolated to this task. */
+static void console_write(const char *text)
+{
+    size_t remaining = strlen(text);
+    TickType_t started = xTaskGetTickCount();
+    const TickType_t budget = pdMS_TO_TICKS(200u);
+    while (remaining > 0u) {
+        const TickType_t elapsed = xTaskGetTickCount() - started;
+        if (elapsed >= budget) {
+            return;
+        }
+        int wrote = usb_serial_jtag_write_bytes(text, (uint32_t)remaining,
+                                                 budget - elapsed);
+        if (wrote <= 0) {
+            return;
+        }
+        text += wrote;
+        remaining -= (size_t)wrote;
+    }
+}
+
 static void print_stats(void)
 {
     sd_logger_stats_t stats;
+    char output[512];
     sd_logger_get_stats(&stats);
-    printf("state=%s accepted=%" PRIu64 " serialized=%" PRIu64
-           " written=%" PRIu64 " flushed=%" PRIu64
-           " storage_drop=%" PRIu64 " queue_full=%" PRIu64
-           " old_rx=%" PRIu64
-           " io_drop=%" PRIu64 " full=%" PRIu64 " io_errors=%" PRIu64
-           " limit=%u rotations=%" PRIu64 " invalid=%" PRIu64
-           " filtered=%" PRIu64 " queue=%u/%u session=%016" PRIX64
-           " max_io_us=%" PRIu64 "/%" PRIu64 "/%" PRIu64 "/%" PRIu64
-           " slow=%" PRIu64
-           " file=%s summary=%s\n",
-           sd_logger_state_name(stats.state), stats.accepted, stats.serialized,
-           stats.written, stats.flushed, stats.storage_drop,
-           stats.drop_queue_full, stats.drop_pre_session, stats.drop_io,
-           stats.storage_full_errors,
-           stats.io_errors,
-           stats.limit_reached ? 1u : 0u, stats.file_rotations,
-           stats.rejected_invalid, stats.filtered_non_data,
-           (unsigned)stats.queue_depth,
-           (unsigned)stats.queue_peak, stats.session_id,
-           stats.max_open_us, stats.max_write_us, stats.max_flush_us,
-           stats.max_close_us, stats.io_slow_count,
-           stats.current_path[0] ? stats.current_path : "-",
-           stats.summary_path[0] ? stats.summary_path : "-");
+    (void)snprintf(output, sizeof(output),
+                   "state=%s accepted=%" PRIu64 " serialized=%" PRIu64
+                   " written=%" PRIu64 " flushed=%" PRIu64
+                   " storage_drop=%" PRIu64 " queue_full=%" PRIu64
+                   " old_rx=%" PRIu64
+                   " io_drop=%" PRIu64 " full=%" PRIu64 " io_errors=%" PRIu64
+                   " limit=%u rotations=%" PRIu64 " invalid=%" PRIu64
+                   " filtered=%" PRIu64 " queue=%u/%u session=%016" PRIX64
+                   " max_io_us=%" PRIu64 "/%" PRIu64 "/%" PRIu64 "/%" PRIu64
+                   " slow=%" PRIu64
+                   " file=%s summary=%s\r\n",
+                   sd_logger_state_name(stats.state), stats.accepted, stats.serialized,
+                   stats.written, stats.flushed, stats.storage_drop,
+                   stats.drop_queue_full, stats.drop_pre_session, stats.drop_io,
+                   stats.storage_full_errors,
+                   stats.io_errors,
+                   stats.limit_reached ? 1u : 0u, stats.file_rotations,
+                   stats.rejected_invalid, stats.filtered_non_data,
+                   (unsigned)stats.queue_depth,
+                   (unsigned)stats.queue_peak, stats.session_id,
+                   stats.max_open_us, stats.max_write_us, stats.max_flush_us,
+                   stats.max_close_us, stats.io_slow_count,
+                   stats.current_path[0] ? stats.current_path : "-",
+                   stats.summary_path[0] ? stats.summary_path : "-");
+    console_write(output);
 }
 
 static int cmd_capture_start(int argc, char **argv)
 {
     (void)argv;
     if (argc != 1) {
-        printf("usage: capture-start\n");
+        console_write("usage: capture-start\r\n");
         return 2;
     }
     const esp_err_t result = sd_logger_start();
     if (result != ESP_OK) {
-        printf("capture start rejected: %s\n", esp_err_to_name(result));
+        char output[96];
+        (void)snprintf(output, sizeof(output), "capture start rejected: %s\r\n",
+                       esp_err_to_name(result));
+        console_write(output);
         print_stats();
         return 1;
     }
-    printf("capture start requested; use capture-status for state\n");
+    console_write("capture start requested; use capture-status for state\r\n");
     return 0;
 }
 
@@ -422,29 +455,29 @@ static int cmd_capture_stop(int argc, char **argv)
 {
     (void)argv;
     if (argc != 1) {
-        printf("usage: capture-stop\n");
+        console_write("usage: capture-stop\r\n");
         return 2;
     }
     sd_logger_stats_t before;
     sd_logger_get_stats(&before);
     if (before.state == SD_LOGGER_STOPPED || before.state == SD_LOGGER_DISABLED) {
-        printf("capture is already stopped\n");
+        console_write("capture is already stopped\r\n");
         print_stats();
         return 0;
     }
     if (!sd_logger_request_stop() && before.state != SD_LOGGER_STOPPING) {
-        printf("capture stop request rejected\n");
+        console_write("capture stop request rejected\r\n");
         print_stats();
         return 1;
     }
     const sd_logger_wait_result_t result =
         sd_logger_wait_stopped(SD_LOGGER_STOP_WAIT_MS);
     if (result == SD_LOGGER_WAIT_PENDING) {
-        printf("STOPPING is still pending; logger still owns its buffers\n");
+        console_write("STOPPING is still pending; logger still owns its buffers\r\n");
     } else if (result == SD_LOGGER_WAIT_ERROR) {
-        printf("capture stopped with ERROR\n");
+        console_write("capture stopped with ERROR\r\n");
     } else {
-        printf("capture stopped and drained\n");
+        console_write("capture stopped and drained\r\n");
     }
     print_stats();
     return result == SD_LOGGER_WAIT_STOPPED ? 0 : 1;
@@ -454,61 +487,112 @@ static int cmd_capture_status(int argc, char **argv)
 {
     (void)argv;
     if (argc != 1) {
-        printf("usage: capture-status\n");
+        console_write("usage: capture-status\r\n");
         return 2;
     }
     print_stats();
     return 0;
 }
 
+static void dispatch_console_line(char *line)
+{
+    if (strcmp(line, "capture-start") == 0) {
+        (void)cmd_capture_start(1, NULL);
+    } else if (strcmp(line, "capture-stop") == 0) {
+        (void)cmd_capture_stop(1, NULL);
+    } else if (strcmp(line, "capture-status") == 0) {
+        (void)cmd_capture_status(1, NULL);
+    } else if (strcmp(line, "help") == 0) {
+        console_write("capture-start  start a new bounded PCAP session\r\n"
+                      "capture-stop   drain, sync and close capture\r\n"
+                      "capture-status show state and counters\r\n");
+    } else if (line[0] != '\0') {
+        console_write("unknown command; type help\r\n");
+    }
+}
+
+static void console_task(void *arg)
+{
+    (void)arg;
+    char line[SD_LOGGER_CONSOLE_LINE_MAX];
+    size_t used = 0u;
+    bool overflow = false;
+    bool swallow_lf = false;
+    uint8_t input[32];
+    console_write("\r\nPhase 3C capture controls ready; type help\r\ncapture> ");
+
+    for (;;) {
+        const int received = usb_serial_jtag_read_bytes(
+            input, sizeof(input), pdMS_TO_TICKS(100u));
+        if (received <= 0) {
+            continue;
+        }
+        for (int i = 0; i < received; ++i) {
+            const uint8_t ch = input[i];
+            if (swallow_lf) {
+                swallow_lf = false;
+                if (ch == '\n') {
+                    continue;
+                }
+            }
+            if (ch == '\r' || ch == '\n') {
+                swallow_lf = (ch == '\r');
+                console_write("\r\n");
+                if (overflow) {
+                    console_write("command too long\r\n");
+                } else {
+                    line[used] = '\0';
+                    dispatch_console_line(line);
+                }
+                used = 0u;
+                overflow = false;
+                console_write("capture> ");
+            } else if (ch == 0x08u || ch == 0x7fu) {
+                if (used > 0u && !overflow) {
+                    --used;
+                    console_write("\b \b");
+                }
+            } else if (ch >= 0x20u && ch <= 0x7eu) {
+                if (!overflow && used + 1u < sizeof(line)) {
+                    line[used++] = (char)ch;
+                    char echo[2] = { (char)ch, '\0' };
+                    console_write(echo);
+                } else {
+                    overflow = true;
+                }
+            }
+        }
+    }
+}
+
 esp_err_t sd_logger_console_start(void)
 {
-    if (!s_initialized || s_repl != NULL) {
+    if (!s_initialized || s_console_task != NULL) {
         return ESP_ERR_INVALID_STATE;
     }
     const uint32_t heap_before =
         (uint32_t)heap_caps_get_free_size(MALLOC_CAP_8BIT);
-    const esp_console_config_t console_config = ESP_CONSOLE_CONFIG_DEFAULT();
-    esp_err_t err = esp_console_init(&console_config);
-    if (err != ESP_OK) {
-        return err;
-    }
-    err = esp_console_register_help_command();
-    if (err != ESP_OK) {
-        return err;
-    }
-    const esp_console_cmd_t commands[] = {
-        { .command = "capture-start", .help = "start a new bounded PCAP session",
-          .hint = NULL, .func = &cmd_capture_start, .argtable = NULL },
-        { .command = "capture-stop", .help = "stop, drain, sync and close capture",
-          .hint = NULL, .func = &cmd_capture_stop, .argtable = NULL },
-        { .command = "capture-status", .help = "show logger state and counters",
-          .hint = NULL, .func = &cmd_capture_status, .argtable = NULL },
-    };
-    for (size_t i = 0; i < sizeof(commands) / sizeof(commands[0]); ++i) {
-        err = esp_console_cmd_register(&commands[i]);
-        if (err != ESP_OK) {
-            return err;
+    usb_serial_jtag_driver_config_t driver_config =
+        USB_SERIAL_JTAG_DRIVER_CONFIG_DEFAULT();
+    const bool driver_was_installed = usb_serial_jtag_is_driver_installed();
+    if (!driver_was_installed) {
+        const esp_err_t install_result =
+            usb_serial_jtag_driver_install(&driver_config);
+        if (install_result != ESP_OK) {
+            return install_result;
         }
     }
-    esp_console_repl_config_t repl_config = ESP_CONSOLE_REPL_CONFIG_DEFAULT();
-    repl_config.prompt = "pwnagotchi> ";
-    repl_config.task_stack_size = 4096u;
-    repl_config.task_priority = 1u;
-    repl_config.max_cmdline_length = 160;
-    esp_console_dev_usb_serial_jtag_config_t usb_serial_jtag_config =
-        ESP_CONSOLE_DEV_USB_SERIAL_JTAG_CONFIG_DEFAULT();
-    err = esp_console_new_repl_usb_serial_jtag(&usb_serial_jtag_config,
-                                               &repl_config, &s_repl);
-    if (err != ESP_OK) {
-        return err;
+    if (xTaskCreate(console_task, "capture_console", SD_LOGGER_CONSOLE_STACK,
+                    NULL, 1u, &s_console_task) != pdPASS) {
+        s_console_task = NULL;
+        return ESP_ERR_NO_MEM;
     }
-    err = esp_console_start_repl(s_repl);
-    if (err == ESP_OK) {
-        ESP_LOGI(TAG, "capture console ready heap_before=%u heap_after=%u min_heap=%u",
-                 (unsigned)heap_before,
-                 (unsigned)heap_caps_get_free_size(MALLOC_CAP_8BIT),
-                 (unsigned)heap_caps_get_minimum_free_size(MALLOC_CAP_8BIT));
-    }
-    return err;
+    ESP_LOGI(TAG,
+             "capture console ready heap_before=%u heap_after=%u min_heap=%u driver=%s stack=%u",
+             (unsigned)heap_before,
+             (unsigned)heap_caps_get_free_size(MALLOC_CAP_8BIT),
+             (unsigned)heap_caps_get_minimum_free_size(MALLOC_CAP_8BIT),
+             driver_was_installed ? "already-installed" : "installed",
+             SD_LOGGER_CONSOLE_STACK);
+    return ESP_OK;
 }

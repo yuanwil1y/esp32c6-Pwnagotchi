@@ -26,6 +26,6 @@ typedef enum {
 sd_logger_wait_result_t sd_logger_wait_stopped(uint32_t timeout_ms);
 void sd_logger_get_stats(sd_logger_stats_t *out);
 
-/* Adds capture-start / capture-stop / capture-status to the existing UART
- * console. It never starts capture automatically. */
+/* Adds capture-start / capture-stop / capture-status to the USB Serial/JTAG
+ * control reader. It never starts capture automatically. */
 esp_err_t sd_logger_console_start(void);

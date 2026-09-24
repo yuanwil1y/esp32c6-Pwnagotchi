@@ -1,13 +1,12 @@
 # Phase 3C — Bounded asynchronous SD logger
 
-Status: host/IDF CI passed for `f2fe1c411d81bf8058fcb801c0be580fb0c8a709`
-on run
-[35995388924](https://github.com/yuanwil1y/esp32c6-Pwnagotchi/actions/runs/35995388924).
-The 20 KiB `sd_console_init` stack request took effect, but the hardware trace
-shows the stack pointer crossing its lower bound by 8 bytes. This revision
-raises it to 24 KiB; CI and another hardware boot attempt are pending. Real
-capture, controlled stop, extracted-file TShark readback, and live
-display/hopping/heap observation remain **PENDING**.
+Status: **PENDING**. The `8835e59c7887b87f68eb694841548626e68d2671` image
+passed CI and was flashed to COM3, where boot, Wi-Fi, and hopping remained
+stable. Hardware startup logged `capture UART commands unavailable:
+ESP_ERR_INVALID_STATE`, so no SD recording could be started. A bounded direct
+USB Serial/JTAG command reader now replaces that REPL setup path; its CI and
+hardware checks are pending. Do not treat the earlier successful boot as SD
+logger acceptance.
 The user confirmed that an SD card is inserted and authorized creating new
 uniquely named files. No existing file is formatted, deleted, or overwritten.
 
@@ -94,8 +93,40 @@ fault, SP `0x4084bec0` was 24 B below the reported lower bound `0x4084bed8`;
 the captured window contains eight visible stack faults and nine successful
 unique self-test writes. Console initialization did not complete, Wi-Fi did
 not start, and no recording session began. The device is now disconnected.
-The 24,576 B stack revision and switch to the board's USB Serial/JTAG control
-console are pending CI and hardware validation.
+The `8835e59c7887b87f68eb694841548626e68d2671` revision raises the startup
+stack to 24,576 B and selects USB Serial/JTAG for the board's COM3 control
+console. Both CI jobs passed in run
+[35997776604](https://github.com/yuanwil1y/esp32c6-Pwnagotchi/actions/runs/35997776604):
+plain and ASan/UBSan host tests, both independent TShark validations, and the
+ESP-IDF v5.4 build. The app image is 1,211,968 B (CI total image size
+1,211,851 B); linker `.bss` is 64,648 B, and `sd_logger_idf.c.obj` contributes
+10,238 B `.bss`. The generated config confirms USB Serial/JTAG is the primary
+console and main-task stack remains 3,584 B. The app SHA-256 is
+`FE96A9077C89005FB0BD8DC61343BBA8A422440EF53F611A239D22977F4E7880` and the
+embedded git SHA matches the revision. Raw job logs are retained in
+`docs/logs/phase3c_build_ci_35997776604.log` and
+`docs/logs/phase3c_host_ci_35997776604.log`.
+
+The image was flashed app-only at `0x10000`; esptool v5.4 reported `Hash of
+data verified`. The board booted without a stack fault and ran stably for
+several minutes with SD/LCD/touch healthy, Wi-Fi receive and fixed 300 ms hopping
+active. A representative runtime snapshot reported RX queue `q=0/7`, radio
+drop=0, free heap 163,064 B, minimum heap 158,268 B, RX stack HWM 988 B, UI
+stack HWM 1,544 B, and logger stack HWM 3,756 B. An actual passive EAPOL-Key
+observation was logged with `rx_us=6182520`, direction 2, key class 1, and a
+reliable BSSID/STA mapping. However, logger status stayed `STOPPED`; the
+control startup error above meant no SD session or file was created, so this
+does not verify recording or a controlled stop. The full ESP-IDF Monitor log
+is preserved outside the repository at
+`D:\pwn\phase3c-evidence\35997776604\log..20260924203521.txt` (287,646 B,
+SHA-256 `ACF5F9DF181A52ADAEF0B2BF65F41EB7E7C27B184E168D40E13E2E6B029F3983`).
+It contains raw wireless metadata and remains local.
+
+The follow-up replaces ESP-IDF's all-in-one REPL creation with a dedicated
+4 KiB bounded reader task on the existing USB Serial/JTAG driver. It accepts
+only `capture-start`, `capture-stop`, `capture-status`, and `help`; it neither
+owns radio/logger slots nor performs storage work. This change is awaiting
+GitHub CI before another app-only flash.
 
 The `f2fe1c411d81bf8058fcb801c0be580fb0c8a709` revision passed both CI jobs in
 run [35995388924](https://github.com/yuanwil1y/esp32c6-Pwnagotchi/actions/runs/35995388924):
@@ -335,20 +366,20 @@ python3 tests/host/validate_phase3c_capture.py tests/host/build/phase3c_logger_s
 ESP-IDF v5.4 / ESP32-C6 build
 ```
 
-No local build or test is run for this task. The CI run and the failed hardware
-boot attempts are recorded above; this document will be updated after the
-24 KiB / USB Serial/JTAG revision receives CI and authorized hardware checks.
+No local build or test is run for this task. The CI run and all hardware
+attempts are recorded above; the latest control-reader change must pass GitHub
+CI and receive a separate authorized app-only flash before hardware capture.
 
 ## Hardware acceptance status
 
-**PENDING — Phase 3C firmware has been flashed to COM3, but repeated startup
-stack faults prevented Wi-Fi/sniffer startup and no capture was performed.**
-The board has been disconnected after the failed boot; the SD card remains
-inserted and creation of uniquely named files is authorized. Once the 24 KiB /
-USB Serial/JTAG revision passes CI and is flashed, verification still needs to:
+**PENDING — the 24 KiB USB Serial/JTAG build is stable, but the REPL setup
+failed with `ESP_ERR_INVALID_STATE`; no logger session was started and no SD
+PCAP was written.** The SD card remains inserted and creation of uniquely
+named files is authorized. After the control-reader change passes CI and is
+flashed app-only, verification still needs to:
 
 1. flash only the CI-built app image and retain the original raw COM3 log;
-2. check startup mount/self-test, logger `STOPPED`, SD/lcd/touch/world, fixed
+2. check startup mount/self-test, console availability, logger `STOPPED`, SD/LCD/touch/world, fixed
    hopper behavior, heap minima, and logger/RX/UI stack telemetry;
 3. use `capture-start`, allow passive capture, then `capture-stop` and confirm
    `STOPPED`, closed files, and sidecar counts;

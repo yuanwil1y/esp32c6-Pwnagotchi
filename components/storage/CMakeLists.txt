@@ -6,7 +6,7 @@ idf_component_register(
     PRIV_REQUIRES
         board
         radio
-        console
+        esp_driver_usb_serial_jtag
         esp_timer
         esp_system
         heap
