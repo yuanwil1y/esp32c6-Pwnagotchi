@@ -32,6 +32,8 @@
 #define SD_LOGGER_STOP_WAIT_MS     5000u
 #define SD_LOGGER_CONSOLE_STACK    4096u
 #define SD_LOGGER_CONSOLE_LINE_MAX 160u
+/* Keep each atomic write below the driver's default 256-byte TX ring. */
+#define SD_LOGGER_SERIAL_WRITE_CHUNK 128u
 #define SD_LOGGER_EVENT_DONE       (1u << 0)
 #define SD_LOGGER_DIR              BOARD_SD_MOUNT_POINT "/capture"
 
@@ -590,7 +592,9 @@ static void console_write(const char *text)
         if (elapsed >= budget) {
             return;
         }
-        int wrote = usb_serial_jtag_write_bytes(text, (uint32_t)remaining,
+        const size_t chunk = remaining > SD_LOGGER_SERIAL_WRITE_CHUNK
+                                 ? SD_LOGGER_SERIAL_WRITE_CHUNK : remaining;
+        int wrote = usb_serial_jtag_write_bytes(text, (uint32_t)chunk,
                                                  budget - elapsed);
         if (wrote <= 0) {
             return;
@@ -610,8 +614,10 @@ static bool console_write_exact(const char *data, size_t length)
         if (elapsed >= budget) {
             return false;
         }
+        const size_t chunk = remaining > SD_LOGGER_SERIAL_WRITE_CHUNK
+                                 ? SD_LOGGER_SERIAL_WRITE_CHUNK : remaining;
         const int wrote = usb_serial_jtag_write_bytes(
-            data, (uint32_t)remaining, budget - elapsed);
+            data, (uint32_t)chunk, budget - elapsed);
         if (wrote <= 0) {
             return false;
         }

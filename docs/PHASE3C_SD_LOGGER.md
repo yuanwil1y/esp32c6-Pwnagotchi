@@ -514,8 +514,10 @@ follow-up entry below.
   session `9D808161AA2EF8C5` remains on the SD card. No Phase 2/3A/3B fixes or
   existing Phase 3C capture ownership were rewritten.
 - Implementation commits: `3d76f7fed611bf15916d8a9130b9fe360aa0cf50`
-  (serial readback, status detail, protocol, host receiver) and
-  `7ddaf86fe1ff3ed2f227542a4c2e7568e32d96f3` (wire file-kind correction).
+  (serial readback, status detail, protocol, host receiver),
+  `7ddaf86fe1ff3ed2f227542a4c2e7568e32d96f3` (wire file-kind correction),
+  `51e209b022e73161bddb3dec3f08cb11bb3e8640` (host command names), and
+  `496667192ba4ece8e8cc103032c80040c3cb9968` (prompt-prefixed host frames).
 - GitHub Actions run
   [36008775587](https://github.com/yuanwil1y/esp32c6-Pwnagotchi/actions/runs/36008775587)
   passed both jobs. Host plain and ASan/UBSan regression suites passed,
@@ -537,12 +539,19 @@ follow-up entry below.
   against the CLI words `pcap`/`summary`. The correction is covered by the
   fully passing run above. Logs retained in `docs/logs/` are the actual GitHub
   job logs; no local compile or test was used.
-- Hardware readback is **PENDING**. The new app has not yet been flashed, and
-  the old PCAP has not yet been transferred or checked with TShark. The last
-  recorded on-device logger state was `ERROR` after 1,594 records; its
-  `capture-status` I/O-stage detail cannot be retroactively recovered from
-  that firmware. New firmware reports the I/O stage and the serial export
-  command can retrieve the old PCAP and sidecar without a reader. The hardware
-  attempt must still confirm no reboot loop, a complete transfer, and
-  independent `capinfos`/TShark packet and length results. This is not a Phase
-  3C acceptance PASS.
+- The 7ddaf86 app was app-only flashed to `0x10000` on COM3; esptool v5.4
+  verified the written hash. It booted and `capture-export-info` reported the
+  target PCAP size as 216,586 B and sidecar size as zero. An end-offset read
+  returned `!PCAP,END,P,0,216586`. A full body transfer did not produce a
+  valid data chunk; the host `.part` remains zero bytes. The target app had
+  tried to enqueue each roughly 700-byte ASCII frame in one USB Serial/JTAG
+  write, larger than the configured 256-byte TX ring. The corrective firmware
+  change sends 128-byte bounded slices; it must pass CI and be app-only flashed
+  before retrying. No SD file was created, changed, or deleted by readback.
+- Hardware PCAP readback is still **PENDING**. The last recorded logger state
+  was `ERROR` after 1,594 records; its I/O-stage cause cannot be retroactively
+  recovered from that firmware. After the bounded-write fix, acceptance still
+  requires a complete serial transfer and independent `capinfos`/TShark packet
+  count and length results. This is not a Phase 3C acceptance PASS. Live raw
+  serial debug output is kept outside Git at `D:\pwn\phase3c-evidence\` because
+  it includes nearby network identifiers.
