@@ -113,7 +113,7 @@ static world_ap_t *alloc_ap(world_t *w, uint64_t now_ms, bool strong_creator)
     /* Oldest last_seen wins; ties break to the lowest slot index. */
     world_ap_t *victim = &w->ap[0];
     for (uint16_t i = 1; i < WORLD_AP_MAX; i++) {
-        const world_ap_t *cand = &w->ap[i];
+        world_ap_t *cand = &w->ap[i];
         if (cand->last_seen_ms < victim->last_seen_ms) {
             victim = cand;
         }
