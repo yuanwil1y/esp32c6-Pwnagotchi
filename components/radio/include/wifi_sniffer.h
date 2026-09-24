@@ -3,6 +3,7 @@
 #include <stdint.h>
 
 #include "esp_err.h"
+#include "eapol_parser.h"
 #include "radio_types.h"
 
 /*
@@ -22,3 +23,6 @@ esp_err_t wifi_sniffer_start(uint8_t channel);
 
 /* Concurrency-safe counters snapshot for logging / UI. */
 void wifi_sniffer_get_stats(radio_stats_t *out);
+
+/* Fixed-size EAPOL counters and latest value-only observation snapshot. */
+void wifi_sniffer_get_eapol_stats(eapol_stats_t *out);

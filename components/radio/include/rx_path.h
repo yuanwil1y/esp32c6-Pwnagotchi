@@ -41,6 +41,8 @@ typedef struct {
     uint16_t orig_length;
     uint8_t packet_type; /* wifi_promiscuous_pkt_type_t value */
     uint8_t data[RADIO_PACKET_MAX_LEN];
+    /* System-monotonic receive time captured at callback entry, in us. */
+    uint64_t rx_timestamp_us;
 } radio_packet_t;
 
 /* Counter contract (all monotonic unless noted):
@@ -107,7 +109,33 @@ typedef struct {
     uint16_t sig_len;
     const uint8_t *payload; /* may be NULL when payload_len == 0 */
     uint16_t payload_len;
+    uint64_t rx_timestamp_us;
 } rx_frame_view_t;
+
+/* FCS policy used by the driver adapter and the bounded pool. */
+typedef enum {
+    /* Driver length includes a 4-byte FCS; capture views remove it. */
+    RX_CAPTURE_FCS_DRIVER_LENGTH_INCLUDES_STRIP_FROM_VIEW = 0,
+} rx_capture_fcs_policy_t;
+
+/*
+ * Unified read-only view for parsers. `mac_bytes` points into a packet-pool
+ * slot and is valid only until rx_path_slot_release(); consumers must not
+ * retain that pointer. All other fields are copied values. MAC lengths
+ * exclude the 4-byte FCS. `capture_truncated` means MAC body bytes are
+ * missing; a capture that omitted only some/all FCS bytes is not truncated.
+ */
+typedef struct {
+    const uint8_t *mac_bytes;
+    uint16_t captured_mac_length;
+    uint16_t original_mac_length;
+    bool original_mac_length_valid;
+    uint8_t rx_channel;
+    int8_t rssi;
+    uint64_t rx_timestamp_us;
+    rx_capture_fcs_policy_t fcs_policy;
+    bool capture_truncated;
+} rx_capture_view_t;
 
 /*
  * Queue operations injected by the adapter (FreeRTOS queues on target,
@@ -170,3 +198,7 @@ uint16_t rx_path_parse_length(const radio_packet_t *pkt);
  * instead of judging it; see rx_path_parse_length().
  */
 bool rx_path_body_truncated(const radio_packet_t *pkt);
+
+/* Build the unified parser view from a live pool slot; no bytes are copied. */
+bool rx_path_make_capture_view(const radio_packet_t *pkt,
+                               rx_capture_view_t *out);

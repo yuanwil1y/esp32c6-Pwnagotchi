@@ -88,6 +88,7 @@ void rx_path_on_frame(const rx_path_io_t *io, rx_path_stats_t *stats,
     slot->orig_length = orig_len;
     slot->length = copy_len;
     slot->packet_type = view->type;
+    slot->rx_timestamp_us = view->rx_timestamp_us;
     if (copy_len > 0) {
         memcpy(slot->data, view->payload, copy_len);
     }
@@ -131,43 +132,89 @@ void rx_path_slot_release(const rx_path_io_t *io, rx_path_stats_t *stats,
     (void)io->slot_return(io->ctx, slot);
 }
 
-uint16_t rx_path_parse_length(const radio_packet_t *pkt)
+static void rx_path_get_mac_lengths(const radio_packet_t *pkt,
+                                    uint16_t *captured_mac_length,
+                                    uint16_t *original_mac_length,
+                                    bool *original_mac_length_valid,
+                                    bool *capture_truncated)
 {
+    if (captured_mac_length != NULL) {
+        *captured_mac_length = 0;
+    }
+    if (original_mac_length != NULL) {
+        *original_mac_length = 0;
+    }
+    if (original_mac_length_valid != NULL) {
+        *original_mac_length_valid = false;
+    }
+    if (capture_truncated != NULL) {
+        *capture_truncated = false;
+    }
     if (pkt == NULL) {
-        return 0;
+        return;
     }
 
-    /*
-     * MAC body of the pooled copy, i.e. the captured bytes minus the FCS:
-     *   parse_len = min(captured, orig - 4)  when orig >= 4
-     *   parse_len = captured                 when orig <  4
-     * The subtraction happens in the wide type after the orig >= 4 check,
-     * so it cannot underflow. A copy cut inside the MAC body keeps the
-     * full copy; a copy that only misses (part of) the FCS excludes the
-     * FCS bytes. The FCS never reaches the parser in either case.
-     */
-    uint32_t parse_len = pkt->length;
-    if (pkt->orig_length >= 4) {
-        const uint32_t body = (uint32_t)pkt->orig_length - 4;
-        if (parse_len > body) {
-            parse_len = body;
+    /* Phase 1.5 orig_length is driver-reported sig_len including FCS.
+     * Compute the no-FCS lengths once, in a wide type and only after the
+     * underflow guard. If orig_length < 4, retain the bounded copy length
+     * for the legacy parser helper but declare original MAC length invalid. */
+    uint32_t original_mac = 0;
+    uint32_t captured_mac = pkt->length;
+    const bool original_valid = pkt->orig_length >= 4;
+    if (original_valid) {
+        original_mac = (uint32_t)pkt->orig_length - 4u;
+        if (captured_mac > original_mac) {
+            captured_mac = original_mac;
         }
     }
-    return (uint16_t)parse_len;
+
+    if (captured_mac_length != NULL) {
+        *captured_mac_length = (uint16_t)captured_mac;
+    }
+    if (original_mac_length != NULL && original_valid) {
+        *original_mac_length = (uint16_t)original_mac;
+    }
+    if (original_mac_length_valid != NULL) {
+        *original_mac_length_valid = original_valid;
+    }
+    if (capture_truncated != NULL && original_valid) {
+        *capture_truncated = captured_mac < original_mac;
+    }
+}
+
+uint16_t rx_path_parse_length(const radio_packet_t *pkt)
+{
+    uint16_t captured_mac_length = 0;
+    rx_path_get_mac_lengths(pkt, &captured_mac_length, NULL, NULL, NULL);
+    return captured_mac_length;
 }
 
 bool rx_path_body_truncated(const radio_packet_t *pkt)
 {
-    if (pkt == NULL) {
+    bool capture_truncated = false;
+    rx_path_get_mac_lengths(pkt, NULL, NULL, NULL, &capture_truncated);
+    return capture_truncated;
+}
+
+bool rx_path_make_capture_view(const radio_packet_t *pkt,
+                               rx_capture_view_t *out)
+{
+    if (pkt == NULL || out == NULL) {
         return false;
     }
 
-    /*
-     * True when MAC body bytes (not just FCS bytes) were lost. Only then
-     * may the parser report its tail as incomplete instead of judging it.
-     */
-    if (pkt->orig_length < 4) {
-        return false;
+    memset(out, 0, sizeof(*out));
+    out->mac_bytes = pkt->data;
+    rx_path_get_mac_lengths(pkt, &out->captured_mac_length,
+                            &out->original_mac_length,
+                            &out->original_mac_length_valid,
+                            &out->capture_truncated);
+    if (out->captured_mac_length > RADIO_PACKET_MAX_LEN) {
+        out->captured_mac_length = RADIO_PACKET_MAX_LEN;
     }
-    return pkt->length < (uint16_t)(pkt->orig_length - 4);
+    out->rx_channel = pkt->channel;
+    out->rssi = pkt->rssi;
+    out->rx_timestamp_us = pkt->rx_timestamp_us;
+    out->fcs_policy = RX_CAPTURE_FCS_DRIVER_LENGTH_INCLUDES_STRIP_FROM_VIEW;
+    return true;
 }

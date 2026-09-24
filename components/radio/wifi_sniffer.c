@@ -1,6 +1,7 @@
 #include "wifi_sniffer.h"
 
 #include "channel_hopper.h"
+#include "eapol_parser.h"
 #include "ieee80211_parser.h"
 #include "obs_cache.h"
 #include "rx_path.h"
@@ -55,6 +56,7 @@ static QueueHandle_t s_rx_queue;   /* radio_packet_t* filled by the callback */
 static portMUX_TYPE s_stats_mux = portMUX_INITIALIZER_UNLOCKED;
 static radio_stats_t s_stats;
 static rx_path_stats_t s_rx_stats;
+static eapol_stats_t s_eapol_stats;
 static uint8_t s_current_channel;
 static bool s_initialized;
 
@@ -67,6 +69,7 @@ static bool s_initialized;
 static world_t s_world;
 static SemaphoreHandle_t s_world_mux;
 static uint64_t s_last_world_maint;
+static uint64_t s_last_eapol_log_us;
 static TaskHandle_t s_rx_task_handle;
 static TaskHandle_t s_stats_task_handle;
 
@@ -156,6 +159,36 @@ static void world_tick(uint64_t now_ms)
     world_maintenance(&s_world, now_ms);
     s_last_world_maint = now_ms;
     xSemaphoreGive(s_world_mux);
+}
+
+/* Individual observations are useful during passive field checks, but the
+ * parser task must not emit a line for every retransmitted EAPOL frame. */
+static void eapol_log_observation(const eapol_observation_t *obs)
+{
+    if (obs == NULL || !obs->raw_eapol_frame) {
+        return;
+    }
+
+    const uint64_t now_us = (uint64_t)esp_timer_get_time();
+    if (now_us >= s_last_eapol_log_us &&
+        now_us - s_last_eapol_log_us < UINT64_C(3000000)) {
+        return;
+    }
+    s_last_eapol_log_us = now_us;
+
+    char bssid[18] = "?";
+    char sta[18] = "?";
+    if (obs->bssid_valid) {
+        ieee80211_format_mac(obs->bssid, bssid, sizeof(bssid));
+    }
+    if (obs->sta_valid) {
+        ieee80211_format_mac(obs->sta, sta, sizeof(sta));
+    }
+    ESP_LOGI(TAG_OBS,
+             "EAPOL rx_us=%" PRIu64 " type=%u status=%u dir=%u"
+             " key_class=%u bssid=%s sta=%s",
+             obs->rx_timestamp_us, obs->eapol_type, obs->status,
+             obs->direction, obs->key_class, bssid, sta);
 }
 
 /*
@@ -248,6 +281,10 @@ static const rx_path_io_t s_rx_io = {
 static void promiscuous_rx_cb(void *buf, wifi_promiscuous_pkt_type_t type)
 {
     const wifi_promiscuous_pkt_t *pkt = (const wifi_promiscuous_pkt_t *)buf;
+    /* IDF documents esp_timer_get_time() as fast, lock-free and usable from
+     * both task and ISR context. The Wi-Fi promiscuous callback runs in the
+     * driver task; take the value before copying/enqueueing the frame. */
+    const uint64_t rx_timestamp_us = (uint64_t)esp_timer_get_time();
 
     /* IDF v5.4 payload contract: sig_len is the on-air length including
      * FCS for MGMT/CTRL/DATA, while MISC packets have a zero-length
@@ -268,6 +305,7 @@ static void promiscuous_rx_cb(void *buf, wifi_promiscuous_pkt_type_t type)
         .sig_len = (uint16_t)pkt->rx_ctrl.sig_len,
         .payload = pkt->payload,
         .payload_len = payload_len,
+        .rx_timestamp_us = rx_timestamp_us,
     };
 
     rx_path_on_frame(&s_rx_io, &s_rx_stats, &view);
@@ -627,12 +665,25 @@ static void radio_rx_task(void *arg)
             continue;
         }
 
-        world_tick(radio_now_ms());
-
         const uint16_t parse_len = packet_parse_length(pkt);
         const ieee80211_parse_opts_t opts = {
             .capture_truncated = rx_path_body_truncated(pkt),
         };
+
+        /* EAPOL is an independent parser-task observation. It runs before
+         * any World Model lock/insert attempt, so a full DB or missed lock
+         * cannot suppress detection. The parser returns only value data. */
+        rx_capture_view_t capture;
+        eapol_observation_t eapol_observation;
+        if (rx_path_make_capture_view(pkt, &capture) &&
+            eapol_parse_frame(&capture, &eapol_observation)) {
+            portENTER_CRITICAL(&s_stats_mux);
+            eapol_stats_record(&s_eapol_stats, &eapol_observation);
+            portEXIT_CRITICAL(&s_stats_mux);
+            eapol_log_observation(&eapol_observation);
+        }
+
+        world_tick(radio_now_ms());
 
         ieee80211_frame_info_t info = {0};
         ieee80211_parse(pkt->data, pkt->length, &info);
@@ -786,6 +837,22 @@ static void radio_stats_task(void *arg)
                  stats.world_data_ambiguous, stats.world_data_wds,
                  stats.world_data_short,
                  stats.world_obs_stale, stats.world_obs_invalid);
+
+        eapol_stats_t eapol;
+        wifi_sniffer_get_eapol_stats(&eapol);
+        ESP_LOGI(TAG_OBS,
+                 "EAPOL raw=%" PRIu32 " env=%" PRIu32 " key=%" PRIu32
+                 " trunc=%" PRIu32 " unsup=%" PRIu32 " malformed=%" PRIu32
+                 " mac_unsup=%" PRIu32 " eap=%" PRIu32 " start=%" PRIu32
+                 " logoff=%" PRIu32 " key_raw=%" PRIu32
+                 " pair=%" PRIu32 " group=%" PRIu32 " key_desc_unknown=%" PRIu32,
+                 eapol.raw_eapol_frames, eapol.complete_eapol_envelopes,
+                 eapol.complete_key_frames, eapol.truncated_eapol_frames,
+                 eapol.unsupported_eapol_frames, eapol.malformed_eapol_frames,
+                 eapol.unsupported_mac_layout_frames, eapol.eap_packet_frames,
+                 eapol.start_frames, eapol.logoff_frames, eapol.key_frames,
+                 eapol.pairwise_key_frames, eapol.group_key_frames,
+                 eapol.unknown_key_descriptors);
     }
 }
 
@@ -847,6 +914,16 @@ void wifi_sniffer_get_stats(radio_stats_t *out)
     if (hop.current_channel != 0) {
         out->current_channel = hop.current_channel;
     }
+}
+
+void wifi_sniffer_get_eapol_stats(eapol_stats_t *out)
+{
+    if (out == NULL) {
+        return;
+    }
+    portENTER_CRITICAL(&s_stats_mux);
+    *out = s_eapol_stats;
+    portEXIT_CRITICAL(&s_stats_mux);
 }
 
 esp_err_t wifi_sniffer_init(void)
@@ -917,6 +994,7 @@ esp_err_t wifi_sniffer_init(void)
 
     memset(&s_stats, 0, sizeof(s_stats));
     memset(&s_rx_stats, 0, sizeof(s_rx_stats));
+    memset(&s_eapol_stats, 0, sizeof(s_eapol_stats));
     obs_ap_cache_init(&s_ap_cache);
     for (size_t i = 0; i < RADIO_PACKET_POOL_SIZE; i++) {
         radio_packet_t *slot = &s_packet_pool[i];
