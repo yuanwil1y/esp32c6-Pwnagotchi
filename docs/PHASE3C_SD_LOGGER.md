@@ -1,13 +1,13 @@
 # Phase 3C — Bounded asynchronous SD logger
 
-Status: **PENDING**. The summary overflow fix and regression passed GitHub CI;
-the app-only image from commit `7055881ffa6a00a10ca3401a2cea9f17b3300226` was
-flashed and hash-verified. A new 17-second session was stopped successfully:
-218 accepted/serialized/written/flushed records, zero storage drops or I/O
-errors, and a nonempty 784-byte summary were read back over USB Serial/JTAG.
-Scapy independently parsed its PCAP and found six caplen-truncated records.
-Real-file TShark/capinfos and physical display/touch responsiveness during
-active writes remain **PENDING**; synthetic CI TShark/capinfos checks passed.
+Status: **PENDING** for physical LCD/touch responsiveness during active SD
+writes. The summary overflow fix and regression passed GitHub CI; the app-only
+image from commit `7055881ffa6a00a10ca3401a2cea9f17b3300226` was flashed and
+hash-verified. A new 17-second session was stopped successfully: 218
+accepted/serialized/written/flushed records, zero storage drops or I/O errors,
+and a nonempty 784-byte summary were read back over USB Serial/JTAG. Scapy and
+TShark/capinfos independently parsed the PCAP; all six caplen-truncated records
+were preserved honestly. Synthetic CI TShark/capinfos checks passed too.
 An earlier post-flash stop attempt was interrupted when its host script
 reopened COM3 and toggled DTR/RTS; that new session is not counted as a
 controlled-stop pass. The user has no SD reader, so all readback uses the
@@ -436,10 +436,9 @@ and hash-verified; controlled stop and serial file readback succeeded.
 
 ## Hardware acceptance status
 
-**PENDING — the summary fix now passes a controlled hardware stop and serial
-readback, but real-file TShark/capinfos and visual display/touch checks remain
-incomplete.** Scapy parsed the new PCAP; the independent TShark/capinfos CI
-validation covers synthetic fixtures, not the live SD file. The original
+**PENDING — the summary fix passes a controlled hardware stop, serial
+readback, and real-file TShark/capinfos validation. Physical LCD/touch
+responsiveness during active writes remains unobserved.** The original
 zero-byte summary did not reveal its failure; a later controlled stop
 reproduced the summary formatter overflow, which was fixed and then passed a
 new app-only device retest.
@@ -456,13 +455,14 @@ continued at 300 ms with zero reported errors; heap and stack telemetry
 remained available. This capture contained zero EAPOL frames; that does not
 test the EAPOL parser.
 
-To finish hardware acceptance, run TShark/capinfos on the real serial-exported
-PCAP, compare packet count/lengths with its summary, and confirm physical
-display/touch responsiveness during active writes. The local machine still
-does not have TShark/capinfos installed; its earlier Wireshark package download
-failed with `InternetReadFile() failed (0x80072ee2)`. Scapy's successful
-independent offline read is not represented as a real-file TShark/capinfos
-PASS. No local build or host-test result is substituted for GitHub CI, and no
+To finish hardware acceptance, confirm physical display/touch responsiveness
+during active writes. Real-file TShark/capinfos and the packet count/length
+comparison have now passed for the serial-exported session documented below.
+The earlier Wireshark package download failed with
+`InternetReadFile() failed (0x80072ee2)`; a later official, signed Wireshark
+4.6.9 package was installed in a task-specific directory without Npcap and
+used only for offline reading. No local build or host-test result is
+substituted for GitHub CI, and no
 live capture file was uploaded or committed.
 
 The firmware does not request Wi-Fi reassociation, deauthentication, active
@@ -503,11 +503,10 @@ once with `python -m pip install pyserial`, then run from the repository root:
 python tools/capture_serial_export.py COM3 --session 9D808161AA2EF8C5 --output-dir D:\pwn\capture-export
 ```
 
-The receiver does not upload the resulting PCAP or summary. The output can be
-independently checked with TShark after retrieval. The serial transfer and a
-Scapy offline read of the retrieved PCAP have succeeded; real-file
-TShark/capinfos acceptance remains **PENDING**. The implementation, CI, and
-hardware results are recorded below.
+The receiver does not upload the resulting PCAP or summary. The old session's
+serial transfer and Scapy offline read succeeded; real-file TShark/capinfos
+validation later passed on a new session, as recorded below. The
+implementation, CI, and hardware results are recorded below.
 
 ### Follow-up implementation and validation
 
@@ -591,10 +590,11 @@ hardware results are recorded below.
   frequencies were 2412, 2417, 2422, 2427, 2432, 2437, 2442, 2447, 2452,
   2457, and 2462 MHz; RSSI ranged from -96 to -37 dBm. This old recording
   contained zero EAPOL frames.
-- Direct real-file TShark/capinfos verification is still pending. Neither tool
-  was installed; the Wireshark 4.6.8 winget download failed with
-  `InternetReadFile() failed (0x80072ee2)`. Scapy's offline read is an
-  independent useful check, but it is not reported as a TShark/capinfos PASS.
+- At this point in the earlier `9D808161AA2EF8C5` readback, direct real-file
+  TShark/capinfos verification was pending: neither tool was installed and
+  the Wireshark 4.6.8 winget download failed with
+  `InternetReadFile() failed (0x80072ee2)`. The later `6264BF9AA6F15BEB` live
+  file was validated with TShark/capinfos below.
 - A later `capture-status` command after the firmware reboot reported logger
   `STOPPED` with zero current-session logger counters (the reboot reset these
   RAM counters; this is not the old file's summary). The same serial response
@@ -696,7 +696,49 @@ hardware results are recorded below.
   radiotap channel and RSSI; channels decoded across 1–11 (2412–2462 MHz),
   signal ranged from -93 to -35 dBm, and no EAPOL was present. Scapy emitted
   a warning that no libpcap provider was installed, but its pure reader parsed
-  the file successfully. TShark/capinfos still did not run on this live file.
+  the file successfully. The independent TShark/capinfos results for this
+  live file are recorded below.
+- The official Wireshark 4.6.9 Windows x64 installer was downloaded from the
+  Singapore mirror after the default mirror timed out. Its Authenticode
+  signature verified as valid with signer `Wireshark Foundation`. It was
+  installed to `D:\pwn\phase3c-tools\wireshark-4.6.9` without Npcap; TShark
+  and capinfos both reported version 4.6.9 and were used only for offline
+  reading.
+- `capinfos.exe -E -I -l -c -s -u -a -e <PCAP>` reported encapsulation
+  “IEEE 802.11 plus radiotap radio header” (23), snaplen 527, microsecond
+  precision, 218 packets, 65 kB, and 16.501012 seconds. Its displayed local
+  timestamps were `1970-01-01 08:00:00.616812` through
+  `1970-01-01 08:00:17.117824`; that is the epoch-zero monotonic-delta
+  session timeline rendered in UTC+8, not UTC.
+- TShark 4.6.9 decoded all 218 records. Aggregated `frame.cap_len` was
+  62,007 B, `frame.len` 62,403 B, with six records where caplen < origlen.
+  `frame.time_relative` ranged 0–16.501012 s. All 218 records had radiotap
+  channel and RSSI fields; frequencies covered 2412–2462 MHz (channels 1–11)
+  and signal ranged from -93 to -35 dBm. WLAN BSSID/SA/DA fields were present
+  on 173 records each; the remainder are control frames without those
+  address fields. No EAPOL type was present in this passive interval. Frame
+  type/subtype counts matched the Scapy aggregation above.
+- Per-frame fields were read with TShark using `frame.number`,
+  `frame.cap_len`, `frame.len`, `frame.time_relative`,
+  `radiotap.channel.freq`, `radiotap.dbm_antsignal`, `wlan.fc.type`,
+  `wlan.fc.subtype`, `wlan.bssid`, `wlan.sa`, `wlan.da`, and `eapol.type`.
+  The command was:
+  ```text
+  tshark.exe -r <PCAP> -T fields -E "separator=|" -E header=y -e frame.number -e frame.cap_len -e frame.len -e frame.time_relative -e radiotap.channel.freq -e radiotap.dbm_antsignal -e wlan.fc.type -e wlan.fc.subtype -e wlan.bssid -e wlan.sa -e wlan.da -e eapol.type
+  ```
+  The raw field export is retained locally; only aggregates are recorded here
+  so live addresses do not enter the repository.
+- `tshark -Y _ws.malformed` matched zero frames. TShark, capinfos, and the
+  serial summary agree on record accounting:
+  `24 + 16*218 + 62007 = 65519` bytes. The live file therefore passed
+  independent TShark/capinfos inspection; this does not imply an EAPOL frame
+  was present in the interval.
+- The TShark per-frame field export contains live radio addresses and remains
+  local at `D:\pwn\phase3c-evidence\tshark-6264BF9AA6F15BEB.psv`; malformed
+  filter output, capinfos output, and command stderr are stored beside it as
+  `tshark-malformed-6264BF9AA6F15BEB.txt`,
+  `capinfos-6264BF9AA6F15BEB.raw.txt`, and
+  `tshark-6264BF9AA6F15BEB.stderr.txt`. Those files were not committed.
 - During the same boot the radio reported RX drops 0, a drained RX queue, and
   300 ms hopping with zero errors. Logger stack high-water was 3,100 B of
   6,144 B; UI stack high-water was 1,524 B; radio RX task high-water was 968
@@ -710,5 +752,4 @@ hardware results are recorded below.
   radio observations. In particular, the raw boot, corrected controlled-stop,
   and interrupted-stop logs were preserved. The interrupted session's partial
   file remains on the card; no existing or partial file was deleted. Phase 3C
-  remains **PENDING** until live-file TShark/capinfos and physical
-  display/touch verification are complete.
+  remains **PENDING** until physical display/touch verification is complete.
