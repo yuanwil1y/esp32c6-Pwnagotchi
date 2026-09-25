@@ -367,6 +367,61 @@ static void test_submit_is_nonblocking_copy_and_stop_syncs(void)
     check_pool_conserved();
 }
 
+static void test_summary_fits_full_width_counters(void)
+{
+    setup(true);
+    const char *const firmware_sha =
+        "cf8708bf60495b6e538830dbe5aec37c2898ecbf";
+    CHECK(sd_logger_core_request_start(&s_core, 0xC001u, 0x100000000u,
+                                       firmware_sha));
+    CHECK(sd_logger_core_process_one(&s_core));
+
+    /* Exercise the largest decimal representations of every summary counter.
+     * Production values reached 794 bytes with a full SHA and ordinary counts,
+     * overrunning the old 768-byte local buffer. */
+    s_core.stats.accepted = UINT64_MAX;
+    s_core.stats.serialized = UINT64_MAX;
+    s_core.stats.written = UINT64_MAX;
+    s_core.stats.flushed = UINT64_MAX;
+    s_core.stats.storage_drop = UINT64_MAX;
+    s_core.stats.drop_queue_full = UINT64_MAX;
+    s_core.stats.drop_not_recording = UINT64_MAX;
+    s_core.stats.drop_io = UINT64_MAX;
+    s_core.stats.drop_limit = UINT64_MAX;
+    s_core.stats.drop_pre_session = UINT64_MAX;
+    s_core.stats.rejected_invalid = UINT64_MAX;
+    s_core.stats.filtered_non_data = UINT64_MAX;
+    s_core.stats.short_writes = UINT64_MAX;
+    s_core.stats.io_errors = UINT64_MAX;
+    s_core.stats.storage_full_errors = UINT64_MAX;
+    s_core.stats.pcap_bytes = UINT64_MAX;
+    s_core.stats.max_open_us = UINT64_MAX;
+    s_core.stats.max_write_us = UINT64_MAX;
+    s_core.stats.max_flush_us = UINT64_MAX;
+    s_core.stats.max_close_us = UINT64_MAX;
+    s_core.stats.io_slow_count = UINT64_MAX;
+    s_core.stats.file_rotations = UINT64_MAX;
+    s_core.stats.filename_collisions = UINT64_MAX;
+    s_core.stats.files_incomplete = UINT64_MAX;
+    s_core.stats.limit_reached = true;
+
+    CHECK(sd_logger_core_request_stop(&s_core));
+    run_worker();
+
+    sd_logger_stats_t stats;
+    sd_logger_core_get_stats(&s_core, &stats);
+    CHECK(stats.state == SD_LOGGER_STOPPED);
+    CHECK(stats.io_errors == UINT64_MAX);
+    mock_file_t *summary = find_file(true, 0xC001u, 0u);
+    CHECK(summary != NULL && summary->closed);
+    CHECK(summary->length > 768u && summary->length < MOCK_FILE_BYTES);
+    CHECK(strstr((char *)summary->data, "firmware_sha=") != NULL);
+    CHECK(strstr((char *)summary->data,
+                 "io_errors=18446744073709551615\n") != NULL);
+    CHECK(strstr((char *)summary->data, "limit_reached=1\n") != NULL);
+    check_pool_conserved();
+}
+
 static void test_full_queue_drops_only_new_and_drains_fifo(void)
 {
     setup(true);
@@ -744,6 +799,7 @@ static void test_open_and_close_failures_leave_recoverable_error(void)
 int main(void)
 {
     test_register("submit_copy_and_stop_sync", test_submit_is_nonblocking_copy_and_stop_syncs);
+    test_register("summary_full_width_counters", test_summary_fits_full_width_counters);
     test_register("queue_full_fifo_and_drain", test_full_queue_drops_only_new_and_drains_fifo);
     test_register("valid_mgmt_control_data", test_valid_mgmt_control_and_data_raw_frames_are_kept);
     test_register("slow_writer_not_producer_lock", test_slow_writer_does_not_hold_producer_lock);

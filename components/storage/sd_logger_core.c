@@ -6,7 +6,6 @@
 #include "ieee80211_parser.h"
 
 #define SD_LOGGER_RETRY_COLLISIONS 32u
-#define SD_LOGGER_SUMMARY_SIZE    768u
 
 typedef enum {
     STEP_NONE = 0,
@@ -566,8 +565,12 @@ static bool write_summary(sd_logger_core_t *core)
     sd_logger_stats_t now;
     sd_logger_core_get_stats(core, &now);
     const sd_logger_stats_t *base = &core->session_baseline;
-    char summary[SD_LOGGER_SUMMARY_SIZE];
-    const int length = snprintf(summary, sizeof(summary),
+    /* The PCAP batch has been flushed and closed before every summary write.
+     * Reuse its logger-owned storage so a full 64-bit stats snapshot fits
+     * without adding a large logger-task stack allocation. */
+    char *const summary = (char *)core->batch;
+    const size_t summary_capacity = sizeof(core->batch);
+    const int length = snprintf(summary, summary_capacity,
         "format=pcap-2.4-linktype-127\n"
         "firmware_sha=%s\n"
         "session_id=%016llX\n"
@@ -617,7 +620,7 @@ static bool write_summary(sd_logger_core_t *core)
         (unsigned long long)session_delta(now.filename_collisions, base->filename_collisions),
         (unsigned long long)session_delta(now.files_incomplete, base->files_incomplete),
         now.limit_reached ? 1u : 0u);
-    if (length < 0 || (size_t)length >= sizeof(summary)) {
+    if (length < 0 || (size_t)length >= summary_capacity) {
         return false;
     }
     if (!write_full(core, core->summary_handle, (const uint8_t *)summary,
