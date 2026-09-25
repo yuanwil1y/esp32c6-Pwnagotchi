@@ -429,21 +429,19 @@ ESP-IDF v5.4 / ESP32-C6 build
 ```
 
 No local build or test is run for this task. The CI run and all hardware
-attempts are recorded above. The latest control-reader image was flashed
-app-only; the SD close error and missing card readback prevent hardware
-acceptance.
+attempts are recorded above. The control-reader image was app-only flashed and
+serial readback succeeded. A new controlled stop reproduced a summary buffer
+overflow; its fix passed GitHub CI but has not yet been flashed to the device.
 
 ## Hardware acceptance status
 
-**PENDING — live recording and radio operation were demonstrated, but the
-controlled stop returned `ERROR`; the retrieved PCAP has been read by Scapy,
-while real-file TShark/capinfos verification is still pending.** USB
-Serial/JTAG successfully copied the existing PCAP to a local evidence
-directory without changing its SD copy; the session sidecar size was zero.
-The close-failure source (PCAP versus sidecar) is unknown from the original
-firmware's aggregate error status. Visual LCD/touch responsiveness during
-active SD writes also remains unverified. The written/flushed counters and
-synthetic host TShark run alone are not a hardware PCAP PASS.
+**PENDING — two controlled stops returned `ERROR`; serial readback succeeded,
+and the new root-cause fix passed CI but still needs an app-only device retest.**
+Scapy parsed both local PCAP copies; real-file TShark/capinfos verification is
+still pending. The original session's zero-byte summary did not reveal its
+failure, but a second controlled stop isolated the same symptom to the summary
+formatter overflowing its 768-byte buffer. Visual LCD/touch responsiveness
+during active SD writes also remains unverified.
 
 What was verified: the code and app-only image passed GitHub CI; the device
 booted stably; direct USB Serial/JTAG control worked; a uniquely named file
@@ -454,13 +452,14 @@ telemetry remained available. The phone Wi-Fi toggle did not increase the
 EAPOL observation counter during this capture, which is consistent with the
 known possibility of missing a brief connection exchange while hopping.
 
-To finish hardware acceptance, run TShark/capinfos on the local serial export
-and compare packet count and lengths with the recorded counters, investigate
-the reported close error, and confirm display responsiveness during an active
-write. Scapy's successful offline parse is recorded below, but does not replace
-the requested real-file TShark/capinfos check. No local build or host test
-result is substituted for GitHub CI, and no live capture file was uploaded or
-committed.
+To finish hardware acceptance, app-only flash the passing summary fix, create a
+new session, verify controlled stop reaches `STOPPED` and produces a nonempty
+summary, and read both files back over serial. Run TShark/capinfos on the new
+PCAP, compare packet count/lengths with its summary, and confirm display
+responsiveness during active writes. Scapy's successful offline parse is
+recorded below, but does not replace the requested real-file TShark/capinfos
+check. No local build or host test result is substituted for GitHub CI, and no
+live capture file was uploaded or committed.
 
 The firmware does not request Wi-Fi reassociation, deauthentication, active
 scanning, or transmit packets. This phase does not implement PCAPNG, handshake
@@ -605,7 +604,53 @@ hardware results are recorded below.
 - Actual serial status bytes and the PCAP remain local under
   `D:\pwn\phase3c-evidence\` and were not uploaded or committed because they
   contain private radio observations. Live raw serial debug output is also
-  retained there. The close failure cause cannot be recovered from the old
-  firmware's missing zero-byte summary; Phase 3C acceptance remains **PENDING**
-  until real-file TShark/capinfos verification and the remaining hardware
-  checks are complete.
+  retained there.
+
+### Controlled-stop retest and summary fix (2026-09-25)
+
+- With the COM3 control-reader image, a new 15-second session
+  `0B0538BEFBDDDED3` again ended in `ERROR`. The status reported
+  `accepted=serialized=written=flushed=1211`, `pcap_bytes=102000`,
+  `storage_drop=queue_full=189`, `io_drop=0`, `incomplete=0`,
+  `short_writes=0`, `io_errors=1`, `last_io_error=none`. The PCAP close took
+  5,540 us; the sidecar remained zero bytes. The 1,211-frame PCAP was read
+  over serial and parsed by Scapy 2.7.0 as radiotap linktype 127: 82,600
+  captured/original bytes, no caplen truncations, 180 management, 1,009
+  control, 22 data, zero EAPOL. Its record accounting is
+  `24 + 16*1211 + 82600 = 102000` bytes. TShark/capinfos are still unavailable
+  locally, so this remains a Scapy-only hardware-file inspection.
+- The retest pointed to the summary formatting boundary: `write_summary()`
+  builds the complete field set, including the 40-character firmware SHA, in a
+  768-byte local array. The retest values require about 794 bytes. The bounds
+  check returned failure before the summary write, `fail_session()` counted
+  one error, and the best-effort close left the summary empty. This matches the
+  observed successful PCAP flush/close, zero short writes, `last_io_error=none`,
+  and `ERROR` result.
+- Code commit `5685973eb0f6dcc5c12410609178ccc7cce2a139` fixes the overflow by
+  formatting into the logger-owned batch buffer, which is unused after the
+  PCAP batch has been flushed and the PCAP closed. It adds no task, queue, or
+  BSS and removes the 768-byte local stack array. Commit
+  `6fadce557c34485631dc7b513a98a9a9983758a4` adds a host regression matching
+  the device snapshot and a second test for full-width 64-bit counters.
+- GitHub Actions run
+  [36100879082](https://github.com/yuanwil1y/esp32c6-Pwnagotchi/actions/runs/36100879082)
+  passed plain, ASan/UBSan, reference and fixture TShark/capinfos validation,
+  and the ESP-IDF v5.4 ESP32-C6 build. Both `summary_device_snapshot` and
+  `summary_full_width_counters` passed. The actual CI logs are retained at
+  `docs/logs/github-actions-36100879082.txt`.
+- The passing app artifact is 1,199,120 B (`0x124c10`), SHA-256
+  `b3f3b7d0104bea25f72ed207d2cf704cb2667a0c0765765f5956f1aa9efba3ff`;
+  linker `.bss` remains 65,936 B. The logger task stack request remains 6,144
+  B. These values are from GitHub CI; no local build was run. This image has
+  not yet been flashed. Re-test controlled stop, nonempty summary, file
+  readback, and logger stack high-water mark after operator power-up.
+- During the failed retest, max open/write/sync/close durations were
+  290,008/103,056/67,193/5,540 us, logger stack high-water was 2,092 B, UI
+  stack high-water was 1,428 B, minimum heap was 119,044 B, and 300 ms hopping
+  reported zero errors. RX drops remained 42 for the boot; the 189 storage
+  queue-full drops are separate. No physical LCD/touch check was made, so
+  display responsiveness during SD writes remains **PENDING**. The original
+  `9D808161AA2EF8C5` close cause is unrecoverable because its logger counters
+  were lost at reboot and its summary file is empty. Phase 3C remains
+  **PENDING** until the fixed image passes its hardware retest and the
+  remaining real-file/display checks are done.
