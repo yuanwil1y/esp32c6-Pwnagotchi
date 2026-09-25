@@ -1,16 +1,18 @@
 # Phase 3C — Bounded asynchronous SD logger
 
-Status: **PENDING**. Code SHA
-`3f23fcd08f7da23b606e2289e326bf8d8734875b` passed GitHub host and ESP-IDF CI
-run [36001491669](https://github.com/yuanwil1y/esp32c6-Pwnagotchi/actions/runs/36001491669).
-Its app-only image was flashed and booted stably. A live SD recording ran, but
-`capture-stop` ended in `ERROR` with one I/O error even though accepted,
-serialized, written, and flushed all reached 1,594. Six additional records
-were dropped at the full logger queue. The user has no SD reader, so the file
-has not been extracted or independently read by TShark; hardware PCAP
-readback and successful controlled-stop acceptance remain **PENDING**.
-Active hopping/RX/heap/stack telemetry was observed. Visual LCD responsiveness
-was not independently assessed during the write interval.
+Status: **PENDING**. The summary overflow fix and regression passed GitHub CI;
+the app-only image from commit `7055881ffa6a00a10ca3401a2cea9f17b3300226` was
+flashed and hash-verified. A new 17-second session was stopped successfully:
+218 accepted/serialized/written/flushed records, zero storage drops or I/O
+errors, and a nonempty 784-byte summary were read back over USB Serial/JTAG.
+Scapy independently parsed its PCAP and found six caplen-truncated records.
+Real-file TShark/capinfos and physical display/touch responsiveness during
+active writes remain **PENDING**; synthetic CI TShark/capinfos checks passed.
+An earlier post-flash stop attempt was interrupted when its host script
+reopened COM3 and toggled DTR/RTS; that new session is not counted as a
+controlled-stop pass. The user has no SD reader, so all readback uses the
+existing serial exporter. No existing file is formatted, deleted, or
+overwritten.
 The user confirmed that an SD card is inserted and authorized creating new
 uniquely named files. No existing file is formatted, deleted, or overwritten.
 
@@ -428,37 +430,39 @@ python3 tests/host/validate_phase3c_capture.py tests/host/build/phase3c_logger_s
 ESP-IDF v5.4 / ESP32-C6 build
 ```
 
-No local build or test is run for this task. The CI run and all hardware
-attempts are recorded above. The control-reader image was app-only flashed and
-serial readback succeeded. A new controlled stop reproduced a summary buffer
-overflow; its fix passed GitHub CI but has not yet been flashed to the device.
+No local build or host test is run for this task. The CI run and all hardware
+attempts are recorded below. The summary-fix app image was app-only flashed
+and hash-verified; controlled stop and serial file readback succeeded.
 
 ## Hardware acceptance status
 
-**PENDING — two controlled stops returned `ERROR`; serial readback succeeded,
-and the new root-cause fix passed CI but still needs an app-only device retest.**
-Scapy parsed both local PCAP copies; real-file TShark/capinfos verification is
-still pending. The original session's zero-byte summary did not reveal its
-failure, but a second controlled stop isolated the same symptom to the summary
-formatter overflowing its 768-byte buffer. Visual LCD/touch responsiveness
-during active SD writes also remains unverified.
+**PENDING — the summary fix now passes a controlled hardware stop and serial
+readback, but real-file TShark/capinfos and visual display/touch checks remain
+incomplete.** Scapy parsed the new PCAP; the independent TShark/capinfos CI
+validation covers synthetic fixtures, not the live SD file. The original
+zero-byte summary did not reveal its failure; a later controlled stop
+reproduced the summary formatter overflow, which was fixed and then passed a
+new app-only device retest.
 
-What was verified: the code and app-only image passed GitHub CI; the device
-booted stably; direct USB Serial/JTAG control worked; a uniquely named file
-was opened and received records; status reported 1,594 accepted/serialized/
-written/flushed records and six logger queue-full drops; RX drops stayed zero;
-300 ms hopping continued without reported hop errors; heap and task stack
-telemetry remained available. The phone Wi-Fi toggle did not increase the
-EAPOL observation counter during this capture, which is consistent with the
-known possibility of missing a brief connection exchange while hopping.
+What was verified: the fixed app-only image passed GitHub CI and was hash-
+verified on COM3. The device booted stably with LCD, I2C, touch, SD, Wi-Fi
+sniffing, and hopping initialized. The successful 17-second session reported
+218 accepted/serialized/written/flushed records, zero storage/RX drops,
+zero I/O errors, and STOPPED after drain/close. The 784-byte summary and
+65,519-byte PCAP were read back through the CRC-checked USB Serial/JTAG
+exporter. Scapy parsed 218 radiotap frames, including six honest
+caplen<origlen truncated records, matching PCAP byte accounting. Hopping
+continued at 300 ms with zero reported errors; heap and stack telemetry
+remained available. This capture contained zero EAPOL frames; that does not
+test the EAPOL parser.
 
-To finish hardware acceptance, app-only flash the passing summary fix, create a
-new session, verify controlled stop reaches `STOPPED` and produces a nonempty
-summary, and read both files back over serial. Run TShark/capinfos on the new
-PCAP, compare packet count/lengths with its summary, and confirm display
-responsiveness during active writes. Scapy's successful offline parse is
-recorded below, but does not replace the requested real-file TShark/capinfos
-check. No local build or host test result is substituted for GitHub CI, and no
+To finish hardware acceptance, run TShark/capinfos on the real serial-exported
+PCAP, compare packet count/lengths with its summary, and confirm physical
+display/touch responsiveness during active writes. The local machine still
+does not have TShark/capinfos installed; its earlier Wireshark package download
+failed with `InternetReadFile() failed (0x80072ee2)`. Scapy's successful
+independent offline read is not represented as a real-file TShark/capinfos
+PASS. No local build or host-test result is substituted for GitHub CI, and no
 live capture file was uploaded or committed.
 
 The firmware does not request Wi-Fi reassociation, deauthentication, active
@@ -641,9 +645,9 @@ hardware results are recorded below.
 - The passing app artifact is 1,199,120 B (`0x124c10`), SHA-256
   `b3f3b7d0104bea25f72ed207d2cf704cb2667a0c0765765f5956f1aa9efba3ff`;
   linker `.bss` remains 65,936 B. The logger task stack request remains 6,144
-  B. These values are from GitHub CI; no local build was run. This image has
-  not yet been flashed. Re-test controlled stop, nonempty summary, file
-  readback, and logger stack high-water mark after operator power-up.
+  B. These values are from GitHub CI; no local build was run. At the time of
+  this original code-fix report the image had not yet been flashed; the
+  subsequent flashed artifact and retest are recorded below.
 - During the failed retest, max open/write/sync/close durations were
   290,008/103,056/67,193/5,540 us, logger stack high-water was 2,092 B, UI
   stack high-water was 1,428 B, minimum heap was 119,044 B, and 300 ms hopping
@@ -652,5 +656,59 @@ hardware results are recorded below.
   display responsiveness during SD writes remains **PENDING**. The original
   `9D808161AA2EF8C5` close cause is unrecoverable because its logger counters
   were lost at reboot and its summary file is empty. Phase 3C remains
-  **PENDING** until the fixed image passes its hardware retest and the
-  remaining real-file/display checks are done.
+  **PENDING** until the remaining real-file/display checks are done.
+
+### Fixed-image hardware retest (2026-09-25)
+
+- Documentation commit `7055881ffa6a00a10ca3401a2cea9f17b3300226` passed
+  GitHub Actions run
+  [36101592166](https://github.com/yuanwil1y/esp32c6-Pwnagotchi/actions/runs/36101592166):
+  host plain + ASan/UBSan, synthetic reference and logger TShark/capinfos
+  validation, and ESP-IDF v5.4 ESP32-C6 build. The app artifact was
+  1,199,120 B (`0x124c10`), SHA-256
+  `06249f0dc2f7bc9c58a7635bfced0314297eb9ac7ec9e9bf9f3d455d1fd6fd41`;
+  `.bss` was 65,936 B and logger stack request 6,144 B. This exact artifact
+  was flashed app-only at `0x10000` using esptool v5.4.0; it reported
+  `Hash of data verified`. No bootloader, partition table, or SD contents were
+  written by the flash operation.
+- After the flash, the device reported
+  `LCD=OK I2C=OK Touch=OK SD=OK WiFi=SNIFFING HOP=ON`. A first short test
+  session (`73F9C94A33B22406`) was interrupted when the host test script
+  reopened COM3 using pyserial's open-on-construction path; that path toggled
+  DTR/RTS and reset the target before `capture-stop`. Do not count it as a
+  controlled stop. Its partial new file was not removed. The retest script was
+  corrected to set DTR/RTS low before opening the port and keep one connection
+  open across start, status, and stop.
+- The corrected 17-second recording used session `6264BF9AA6F15BEB`. Stop
+  returned `STOPPED` with
+  `accepted=serialized=written=flushed=218`, `storage_drop=0`, `io_drop=0`,
+  `io_errors=0`, `incomplete=0`, `short_writes=0`, queue empty, and
+  `pcap_bytes=65519`. The CRC-checked serial exporter reported one PCAP of
+  65,519 B and a nonempty 784-byte summary. The summary agrees on counts and
+  records monotonic-delta time with epoch anchor zero (`not_utc`), snaplen
+  527, FCS omitted, and the session RX anchor. It reports zero RX pre-session,
+  invalid, filtered, short-write, I/O, and storage-full errors.
+- Scapy 2.7.0 `PcapReader` independently decoded the live exported PCAP as
+  radiotap linktype 127: 218 records, 62,007 captured bytes, 62,403 original
+  bytes, and six records with caplen < origlen. Accounting matches exactly:
+  `24 + 16*218 + 62007 = 65519`. Timestamp range was 0.616812–17.117824 s
+  (16.501012 s, session-relative rather than UTC). All 218 frames had a
+  radiotap channel and RSSI; channels decoded across 1–11 (2412–2462 MHz),
+  signal ranged from -93 to -35 dBm, and no EAPOL was present. Scapy emitted
+  a warning that no libpcap provider was installed, but its pure reader parsed
+  the file successfully. TShark/capinfos still did not run on this live file.
+- During the same boot the radio reported RX drops 0, a drained RX queue, and
+  300 ms hopping with zero errors. Logger stack high-water was 3,100 B of
+  6,144 B; UI stack high-water was 1,524 B; radio RX task high-water was 968
+  B; minimum heap was 152,888 B. Maximum open/write/sync/close times were
+  296,869/103,166/66,889/157 us, with three slow-I/O observations. LCD, I2C,
+  touch, and SD all initialized successfully, but physical display/touch
+  responsiveness during these writes was not independently observed and
+  remains **PENDING**.
+- Raw COM3 logs, the exported PCAP, and summary remain local under
+  `D:\pwn\phase3c-evidence\` and were not committed because they contain live
+  radio observations. In particular, the raw boot, corrected controlled-stop,
+  and interrupted-stop logs were preserved. The interrupted session's partial
+  file remains on the card; no existing or partial file was deleted. Phase 3C
+  remains **PENDING** until live-file TShark/capinfos and physical
+  display/touch verification are complete.
