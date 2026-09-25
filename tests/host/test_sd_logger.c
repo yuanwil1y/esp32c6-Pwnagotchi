@@ -367,6 +367,46 @@ static void test_submit_is_nonblocking_copy_and_stop_syncs(void)
     check_pool_conserved();
 }
 
+static void test_summary_fits_device_session_snapshot(void)
+{
+    setup(true);
+    const char *const firmware_sha =
+        "cf8708bf60495b6e538830dbe5aec37c2898ecbf";
+    CHECK(sd_logger_core_request_start(&s_core, 0xC002u, 53470911u,
+                                       firmware_sha));
+    CHECK(sd_logger_core_process_one(&s_core));
+
+    /* Match the real COM3 stop report that previously made snprintf return
+     * about 794 bytes against the old 768-byte local summary buffer. */
+    s_core.stats.accepted = 1211u;
+    s_core.stats.serialized = 1211u;
+    s_core.stats.written = 1211u;
+    s_core.stats.flushed = 1211u;
+    s_core.stats.storage_drop = 189u;
+    s_core.stats.drop_queue_full = 189u;
+    s_core.stats.io_errors = 1u;
+    s_core.stats.pcap_bytes = 102000u;
+    s_core.stats.max_open_us = 290008u;
+    s_core.stats.max_write_us = 103056u;
+    s_core.stats.max_flush_us = 67193u;
+    s_core.stats.max_close_us = 5540u;
+    s_core.stats.io_slow_count = 3u;
+
+    CHECK(sd_logger_core_request_stop(&s_core));
+    run_worker();
+
+    sd_logger_stats_t stats;
+    sd_logger_core_get_stats(&s_core, &stats);
+    CHECK(stats.state == SD_LOGGER_STOPPED);
+    mock_file_t *summary = find_file(true, 0xC002u, 0u);
+    CHECK(summary != NULL && summary->closed);
+    CHECK(summary->length > 768u && summary->length < MOCK_FILE_BYTES);
+    CHECK(strstr((char *)summary->data, "accepted=1211\nserialized=1211\n") != NULL);
+    CHECK(strstr((char *)summary->data, "pcap_bytes=102000\n") != NULL);
+    CHECK(strstr((char *)summary->data, "io_errors=1\n") != NULL);
+    check_pool_conserved();
+}
+
 static void test_summary_fits_full_width_counters(void)
 {
     setup(true);
@@ -376,9 +416,8 @@ static void test_summary_fits_full_width_counters(void)
                                        firmware_sha));
     CHECK(sd_logger_core_process_one(&s_core));
 
-    /* Exercise the largest decimal representations of every summary counter.
-     * Production values reached 794 bytes with a full SHA and ordinary counts,
-     * overrunning the old 768-byte local buffer. */
+    /* Exercise the largest decimal representations of every summary counter
+     * so long sessions remain within the logger-owned scratch buffer. */
     s_core.stats.accepted = UINT64_MAX;
     s_core.stats.serialized = UINT64_MAX;
     s_core.stats.written = UINT64_MAX;
@@ -799,6 +838,7 @@ static void test_open_and_close_failures_leave_recoverable_error(void)
 int main(void)
 {
     test_register("submit_copy_and_stop_sync", test_submit_is_nonblocking_copy_and_stop_syncs);
+    test_register("summary_device_snapshot", test_summary_fits_device_session_snapshot);
     test_register("summary_full_width_counters", test_summary_fits_full_width_counters);
     test_register("queue_full_fifo_and_drain", test_full_queue_drops_only_new_and_drains_fifo);
     test_register("valid_mgmt_control_data", test_valid_mgmt_control_and_data_raw_frames_are_kept);
