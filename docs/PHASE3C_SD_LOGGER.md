@@ -1,8 +1,9 @@
 # Phase 3C — Bounded asynchronous SD logger
 
-Status: **PENDING** for physical LCD/touch responsiveness during active SD
-writes. The summary overflow fix and regression passed GitHub CI; the app-only
-image from commit `7055881ffa6a00a10ca3401a2cea9f17b3300226` was flashed and
+Status: **PASS** for Phase 3C. Physical LCD/touch responsiveness during active
+SD writes was confirmed by the user. The summary overflow fix and regression
+passed GitHub CI; the app-only image from commit
+`7055881ffa6a00a10ca3401a2cea9f17b3300226` was flashed and
 hash-verified. A new 17-second session was stopped successfully: 218
 accepted/serialized/written/flushed records, zero storage drops or I/O errors,
 and a nonempty 784-byte summary were read back over USB Serial/JTAG. Scapy and
@@ -753,3 +754,46 @@ implementation, CI, and hardware results are recorded below.
   and interrupted-stop logs were preserved. The interrupted session's partial
   file remains on the card; no existing or partial file was deleted. Phase 3C
   remains **PENDING** until physical display/touch verification is complete.
+
+### Active-write LCD/touch and second real-file verification (2026-09-25)
+
+- With the same app image (`7055881ffa6a00a10ca3401a2cea9f17b3300226`) and
+  one COM3 connection held open with DTR/RTS low, a new uniquely named session
+  `95D264F95582830B` recorded for about 15 seconds. During active SD writes,
+  the user reported that the display kept refreshing and touch remained
+  responsive. The serial log also shows touch samples and continuing UI-task
+  reports; these runtime logs supplement but do not replace the user's direct
+  visual check.
+- The controlled stop returned `capture stopped and drained`. Its session
+  summary reports accepted=serialized=written=flushed=173, five
+  `queue_full` storage drops, zero I/O errors, zero incomplete files, and
+  64,239 PCAP bytes. Radio RX-drop counters remained zero in the sampled
+  runtime reports; storage drops are separate. Logger stack HWM was 2,044 B
+  of 6,144 B, UI stack HWM 1,524 B, minimum free heap 152,888 B, and fixed
+  300 ms hopping reported zero errors. The maximum measured write and sync
+  calls were 530,045 us and 332,280 us; this is one observed run, not a
+  worst-case latency guarantee.
+- `capture-status` displays counters accumulated since boot, while the
+  sidecar records per-session deltas. At stop it showed accepted/written=391
+  and cumulative PCAP bytes=129,758; the prior session contributed 218
+  records and 65,519 bytes. The new session's sidecar and file therefore
+  correctly contain 173 records and 64,239 bytes. This distinction prevents
+  the boot-wide status snapshot from being mistaken for this file's counts.
+- The new PCAP and sidecar were exported over the existing serial protocol to
+  `D:\pwn\phase3c-evidence\export-95D264F95582830B\`; nothing was read by
+  removing the SD card. Official Wireshark 4.6.9 `capinfos` identified
+  IEEE 802.11 plus radiotap (link type 127), snaplen 527, microsecond
+  timestamps, 173 packets, and a 15.213511-second duration. Independent
+  TShark decoded all 173 records: captured bytes=61,447, original bytes=61,513,
+  one record with caplen < origlen, channel frequencies 2412–2462 MHz, RSSI
+  -95 to -45 dBm, and zero `_ws.malformed` matches. File accounting is exact:
+  `24 + 16*173 + 61447 = 64239`. No EAPOL occurred in this interval; this
+  does not affect raw SD capture acceptance and makes no claim about EAPOL
+  delivery during this session.
+- The raw COM3 log is kept locally at
+  `D:\pwn\phase3c-evidence\lcd-touch-20260925-145038.raw.log`. The exported
+  PCAP, summary, TShark fields, and capinfos/malformed outputs are also local
+  and not committed because they contain live radio observations. The user's
+  direct LCD/touch confirmation closes the final Phase 3C hardware acceptance
+  item. Earlier PENDING entries above describe historical attempts, not the
+  final status.
